@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RootLinearLayout.MainActivity">
+        <item name="android:background">?android:attr/colorBackground</item>
+    </style>
+
+    <style name="ThemeOverlay.PlaylistMaker.MainActivity" parent="Theme.PlaylistMaker">
+        <item name="android:colorBackground">@color/yp_black</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
