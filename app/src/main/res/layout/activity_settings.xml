@@ -1,128 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/yp_white"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/RootLinearLayout">
 
-    <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@color/yp_white">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_arrow_back" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="28dp"
-            android:fontFamily="@font/pt_root_ui_vf"
-            android:text="@string/settings"
-            android:textColor="@color/yp_black"
-            android:textSize="@dimen/medium_text_size"
-            android:textStyle="bold" />
-
-    </androidx.appcompat.widget.Toolbar>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/settingsToolbar"
+        style="@style/Toolbar"
+        app:title="@string/settings" />
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_list_height"
+        android:id="@+id/theme_list_item"
+        style="@style/SettingsListContainer"
         android:layout_marginTop="24dp"
-        android:paddingStart="@dimen/activity_layout_marginHorizontal">
+        android:paddingEnd="4dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:fontFamily="@font/pt_root_ui_vf"
-            android:text="@string/dark_theme"
-            android:textColor="@color/black"
-            android:textSize="@dimen/regular_text_size"
-            android:textStyle="bold" />
+            android:id="@+id/theme_text"
+            style="@style/SettingsListText"
+            android:text="@string/dark_theme" />
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            tools:ignore="UseSwitchCompatOrMaterialXml,TouchTargetSizeCheck" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/theme_switch"
+            style="@style/SettingsListImage"
+            android:thumb="@drawable/switch_thumb"
+            app:thumbTint="@color/switch_thumb"
+            app:trackTint="@color/switch_track"
+            app:useMaterialThemeColors="false" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_list_height"
-        android:paddingHorizontal="@dimen/activity_layout_marginHorizontal">
+        android:id="@+id/share_list_item"
+        style="@style/SettingsListContainer">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:fontFamily="@font/pt_root_ui_vf"
-            android:text="@string/share_app"
-            android:textColor="@color/black"
-            android:textSize="@dimen/regular_text_size"
-            android:textStyle="bold" />
+            android:id="@+id/share_text"
+            style="@style/SettingsListText"
+            android:text="@string/share_app" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_share" />
+            android:id="@+id/share_image"
+            style="@style/SettingsListImage"
+            android:src="@drawable/ic_share_24" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_list_height"
-        android:paddingStart="@dimen/activity_layout_marginHorizontal"
-        android:paddingEnd="14dp">
+        android:id="@+id/support_list_item"
+        style="@style/SettingsListContainer">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:fontFamily="@font/pt_root_ui_vf"
-            android:text="@string/contact_support"
-            android:textColor="@color/black"
-            android:textSize="@dimen/regular_text_size"
-            android:textStyle="bold" />
+            android:id="@+id/support_text"
+            style="@style/SettingsListText"
+            android:text="@string/contact_support" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_support" />
+            android:id="@+id/support_image"
+            style="@style/SettingsListImage"
+            android:src="@drawable/ic_support_24" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/setting_list_height"
-        android:paddingStart="@dimen/activity_layout_marginHorizontal"
-        android:paddingEnd="20dp">
+        android:id="@+id/agreement_list_item"
+        style="@style/SettingsListContainer">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:fontFamily="@font/pt_root_ui_vf"
-            android:text="@string/user_agreement"
-            android:textColor="@color/black"
-            android:textSize="@dimen/regular_text_size"
-            android:textStyle="bold" />
+            android:id="@+id/agreement_text"
+            style="@style/SettingsListText"
+            android:text="@string/user_agreement" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_arrow_forward" />
+            android:id="@+id/agreement_image"
+            style="@style/SettingsListImage"
+            android:src="@drawable/ic_arrow_forward_24" />
 
     </FrameLayout>
 

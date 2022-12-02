@@ -1,17 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingHorizontal="@dimen/activity_layout_marginHorizontal"
-    android:paddingTop="@dimen/activity_layout_marginTop">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RootLinearLayout">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/pt_root_ui_vf"
-        android:text="@string/search"
-        android:textColor="@color/yp_black"
-        android:textSize="@dimen/medium_text_size"
-        android:textStyle="bold" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/searchToolbar"
+        style="@style/Toolbar"
+        app:title="@string/search" />
+
+    <FrameLayout
+        android:id="@+id/searchFieldContainer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search_field_height"
+        android:layout_marginHorizontal="@dimen/container_paddingHorizontal"
+        android:layout_marginVertical="8dp"
+        android:background="@drawable/search_field"
+        android:paddingStart="12dp"
+        tools:ignore="RtlSymmetry">
+
+        <ImageView
+            android:id="@+id/searchIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:src="@drawable/ic_search_14"
+            app:tint="?attr/colorOnSurface" />
+
+        <EditText
+            android:id="@+id/inputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_field_height"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:hint="@string/search"
+            android:imeOptions="flagNoExtractUi"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:paddingStart="22dp"
+            android:paddingEnd="40dp"
+            android:textAppearance="?attr/textAppearanceBody_Large"
+            android:textColor="@color/yp_black"
+            android:textColorHint="?attr/colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/clearIcon"
+            android:layout_width="40dp"
+            android:layout_height="@dimen/search_field_height"
+            android:layout_gravity="center_vertical|end"
+            android:padding="8dp"
+            android:paddingEnd="10dp"
+            android:src="@drawable/ic_close_24"
+            android:visibility="gone"
+            app:tint="?attr/colorOnSurface" />
+    </FrameLayout>
 
 </LinearLayout>

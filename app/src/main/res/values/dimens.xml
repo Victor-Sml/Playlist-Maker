@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="medium_text_size">22sp</dimen>
-    <dimen name="regular_text_size">16sp</dimen>
-
-    <dimen name="activity_layout_marginHorizontal">16dp</dimen>
-    <dimen name="activity_layout_marginTop">14dp</dimen>
+    <dimen name="container_paddingHorizontal">16dp</dimen>
 
     <dimen name="big_button_radius">16dp</dimen>
     <dimen name="big_button_iconPadding">10dp</dimen>
 
+    <dimen name="list_height">60dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
-    <dimen name="setting_list_height">60dp</dimen>
+    <dimen name="search_field_height">36dp</dimen>
 </resources>

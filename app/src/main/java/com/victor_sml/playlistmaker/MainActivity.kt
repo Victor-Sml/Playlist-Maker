@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.view.View
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,13 +11,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val searchButton = findViewById<Button>(R.id.search_button)
-        val searchOnClickListener: View.OnClickListener = object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                val searchIntent = Intent(this@MainActivity, SearchActivity::class.java)
-                startActivity(searchIntent)
-            }
+        searchButton.setOnClickListener {
+            val searchIntent = Intent(this@MainActivity, SearchActivity::class.java)
+            startActivity(searchIntent)
         }
-        searchButton.setOnClickListener(searchOnClickListener)
 
         val libraryButton = findViewById<Button>(R.id.library_button)
         libraryButton.setOnClickListener {
@@ -27,12 +23,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         val settingsButton = findViewById<Button>(R.id.settings_button)
-        val settingsOnClickListener: View.OnClickListener = object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                val settingsIntent = Intent(this@MainActivity, SettingsActivity::class.java)
-                startActivity(settingsIntent)
-            }
+        settingsButton.setOnClickListener {
+            val settingsIntent = Intent(this@MainActivity, SettingsActivity::class.java)
+            startActivity(settingsIntent)
         }
-        settingsButton.setOnClickListener(settingsOnClickListener)
     }
 }
