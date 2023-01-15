@@ -16,19 +16,17 @@
         <activity
             android:name="com.victor_sml.playlistmaker.LibraryActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name="com.victor_sml.playlistmaker.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="stateUnchanged" />
         <activity
             android:name="com.victor_sml.playlistmaker.SettingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name="com.victor_sml.playlistmaker.MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:theme="@style/ThemeOverlay.PlaylistMaker.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

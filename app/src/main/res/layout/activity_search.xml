@@ -19,13 +19,6 @@
         android:paddingStart="12dp"
         tools:ignore="RtlSymmetry">
 
-        <ImageView
-            android:id="@+id/searchIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:src="@drawable/ic_search_14"
-            app:tint="?attr/colorOnSurface" />
 
         <EditText
             android:id="@+id/inputEditText"
@@ -33,11 +26,12 @@
             android:layout_height="@dimen/search_field_height"
             android:layout_gravity="center"
             android:background="@null"
+            android:drawableStart="@drawable/ic_search_14"
+            android:drawablePadding="8dp"
             android:hint="@string/search"
             android:imeOptions="flagNoExtractUi"
             android:inputType="textCapSentences"
             android:maxLines="1"
-            android:paddingStart="22dp"
             android:paddingEnd="40dp"
             android:textAppearance="?attr/textAppearanceBody_Large"
             android:textColor="@color/yp_black"

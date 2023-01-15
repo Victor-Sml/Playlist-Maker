@@ -13,8 +13,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.settingsToolbar)
         toolbar.setNavigationOnClickListener {
-            val backToMainIntent = Intent(this@SettingsActivity, MainActivity::class.java)
-            startActivity(backToMainIntent)
+            this.finish()
         }
 
         val shareListItem = findViewById<FrameLayout>(R.id.share_list_item)

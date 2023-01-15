@@ -1,7 +1,6 @@
 package com.victor_sml.playlistmaker
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
@@ -22,7 +20,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
-        inputEditText = findViewById<EditText>(R.id.inputEditText)
+        inputEditText = findViewById(R.id.inputEditText)
 
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -44,20 +42,25 @@ class SearchActivity : AppCompatActivity() {
 
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.searchToolbar)
         toolbar.setNavigationOnClickListener {
-            val backToMainIntent = Intent(this@SearchActivity, MainActivity::class.java)
-            startActivity(backToMainIntent)
+            this.finish()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_INPUT, searchQuery)
+        outState.run {
+            putString(SEARCH_INPUT, searchQuery)
+            putInt(INPUT_START_SELECTION, inputEditText.selectionStart)
+            putInt(INPUT_END_SELECTION, inputEditText.selectionEnd)
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString(SEARCH_INPUT, "")
-        inputEditText.setText(searchQuery)
+        savedInstanceState.run {
+            inputEditText.setText(getString(SEARCH_INPUT, ""))
+            inputEditText.setSelection(getInt(INPUT_START_SELECTION), getInt(INPUT_END_SELECTION))
+        }
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -77,5 +80,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_INPUT = "SEARCH_INPUT"
+        const val INPUT_START_SELECTION = "START_SELECTION"
+        const val INPUT_END_SELECTION = "END_SELECTION"
     }
 }
