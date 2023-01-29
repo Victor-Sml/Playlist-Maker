@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="textAppearanceSubtitle_Large" format="reference"/>
-    <attr name="textAppearanceBody_Large" format="reference"/>
+    <attr name="textAppearanceBody_Medium" format="reference"/>
+    <attr name="textAppearanceBody_XSmall" format="reference"/>
 </resources>

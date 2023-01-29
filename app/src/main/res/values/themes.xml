@@ -20,7 +20,8 @@
         <item name="android:textColorSecondary">@color/yp_text_gray</item>
 
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
-        <item name="textAppearanceBody_Large">@style/TextAppearance.YS_Regular16</item>
+        <item name="textAppearanceBody_Medium">@style/TextAppearance.YS_Regular16</item>
+        <item name="textAppearanceBody_XSmall">@style/TextAppearance.YS_Regular11</item>
     </style>
 
 </resources>

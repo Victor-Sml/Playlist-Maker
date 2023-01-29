@@ -20,6 +20,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         val clearButton = findViewById<ImageView>(R.id.clearIcon)
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.searchToolbar)
         inputEditText = findViewById(R.id.inputEditText)
 
         val searchTextWatcher = object : TextWatcher {
@@ -40,7 +41,6 @@ class SearchActivity : AppCompatActivity() {
             currentFocus?.clearFocus()
         }
 
-        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.searchToolbar)
         toolbar.setNavigationOnClickListener {
             this.finish()
         }
