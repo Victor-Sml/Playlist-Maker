@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="TextAppearance.YS_Medium22" parent="TextAppearance.AppCompat">
+    <style name="TextAppearance.YS_Medium" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:textSize">22sp</item>
         <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:fontWeight">400</item>
     </style>
 
-    <style name="TextAppearance.YS_Regular16" parent="TextAppearance.AppCompat">
+    <style name="TextAppearance.YS_Medium22" parent="TextAppearance.YS_Medium">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="TextAppearance.YS_Regular" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/ys_display_regular</item>
-        <item name="android:textSize">16sp</item>
         <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:fontWeight">400</item>
+    </style>
+
+    <style name="TextAppearance.YS_Regular16" parent="TextAppearance.YS_Regular">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.YS_Regular11" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">11sp</item>
     </style>
 
     <style name="RootLinearLayout">
@@ -53,7 +65,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody_Large</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Medium</item>
     </style>
 
     <style name="SettingsListImage">
