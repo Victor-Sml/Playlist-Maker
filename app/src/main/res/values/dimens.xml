@@ -8,4 +8,6 @@
     <dimen name="list_height">60dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="search_field_height">36dp</dimen>
+
+    <dimen name="small_artwork_dimensions">45dp</dimen>
 </resources>
