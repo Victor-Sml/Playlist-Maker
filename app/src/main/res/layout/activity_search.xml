@@ -19,7 +19,6 @@
         android:paddingStart="12dp"
         tools:ignore="RtlSymmetry">
 
-
         <EditText
             android:id="@+id/inputEditText"
             android:layout_width="match_parent"
@@ -29,10 +28,10 @@
             android:drawableStart="@drawable/ic_search_14"
             android:drawablePadding="8dp"
             android:hint="@string/search"
-            android:imeOptions="flagNoExtractUi"
+            android:imeOptions="flagNoExtractUi|actionDone"
             android:inputType="textCapSentences"
-            android:maxLines="1"
             android:paddingEnd="40dp"
+            android:singleLine="true"
             android:textAppearance="?attr/textAppearanceBody_Medium"
             android:textColor="@color/yp_black"
             android:textColorHint="?attr/colorOnSurface" />
@@ -50,8 +49,17 @@
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_tracklist"
+        android:id="@+id/rw_tracklist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <include
+        android:id="@+id/nothing_found_layout"
+        layout="@layout/nothing_found_layout" />
+
+    <include
+        android:id="@+id/connection_failure_layout"
+        layout="@layout/connection_failure_layout" />
 
 </LinearLayout>

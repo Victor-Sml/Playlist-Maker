@@ -5,6 +5,9 @@
     <dimen name="big_button_radius">16dp</dimen>
     <dimen name="big_button_iconPadding">10dp</dimen>
 
+    <dimen name="small_button_radius">54dp</dimen>
+    <dimen name="small_button_height">36dp</dimen>
+
     <dimen name="list_height">60dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="search_field_height">36dp</dimen>
