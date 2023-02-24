@@ -12,4 +12,6 @@
     <string name="support_email_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="user_agreement_uri">https://yandex.ru/legal/practicum_offer</string>
     <string name="share_app_uri">https://practicum.yandex.ru/android-developer</string>
+    <string name="connection_failure">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="nothing_found">Ничего не нашлось</string>
 </resources>

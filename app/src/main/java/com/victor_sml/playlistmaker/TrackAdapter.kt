@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class TrackAdapter(private val tracklist: ArrayList<Track>) :
     RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
@@ -20,6 +23,12 @@ class TrackAdapter(private val tracklist: ArrayList<Track>) :
 
     override fun getItemCount(): Int = tracklist.size
 
+    fun update(tracklist: ArrayList<Track>? = null) {
+        this.tracklist.clear()
+        if (tracklist != null) this.tracklist.addAll(tracklist)
+        this.notifyDataSetChanged()
+    }
+
     class TrackViewHolder(parentView: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parentView.context)
             .inflate(R.layout.tracklist_item_view, parentView, false)
@@ -32,7 +41,7 @@ class TrackAdapter(private val tracklist: ArrayList<Track>) :
         fun bind(track: Track) {
             trackName.text = track.trackName
             artistName.text = track.artistName
-            trackTime.text = track.trackTime
+            trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
 
             Glide.with(itemView.context).load(track.artworkUrl100)
                 .placeholder(R.drawable.default_artwork)
