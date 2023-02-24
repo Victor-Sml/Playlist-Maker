@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/not_found"
+        android:text="@string/nothing_found"
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceSubtitle_Medium" />
 

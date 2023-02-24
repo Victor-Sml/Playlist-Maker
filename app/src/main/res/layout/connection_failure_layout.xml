@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="24dp"
-        android:text="@string/connection_error"
+        android:text="@string/connection_failure"
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceSubtitle_Medium" />
 

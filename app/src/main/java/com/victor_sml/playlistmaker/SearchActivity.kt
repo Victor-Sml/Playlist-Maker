@@ -12,21 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.Toolbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-
-/**
- * Константы для сохранения состояния UI.
- */
-const val SEARCH_INPUT = "SEARCH_INPUT"
-const val INPUT_START_SELECTION = "START_SELECTION"
-const val INPUT_END_SELECTION = "END_SELECTION"
-const val RECYCLER_VIEW_VISIBILITY = "RECYCLER_VISIBILITY"
-const val NOTHING_FOUND_VIEW_VISIBILITY = "NOTHING_FOUND_VISIBILITY"
-const val CONNECTION_FAILURE_VIEW_VISIBILITY = "CONNECTION_FAILURE_VISIBILITY"
 
 class SearchActivity : AppCompatActivity() {
     /**
@@ -61,7 +50,6 @@ class SearchActivity : AppCompatActivity() {
      */
     private lateinit var viewContainer: ViewContainer
 
-    private val iTunesBaseUrl = "https://itunes.apple.com"
     private val iTunesService = initItunesService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,7 +109,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initItunesService(): ItunesAPI =
-        Retrofit.Builder().baseUrl(iTunesBaseUrl)
+        Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ItunesAPI::class.java)
@@ -153,6 +141,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 sendRequest(searchQuery)
+                hideSoftInput()
                 true
             } else {
                 false
@@ -190,7 +179,7 @@ class SearchActivity : AppCompatActivity() {
         response: Response<TracksResponse>? = null
     ) {
         viewContainer.setVisibility(requestState)
-        if (requestState == RequestState.FOUND) adapter.update(response?.body()?.results!!)
+        if (requestState == RequestState.FOUND) adapter.update(response?.body()?.results)
     }
 
     private fun sendRequest(searchQuery: String) {
@@ -204,7 +193,7 @@ class SearchActivity : AppCompatActivity() {
                         handleResponse(RequestState.FOUND, response)
                     }
                     if (response.isSuccessful && response.body()?.results?.isNotEmpty() == false) {
-                        handleResponse(RequestState.NOTHING_FOUND, response)
+                        handleResponse(RequestState.NOTHING_FOUND)
                     }
                 }
 
@@ -232,17 +221,12 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.visibility = requestState.recyclerVisibility
             nothingFoundView.visibility = requestState.nothingFoundViewVisibility
             connectionFailureView.visibility = requestState.connectionFailureViewVisibility
-            updateInputMethod(requestState)
         }
 
         fun clearVisibility() {
             recyclerView.visibility = View.GONE
             nothingFoundView.visibility = View.GONE
             connectionFailureView.visibility = View.GONE
-        }
-
-        private fun updateInputMethod(requestState: RequestState) {
-            if (requestState == RequestState.CONNECTION_FAILURE) hideSoftInput() else showSoftInput()
         }
     }
 
@@ -252,17 +236,15 @@ class SearchActivity : AppCompatActivity() {
      *  [ViewContainer.recyclerView] = [recyclerVisibility],
      *  [ViewContainer.nothingFoundView] = [nothingFoundViewVisibility],
      *  [ViewContainer.connectionFailureView] = [connectionFailureViewVisibility].
-     *  [inputMethodState] определяет будет ли показана экранная клавиатура.
      */
     private enum class RequestState(
         val recyclerVisibility: Int,
         val nothingFoundViewVisibility: Int,
         val connectionFailureViewVisibility: Int,
-        val inputMethodState: InputMethodState
     ) {
-        FOUND(View.VISIBLE, View.GONE, View.GONE, InputMethodState.UP),
-        NOTHING_FOUND(View.GONE, View.VISIBLE, View.GONE, InputMethodState.UP),
-        CONNECTION_FAILURE(View.GONE, View.GONE, View.VISIBLE, InputMethodState.DOWN)
+        FOUND(View.VISIBLE, View.GONE, View.GONE),
+        NOTHING_FOUND(View.GONE, View.VISIBLE, View.GONE),
+        CONNECTION_FAILURE(View.GONE, View.GONE, View.VISIBLE)
     }
 
     /**
@@ -273,5 +255,18 @@ class SearchActivity : AppCompatActivity() {
     private enum class InputMethodState {
         UP,
         DOWN
+    }
+
+    companion object {
+        const val ITUNES_BASE_URL = "https://itunes.apple.com"
+        /**
+         * Константы для сохранения состояния UI.
+         */
+        const val SEARCH_INPUT = "SEARCH_INPUT"
+        const val INPUT_START_SELECTION = "START_SELECTION"
+        const val INPUT_END_SELECTION = "END_SELECTION"
+        const val RECYCLER_VIEW_VISIBILITY = "RECYCLER_VISIBILITY"
+        const val NOTHING_FOUND_VIEW_VISIBILITY = "NOTHING_FOUND_VISIBILITY"
+        const val CONNECTION_FAILURE_VIEW_VISIBILITY = "CONNECTION_FAILURE_VISIBILITY"
     }
 }
