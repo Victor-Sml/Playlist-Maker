@@ -1,53 +1,42 @@
 package com.victor_sml.playlistmaker
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
-class TrackAdapter(private val tracklist: ArrayList<Track>) :
-    RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+class TrackAdapter(private val delegates: List<AdapterDelegate>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder =
-        TrackViewHolder(parent)
+    private val items: ArrayList<RecyclerItemType> = arrayListOf()
 
-    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(tracklist[position])
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        delegates[viewType].getViewHolder(parent)
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        delegates[getItemViewType(position)].bindViewHolder(holder, items[position])
     }
 
-    override fun getItemCount(): Int = tracklist.size
+    override fun getItemCount(): Int = items.size
 
-    fun update(tracklist: ArrayList<Track>? = null) {
-        this.tracklist.clear()
-        if (tracklist != null) this.tracklist.addAll(tracklist)
+    override fun getItemViewType(position: Int): Int =
+        delegates.indexOfFirst { delegate -> delegate.forItem(items[position]) }
+
+    fun update(
+        tracks: ArrayList<Track>,
+        isHistory: Boolean
+    ) {
+        items.clear()
+        if (isHistory) {
+            items.addAll(tracks)
+            items.add(ClearButton())
+        } else {
+            items.addAll(tracks)
+        }
         this.notifyDataSetChanged()
     }
 
-    class TrackViewHolder(parentView: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parentView.context)
-            .inflate(R.layout.tracklist_item_view, parentView, false)
-    ) {
-        private val artwork: ImageView = itemView.findViewById(R.id.iv_artwork)
-        private val trackName: TextView = itemView.findViewById(R.id.tv_track_name)
-        private val artistName: TextView = itemView.findViewById(R.id.tv_artistName)
-        private val trackTime: TextView = itemView.findViewById(R.id.tv_track_time)
-
-        fun bind(track: Track) {
-            trackName.text = track.trackName
-            artistName.text = track.artistName
-            trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
-
-            Glide.with(itemView.context).load(track.artworkUrl100)
-                .placeholder(R.drawable.default_artwork)
-                .centerCrop()
-                .transform(RoundedCorners(2))
-                .into(artwork)
-        }
+    fun update() {
+        items.clear()
+        this.notifyDataSetChanged()
     }
+
 }

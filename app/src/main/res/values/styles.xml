@@ -108,7 +108,8 @@
         <item name="android:textAppearance">?attr/textAppearanceSubtitle_ExtraSmall</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="cornerRadius">@dimen/small_button_radius</item>
-        <item name="android:padding">0dp</item>
+        <item name="android:paddingVertical">@dimen/small_button_puddingVertical</item>
+        <item name="android:paddingHorizontal">@dimen/small_button_puddingHorizontal</item>
     </style>
 
 </resources>

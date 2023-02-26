@@ -5,18 +5,50 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var app: App
+    private lateinit var toolbar: Toolbar
+    private lateinit var themeSwitcher: SwitchMaterial
+    private lateinit var shareListItem: FrameLayout
+    private lateinit var supportListItem: FrameLayout
+    private lateinit var agreementListItem: FrameLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.settingsToolbar)
+        app = applicationContext as App
+
+        initView()
+        setListeners()
+    }
+
+    private fun initView() {
+        toolbar = findViewById(R.id.settingsToolbar)
+        themeSwitcher = findViewById(R.id.theme_switcher)
+        shareListItem = findViewById(R.id.share_list_item)
+        supportListItem = findViewById(R.id.support_list_item)
+        agreementListItem = findViewById(R.id.agreement_list_item)
+
+        themeSwitcher.isChecked = app.isDarkThemeEnabled()
+    }
+
+    private fun setListeners() {
         toolbar.setNavigationOnClickListener {
             this.finish()
         }
 
-        val shareListItem = findViewById<FrameLayout>(R.id.share_list_item)
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            app.switchTheme(checked)
+            app.getSharedPreferences()
+                .edit()
+                .putBoolean(DARK_THEME_ENABLED, themeSwitcher.isChecked)
+                .apply()
+        }
+
         shareListItem.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
@@ -25,7 +57,6 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(shareIntent)
         }
 
-        val supportListItem = findViewById<FrameLayout>(R.id.support_list_item)
         supportListItem.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
@@ -36,7 +67,6 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        val agreementListItem = findViewById<FrameLayout>(R.id.agreement_list_item)
         agreementListItem.setOnClickListener {
             val agreementIntent = Intent(
                 Intent.ACTION_VIEW,
@@ -45,4 +75,5 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(agreementIntent)
         }
     }
+
 }

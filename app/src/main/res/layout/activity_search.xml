@@ -48,6 +48,17 @@
             app:tint="?attr/colorOnSurface" />
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/tw_historyTitle"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="@string/search_history"
+        android:textAppearance="?attr/textAppearanceSubtitle_Medium"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rw_tracklist"
         android:layout_width="match_parent"
