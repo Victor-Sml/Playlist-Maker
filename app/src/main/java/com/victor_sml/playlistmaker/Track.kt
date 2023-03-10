@@ -6,4 +6,4 @@ data class Track(
     val trackName: String,
     val artworkUrl100: String,
     val trackTimeMillis: Long,
-)
+) : RecyclerItemType

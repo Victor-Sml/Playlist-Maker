@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,7 +23,7 @@
         <activity
             android:name="com.victor_sml.playlistmaker.SearchActivity"
             android:exported="false"
-            android:windowSoftInputMode="stateUnchanged" />
+             />
         <activity
             android:name="com.victor_sml.playlistmaker.SettingsActivity"
             android:exported="false" />

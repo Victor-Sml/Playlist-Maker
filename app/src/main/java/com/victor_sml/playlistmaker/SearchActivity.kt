@@ -7,26 +7,27 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.Toolbar
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+import com.victor_sml.playlistmaker.TracksHandler.RequestState
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 class SearchActivity : AppCompatActivity() {
+
+    private lateinit var tracksHandler: TracksHandler
+
     /**
      * Хранит текст из поля поискового запроса [inputEditText].
      * */
     private var searchQuery: String = ""
-
-    /**
-     * RecyclerView для отображенитя списка треков.
-     */
-    private lateinit var adapter: TrackAdapter
 
     /**
      * Поле для ввода поискового запроса.
@@ -43,12 +44,9 @@ class SearchActivity : AppCompatActivity() {
      */
     private lateinit var clearButton: ImageView
 
-    private lateinit var toolbar: Toolbar
+    private lateinit var historyTitle: TextView
 
-    /**
-     * [ViewContainer] содержит ссылки на View сообщений-заглушек и RecyclerView для треклиста.
-     */
-    private lateinit var viewContainer: ViewContainer
+    private lateinit var toolbar: Toolbar
 
     private val iTunesService = initItunesService()
 
@@ -56,15 +54,16 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        viewContainer = ViewContainer(
-            recyclerView = findViewById(R.id.rw_tracklist),
-            nothingFoundView = findViewById(R.id.nothing_found_layout),
-            connectionFailureView = findViewById(R.id.connection_failure_layout)
-        )
-
         initViews()
-        initRecyclerView()
         setListeners()
+
+        tracksHandler = TracksHandler(
+            recyclerView = findViewById(R.id.rw_tracklist),
+            nothingFound = findViewById(R.id.nothing_found_layout),
+            connectionFailure = findViewById(R.id.connection_failure_layout),
+            historyTitle
+        )
+        inputEditText.requestFocus()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -73,11 +72,11 @@ class SearchActivity : AppCompatActivity() {
             putString(SEARCH_INPUT, searchQuery)
             putInt(INPUT_START_SELECTION, inputEditText.selectionStart)
             putInt(INPUT_END_SELECTION, inputEditText.selectionEnd)
-            putInt(RECYCLER_VIEW_VISIBILITY, viewContainer.recyclerView.visibility)
-            putInt(NOTHING_FOUND_VIEW_VISIBILITY, viewContainer.nothingFoundView.visibility)
+            putInt(RECYCLER_VIEW_VISIBILITY, tracksHandler.recyclerView.visibility)
+            putInt(NOTHING_FOUND_VIEW_VISIBILITY, tracksHandler.nothingFound.visibility)
             putInt(
                 CONNECTION_FAILURE_VIEW_VISIBILITY,
-                viewContainer.connectionFailureView.visibility
+                tracksHandler.connectionFailure.visibility
             )
         }
     }
@@ -87,25 +86,20 @@ class SearchActivity : AppCompatActivity() {
         savedInstanceState.run {
             inputEditText.setText(getString(SEARCH_INPUT, ""))
             inputEditText.setSelection(getInt(INPUT_START_SELECTION), getInt(INPUT_END_SELECTION))
-            viewContainer.recyclerView.visibility = getInt(RECYCLER_VIEW_VISIBILITY)
-            viewContainer.nothingFoundView.visibility = getInt(NOTHING_FOUND_VIEW_VISIBILITY)
-            viewContainer.connectionFailureView.visibility =
+            tracksHandler.recyclerView.visibility = getInt(RECYCLER_VIEW_VISIBILITY)
+            tracksHandler.nothingFound.visibility = getInt(NOTHING_FOUND_VIEW_VISIBILITY)
+            tracksHandler.connectionFailure.visibility =
                 getInt(CONNECTION_FAILURE_VIEW_VISIBILITY)
         }
     }
 
     private fun initViews() {
+        historyTitle = findViewById(R.id.tw_historyTitle)
         refreshButton = findViewById(R.id.btn_refresh)
         clearButton = findViewById(R.id.clearIcon)
         toolbar = findViewById(R.id.searchToolbar)
         inputEditText = findViewById(R.id.inputEditText)
-    }
 
-    private fun initRecyclerView() {
-        adapter = TrackAdapter(arrayListOf())
-        viewContainer.recyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        viewContainer.recyclerView.adapter = adapter
     }
 
     private fun initItunesService(): ItunesAPI =
@@ -121,6 +115,8 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchQuery = s.toString()
                 clearButton.visibility = clearButtonVisibility(s)
+
+                if (s.isNullOrEmpty()) tracksHandler.showHistory()
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -129,9 +125,9 @@ class SearchActivity : AppCompatActivity() {
 
         clearButton.setOnClickListener {
             inputEditText.setText("")
+            tracksHandler.clearSearchResult()
             hideSoftInput()
             currentFocus?.clearFocus()
-            viewContainer.clearVisibility()
         }
 
         refreshButton.setOnClickListener {
@@ -145,6 +141,12 @@ class SearchActivity : AppCompatActivity() {
                 true
             } else {
                 false
+            }
+        }
+
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && (view as EditText).text.isEmpty()) {
+                tracksHandler.showHistory()
             }
         }
 
@@ -168,20 +170,6 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
-    private fun showSoftInput() {
-        val inputMethodManager: InputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(inputEditText, InputMethodManager.SHOW_IMPLICIT)
-    }
-
-    private fun handleResponse(
-        requestState: RequestState,
-        response: Response<TracksResponse>? = null
-    ) {
-        viewContainer.setVisibility(requestState)
-        if (requestState == RequestState.FOUND) adapter.update(response?.body()?.results)
-    }
-
     private fun sendRequest(searchQuery: String) {
         iTunesService.getTracks(searchQuery)
             .enqueue(object : Callback<TracksResponse> {
@@ -190,75 +178,22 @@ class SearchActivity : AppCompatActivity() {
                     response: Response<TracksResponse>
                 ) {
                     if (response.isSuccessful && response.body()?.results?.isNotEmpty() == true) {
-                        handleResponse(RequestState.FOUND, response)
+                        response.body()?.results?.let { tracksHandler.showSearchResult(it) }
                     }
                     if (response.isSuccessful && response.body()?.results?.isNotEmpty() == false) {
-                        handleResponse(RequestState.NOTHING_FOUND)
+                        tracksHandler.showSearchResult(RequestState.NOTHING_FOUND)
                     }
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    handleResponse(RequestState.CONNECTION_FAILURE)
+                    tracksHandler.showSearchResult(RequestState.CONNECTION_FAILURE)
                 }
             })
     }
 
-    /**
-     * Содержит View сообщений-заглушек: [nothingFoundView] - "Ничего не нашлось",
-     * [connectionFailureView] - "Проблемы со связью", [recyclerView] - RecyclerView с треклистом и
-     * управляет отображением их на экране.
-     */
-    private inner class ViewContainer(
-        val recyclerView: RecyclerView,
-        val nothingFoundView: View,
-        val connectionFailureView: View
-    ) {
-        /**
-         * В соответствии с [RequestState] переданном в [requestState] устанавливает значение visibility
-         * для [recyclerView], [nothingFoundView], [connectionFailureView].
-         */
-        fun setVisibility(requestState: RequestState) {
-            recyclerView.visibility = requestState.recyclerVisibility
-            nothingFoundView.visibility = requestState.nothingFoundViewVisibility
-            connectionFailureView.visibility = requestState.connectionFailureViewVisibility
-        }
-
-        fun clearVisibility() {
-            recyclerView.visibility = View.GONE
-            nothingFoundView.visibility = View.GONE
-            connectionFailureView.visibility = View.GONE
-        }
-    }
-
-    /**
-     * Статус поискового запроса.
-     * Каждый экземпляр сожержит значение visibility для сообщений-заглушек и RecyclerView:
-     *  [ViewContainer.recyclerView] = [recyclerVisibility],
-     *  [ViewContainer.nothingFoundView] = [nothingFoundViewVisibility],
-     *  [ViewContainer.connectionFailureView] = [connectionFailureViewVisibility].
-     */
-    private enum class RequestState(
-        val recyclerVisibility: Int,
-        val nothingFoundViewVisibility: Int,
-        val connectionFailureViewVisibility: Int,
-    ) {
-        FOUND(View.VISIBLE, View.GONE, View.GONE),
-        NOTHING_FOUND(View.GONE, View.VISIBLE, View.GONE),
-        CONNECTION_FAILURE(View.GONE, View.GONE, View.VISIBLE)
-    }
-
-    /**
-     * Состояние SoftInputMethod.
-     * [UP] - отображается на экране.
-     * [DOWN] - не отображается на экране.
-     */
-    private enum class InputMethodState {
-        UP,
-        DOWN
-    }
-
     companion object {
         const val ITUNES_BASE_URL = "https://itunes.apple.com"
+
         /**
          * Константы для сохранения состояния UI.
          */

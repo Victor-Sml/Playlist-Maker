@@ -7,10 +7,14 @@
 
     <dimen name="small_button_radius">54dp</dimen>
     <dimen name="small_button_height">36dp</dimen>
+    <dimen name="small_button_puddingVertical">4dp</dimen>
+    <dimen name="small_button_puddingHorizontal">14dp</dimen>
 
     <dimen name="list_height">60dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="search_field_height">36dp</dimen>
 
     <dimen name="small_artwork_dimensions">45dp</dimen>
+
+    <dimen name="recycler_item_height">60dp</dimen>
 </resources>

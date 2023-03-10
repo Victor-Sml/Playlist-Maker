@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="@dimen/recycler_item_height"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="12dp">
@@ -41,6 +41,9 @@
                 android:id="@+id/tv_artistName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxWidth="300dp"
+                android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceBody_XSmall"
                 android:textColor="?attr/colorSecondaryVariant" />
 
