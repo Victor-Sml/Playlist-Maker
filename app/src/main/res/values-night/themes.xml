@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -19,9 +19,12 @@
         <item name="colorSurface">@color/yp_white</item>
         <item name="colorOnSurface">@color/yp_black</item>
 
+        <item name="smallFabColor">@color/yp_fab_light_grey</item>
+
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
         <item name="textAppearanceSubtitle_Medium">@style/TextAppearance.YS_Medium19</item>
         <item name="textAppearanceSubtitle_ExtraSmall">@style/TextAppearance.YS_Medium14</item>
+        <item name="textAppearanceBody_Small">@style/TextAppearance.YS_Regular13</item>
         <item name="textAppearanceBody_Medium">@style/TextAppearance.YS_Regular16</item>
         <item name="textAppearanceBody_XSmall">@style/TextAppearance.YS_Regular11</item>
     </style>

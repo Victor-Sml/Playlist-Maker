@@ -38,5 +38,4 @@ class TrackAdapter(private val delegates: List<AdapterDelegate>) :
         items.clear()
         this.notifyDataSetChanged()
     }
-
 }

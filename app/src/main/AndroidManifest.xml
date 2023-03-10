@@ -17,7 +17,7 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name="com.victor_sml.playlistmaker.LibraryActivity"
+            android:name="com.victor_sml.playlistmaker.PlayerActivity"
             android:exported="false"
             tools:ignore="LockedOrientationActivity" />
         <activity

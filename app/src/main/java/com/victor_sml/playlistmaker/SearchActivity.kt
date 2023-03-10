@@ -13,12 +13,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import retrofit2.converter.gson.GsonConverterFactory
-import com.victor_sml.playlistmaker.TracksHandler.RequestState
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -66,6 +65,12 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.requestFocus()
     }
 
+    override fun onStop() {
+        super.onStop()
+        tracksHandler.saveHistory()
+
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.run {
@@ -102,11 +107,11 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
-    private fun initItunesService(): ItunesAPI =
-        Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
+    private fun initItunesService(): ItunesAPI {
+        return Retrofit.Builder().baseUrl(ITUNES_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ItunesAPI::class.java)
+            .create(ItunesAPI::class.java)}
 
     private fun setListeners() {
         val searchTextWatcher = object : TextWatcher {
@@ -181,12 +186,12 @@ class SearchActivity : AppCompatActivity() {
                         response.body()?.results?.let { tracksHandler.showSearchResult(it) }
                     }
                     if (response.isSuccessful && response.body()?.results?.isNotEmpty() == false) {
-                        tracksHandler.showSearchResult(RequestState.NOTHING_FOUND)
+                        tracksHandler.showPlaceholder(TracksHandler.RequestState.NOTHING_FOUND)
                     }
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    tracksHandler.showSearchResult(RequestState.CONNECTION_FAILURE)
+                    tracksHandler.showPlaceholder(TracksHandler.RequestState.CONNECTION_FAILURE)
                 }
             })
     }

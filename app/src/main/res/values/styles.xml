@@ -29,6 +29,10 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="TextAppearance.YS_Regular13" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">13sp</item>
+    </style>
+
     <style name="TextAppearance.YS_Regular11" parent="TextAppearance.AppCompat">
         <item name="android:textSize">11sp</item>
     </style>
@@ -88,6 +92,27 @@
         <item name="android:tint">?attr/colorSecondaryVariant</item>
     </style>
 
+    <style name="EllipsizedTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constrainedWidth">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="MediaContentTextValue" parent="EllipsizedTextView">
+        <item name="android:layout_height">36dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
+    </style>
+
+    <style name="MediaContentText" parent="MediaContentTextValue">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
+        <item name="android:textColor">@color/yp_text_gray</item>
+    </style>
+
     <style name="BigButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
@@ -103,13 +128,32 @@
 
     <style name="SmallButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">@dimen/small_button_height</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:backgroundTint">?attr/colorSecondary</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle_ExtraSmall</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="cornerRadius">@dimen/small_button_radius</item>
         <item name="android:paddingVertical">@dimen/small_button_puddingVertical</item>
         <item name="android:paddingHorizontal">@dimen/small_button_puddingHorizontal</item>
+    </style>
+
+    <style name="FAB">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="elevation">@dimen/fab_elevation</item>
+    </style>
+
+    <style name="BigFAB" parent="FAB">
+        <item name="fabCustomSize">@dimen/big_fab_size</item>
+        <item name="maxImageSize">@dimen/big_fab_size</item>
+    </style>
+
+    <style name="SmallFAB" parent="FAB">
+        <item name="tint">@color/yp_white</item>
+        <item name="backgroundTint">?attr/smallFabColor</item>
+        <item name="borderWidth">@dimen/small_fab_border_width</item>
+        <item name="fabCustomSize">@dimen/small_fab_size</item>
+        <item name="maxImageSize">@dimen/small_fab_size</item>
     </style>
 
 </resources>
