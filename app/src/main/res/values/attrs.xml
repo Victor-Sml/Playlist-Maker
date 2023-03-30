@@ -5,5 +5,8 @@
     <attr name="textAppearanceSubtitle_ExtraSmall" format="reference"/>
 
     <attr name="textAppearanceBody_Medium" format="reference"/>
+    <attr name="textAppearanceBody_Small" format="reference"/>
     <attr name="textAppearanceBody_XSmall" format="reference"/>
+
+    <attr name="smallFabColor" format="reference"/>
 </resources>

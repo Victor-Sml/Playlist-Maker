@@ -8,4 +8,6 @@
     <color name="yp_light_gray">#E6E8EB</color>
     <color name="yp_red">#F56B6C</color>
     <color name="yellow">#FCD452</color>
+    <color name="yp_fab_dark_grey">#401A1B22</color>
+    <color name="yp_fab_light_grey">#40FFFFFF</color>
 </resources>

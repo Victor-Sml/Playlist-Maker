@@ -9,16 +9,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 
+/**
+ * [recyclerView] - отображает список найденных треков и историю их просмотра.
+ * [nothingFound] - плейсхолдер для сообщения "Ничего не нашлось".
+ * [connectionFailure] - плейсхолдер для сообщения "Проблемы со связью".
+ */
 class TracksHandler(
     val recyclerView: RecyclerView,
     val nothingFound: View,
     val connectionFailure: View,
     private val historyTitle: TextView,
 ) {
+    /**
+     * Хранит true если [recyclerView] отображает историю просмотренных треков.
+     */
+    private var isHistory = false
 
     private val app = recyclerView.context.applicationContext as App
     private val adapterDelegates = arrayListOf(
-        TrackDelegate(app, this),
+        TrackDelegate(this),
         ClearButtonDelegate(this)
     )
     private val adapter = TrackAdapter(adapterDelegates)
@@ -40,40 +49,72 @@ class TracksHandler(
         if (lookedTracks.isEmpty()) searchHistory.getSavedTracks()?.toCollection(lookedTracks)
     }
 
+    /**
+     * Выводит на экран переданный в параметр [tracks] - список найденных треков.
+     */
     fun showSearchResult(tracks: ArrayList<Track>) {
         viewContainer.setVisibility(RequestState.FOUND)
         adapter.update(tracks, false)
+        isHistory = false
     }
 
-    fun showSearchResult(requestState: RequestState) {
+    /**
+     * Выводит на экран плейсхолдер в соответствии с переданным в [requestState] статусом поиского
+     * запроса.
+     */
+    fun showPlaceholder(requestState: RequestState) {
         viewContainer.setVisibility(requestState)
+        isHistory = false
     }
 
+    /**
+     * Убирает с экрана список найденных треков и если [lookedTracks] не пуст выводит его на экран.
+     */
     fun clearSearchResult() {
-        if (!showHistory()) {
-            adapter.update()
-            viewContainer.clearVisibility()
-        }
+        if (showHistory()) return
+        adapter.update()
+        viewContainer.clearVisibility()
     }
 
+    /**
+     * Добавляет [track] в [lookedTracks].
+     */
     fun saveTrack(track: Track) {
-        searchHistory.putTrack(track)
+        searchHistory.updateHistory(track)
     }
 
+    /**
+     * Сохраняет [lookedTracks] в [App.sharedPreferences].
+     * Если в момент вызова метода, [isHistory] = true, т.е. пользователь переходит на экран плеера
+     * по клику на трек из истории просмотров, то для того чтобы при возвращении на [SearchActivity]
+     * по нажатию кнопки назад история была обновлена [lookedTracks] записывается в [TrackAdapter.items].
+     */
+    fun saveHistory() {
+        searchHistory.putTracks()
+        if (isHistory) adapter.update(lookedTracks, isHistory)
+    }
+
+    /**
+     * Если [lookedTracks] не пуст, то выводит на экран историю просмотров и возвращает true.
+     */
     fun showHistory(): Boolean {
         if (lookedTracks.isNotEmpty()) {
-            adapter.update(lookedTracks, true)
+            isHistory = true
+            adapter.update(lookedTracks, isHistory)
             viewContainer.setVisibility(RequestState.HISTORY)
             return true
         } else
             return false
     }
 
+    /**
+     * Очищает историю просмотров.
+     */
     fun clearHistory() {
-        lookedTracks.clear()
         searchHistory.clearHistory()
         adapter.update()
-        historyTitle.visibility = GONE
+        viewContainer.clearVisibility()
+        isHistory = false
     }
 
     /**
@@ -121,19 +162,23 @@ class TracksHandler(
         FOUND(VISIBLE, GONE, GONE, GONE),
         NOTHING_FOUND(GONE, VISIBLE, GONE, GONE),
         CONNECTION_FAILURE(GONE, GONE, VISIBLE, GONE),
-        HISTORY(VISIBLE,GONE, GONE, VISIBLE)
+        HISTORY(VISIBLE, GONE, GONE, VISIBLE)
     }
 
     private inner class SearchHistory(private val sharedPreferences: SharedPreferences) {
-
-        fun putTrack(track: Track) {
-            updateHistory(track)
+        /**
+         * Сохраняет [lookedTracks] в [App.sharedPreferences].
+         */
+        fun putTracks() {
             sharedPreferences.edit()
                 .putString(LOOKED_TRACKS, Gson().toJson(lookedTracks))
                 .apply()
         }
 
-        private fun updateHistory(track: Track) {
+        /**
+         * Добавляет [track] в [lookedTracks].
+         */
+        fun updateHistory(track: Track) {
             if (lookedTracks.isNotEmpty()) {
                 if (track != lookedTracks[0]) lookedTracks.remove(track) else return
             }
@@ -142,7 +187,9 @@ class TracksHandler(
             lookedTracks.add(0, track)
         }
 
-
+        /**
+         * Возвращщает массив треков из [App.sharedPreferences].
+         */
         fun getSavedTracks(): Array<Track>? =
             Gson().fromJson(
                 sharedPreferences.getString(LOOKED_TRACKS, null),
@@ -151,9 +198,6 @@ class TracksHandler(
 
         fun clearHistory() {
             lookedTracks.clear()
-            sharedPreferences.edit()
-                .remove(LOOKED_TRACKS)
-                .apply()
         }
     }
 

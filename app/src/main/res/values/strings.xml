@@ -16,4 +16,10 @@
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="search_history">Вы искали</string>
     <string name="clear_history">Очистить истоию</string>
+    <string name="track_time">Длительность</string>
+    <string name="collection_name">Альбом</string>
+    <string name="release_date">Год</string>
+    <string name="primary_genre_name">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="default_playback_progress">00:00</string>
 </resources>

@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/search_field_height"
         android:layout_marginHorizontal="@dimen/container_paddingHorizontal"
-        android:layout_marginVertical="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/search_field"
         android:paddingStart="12dp"
         tools:ignore="RtlSymmetry">
@@ -49,11 +50,10 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/tw_historyTitle"
+        android:id="@+id/tv_historyTitle"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="@string/search_history"
         android:textAppearance="?attr/textAppearanceSubtitle_Medium"
@@ -63,14 +63,17 @@
         android:id="@+id/rw_tracklist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible" />
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/nothing_found_layout"
-        layout="@layout/nothing_found_layout" />
+        layout="@layout/nothing_found_layout"
+        android:visibility="gone"/>
 
     <include
         android:id="@+id/connection_failure_layout"
-        layout="@layout/connection_failure_layout" />
+        layout="@layout/connection_failure_layout"
+        android:visibility="gone"/>
 
 </LinearLayout>
