@@ -17,14 +17,19 @@
 
     <dimen name="recycler_item_height">60dp</dimen>
 
+    <dimen name="player_artwork_dimensions">0dp</dimen>
     <dimen name="player_artwork_margin_top">26dp</dimen>
+    <dimen name="player_artwork_marginHorizontal">24dp</dimen>
     <dimen name="player_track_name_marginTop">22dp</dimen>
     <dimen name="player_artist_name_marginTop">14dp</dimen>
+    <dimen name="player_button_area_margin">30dp</dimen>
 
     <dimen name="fab_elevation">0dp</dimen>
     <dimen name="small_fab_size">51dp</dimen>
     <dimen name="small_fab_border_width">0dp</dimen>
     <dimen name="big_fab_size">83dp</dimen>
 
-    <dimen name="player_button_area_margin">30dp</dimen>
+    <dimen name="media_content_text_layout_height">36dp</dimen>
+    <dimen name="media_content_text_layout_marginHorizontal">16dp</dimen>
+
 </resources>

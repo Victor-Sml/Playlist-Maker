@@ -93,22 +93,13 @@
     </style>
 
     <style name="EllipsizedTextView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="layout_constrainedWidth">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
     </style>
 
-    <style name="MediaContentTextValue" parent="EllipsizedTextView">
-        <item name="android:layout_height">36dp</item>
+    <style name="MediaContentText" parent="EllipsizedTextView">
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
-    </style>
-
-    <style name="MediaContentText" parent="MediaContentTextValue">
-        <item name="android:layout_marginStart">16dp</item>
         <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
         <item name="android:textColor">@color/yp_text_gray</item>
     </style>
@@ -138,8 +129,6 @@
     </style>
 
     <style name="FAB">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="elevation">@dimen/fab_elevation</item>
     </style>
 
