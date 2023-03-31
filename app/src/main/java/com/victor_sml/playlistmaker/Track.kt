@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import com.victor_sml.playlistmaker.recycler.RecyclerItemType
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Locale
-
 @Parcelize
 data class Track(
     val artistName: String?,
@@ -23,7 +23,8 @@ data class Track(
     @JsonAdapter(ReleaseDateJsonAdapter::class)
     val releaseDate: String?,
     val primaryGenreName: String?,
-    val country: String?
+    val country: String?,
+    val previewUrl: String?
 ) : RecyclerItemType, Parcelable {
 
     fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")

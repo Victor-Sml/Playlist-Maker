@@ -1,7 +1,8 @@
-package com.victor_sml.playlistmaker
+package com.victor_sml.playlistmaker.recycler
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.victor_sml.playlistmaker.Track
 
 class TrackAdapter(private val delegates: List<AdapterDelegate>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {

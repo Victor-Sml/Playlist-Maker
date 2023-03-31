@@ -49,6 +49,15 @@
             app:tint="?attr/colorOnSurface" />
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/progress_bar_dimensions"
+        android:layout_height="@dimen/progress_bar_dimensions"
+        android:layout_marginTop="148dp"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateTint="@color/yp_blue"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_historyTitle"
         android:layout_width="match_parent"

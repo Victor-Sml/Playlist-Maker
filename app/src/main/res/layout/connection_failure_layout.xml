@@ -20,6 +20,10 @@
     <Button
         android:id="@+id/btn_refresh"
         style="@style/SmallButton"
-        android:text="Обновить" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/small_button_puddingVertical"
+        android:paddingHorizontal="@dimen/small_button_puddingHorizontal"
+        android:text="@string/refresh" />
 
 </LinearLayout>
