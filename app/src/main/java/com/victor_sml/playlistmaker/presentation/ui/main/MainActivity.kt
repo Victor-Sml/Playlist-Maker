@@ -1,9 +1,13 @@
-package com.victor_sml.playlistmaker
+package com.victor_sml.playlistmaker.presentation.ui.main
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import com.victor_sml.playlistmaker.presentation.ui.player.PlayerActivity
+import com.victor_sml.playlistmaker.R
+import com.victor_sml.playlistmaker.presentation.ui.search.SearchActivity
+import com.victor_sml.playlistmaker.presentation.ui.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker
+package com.victor_sml.playlistmaker.presentation.ui.search
 
 import android.content.Context
 import android.os.Bundle
@@ -14,6 +14,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.victor_sml.playlistmaker.ItunesAPI
+import com.victor_sml.playlistmaker.R
+import com.victor_sml.playlistmaker.TracksHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,6 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.victor_sml.playlistmaker.TracksHandler.RequestState.REQUESTING
 import com.victor_sml.playlistmaker.TracksHandler.RequestState.CONNECTION_FAILURE
 import com.victor_sml.playlistmaker.TracksHandler.RequestState.NOTHING_FOUND
+import com.victor_sml.playlistmaker.TracksResponse
 
 class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
