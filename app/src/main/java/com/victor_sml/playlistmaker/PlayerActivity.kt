@@ -119,10 +119,9 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    fun setPlaybackProgress(progress: Int): Int {
+    fun setPlaybackProgress(progress: Int){
         binding.tvPlaybackProgress.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(progress)
-        return progress
     }
 
     private fun preparePlayer() {
@@ -154,7 +153,8 @@ class PlayerActivity : AppCompatActivity() {
                 handler.removeCallbacks(playbackProgress)
                 playerState = PlayerState.STATE_PREPARED
                 binding.fabPlaybackControl.setImageDrawable(getDrawable(R.drawable.ic_play))
-                playerProgress = setPlaybackProgress(DEFAULT_PLAYBACK_PROGRESS)
+                playerProgress = DEFAULT_PLAYBACK_PROGRESS
+                setPlaybackProgress(playerProgress)
             }
         }
 
