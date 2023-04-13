@@ -20,6 +20,10 @@
         <item name="colorOnSurface">@color/yp_black</item>
 
         <item name="smallFabColor">@color/yp_fab_light_grey</item>
+        <item name="fabEnabledBackgroundTint">@color/yp_white</item>
+        <item name="fabEnabledTint">@color/yp_black</item>
+        <item name="fabDisabledBackgroundTint">@color/yp_fab_light_grey</item>
+        <item name="fabDisabledTint">@color/yp_white</item>
 
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
         <item name="textAppearanceSubtitle_Medium">@style/TextAppearance.YS_Medium19</item>

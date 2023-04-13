@@ -1,52 +1,94 @@
 package com.victor_sml.playlistmaker
 
+import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.View.GONE
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.victor_sml.playlistmaker.recycler.ClearButtonDelegate
+import com.victor_sml.playlistmaker.recycler.TrackAdapter
+import com.victor_sml.playlistmaker.recycler.TrackDelegate
+import java.util.EnumMap
+import kotlin.collections.ArrayList
 
-/**
- * [recyclerView] - отображает список найденных треков и историю их просмотра.
- * [nothingFound] - плейсхолдер для сообщения "Ничего не нашлось".
- * [connectionFailure] - плейсхолдер для сообщения "Проблемы со связью".
- */
+const val TRACK_FOR_PLAYER = "track for player"
+
 class TracksHandler(
-    val recyclerView: RecyclerView,
-    val nothingFound: View,
-    val connectionFailure: View,
-    private val historyTitle: TextView,
+    private val recyclerView: RecyclerView,
+    nothingFound: View,
+    connectionFailure: View,
+    progressBar: ProgressBar,
+    historyTitle: TextView,
 ) {
     /**
      * Хранит true если [recyclerView] отображает историю просмотренных треков.
      */
     private var isHistory = false
-
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
     private val app = recyclerView.context.applicationContext as App
-    private val adapterDelegates = arrayListOf(
-        TrackDelegate(this),
-        ClearButtonDelegate(this)
-    )
-    private val adapter = TrackAdapter(adapterDelegates)
     private val searchHistory = SearchHistory(app.getSharedPreferences())
-    private val viewContainer = ViewContainer(recyclerView, nothingFound, connectionFailure)
+    private val viewContainer = ViewContainer(
+        recyclerView,
+        nothingFound,
+        connectionFailure,
+        progressBar,
+        historyTitle
+    )
+
+    private val trackClickListener = object : TrackDelegate.TrackClickListener {
+        override fun onTrackClick(handler: TracksHandler, track: Track) {
+            if (clickDebounce()) {
+                handler.saveTrack(track)
+                val context = handler.recyclerView.context
+                Intent(context, PlayerActivity::class.java)
+                    .putExtra(TRACK_FOR_PLAYER, track).let { context.startActivity(it) }
+            }
+        }
+    }
+
+    private val clearButtonClickListener = object : ClearButtonDelegate.ClearButtonClickListener {
+        override fun onButtonClick(handler: TracksHandler) {
+            handler.clearHistory()
+        }
+    }
+
+    private val adapter = TrackAdapter(
+        delegates = arrayListOf(
+            TrackDelegate(this, trackClickListener),
+            ClearButtonDelegate(this, clearButtonClickListener)
+        )
+    )
+
+    private fun initRecycler() {
+        recyclerView.layoutManager =
+            LinearLayoutManager(app.applicationContext, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = adapter
+    }
+
+    private fun restoreTracks() {
+        if (lookedTracks.isEmpty()) searchHistory.getSavedTracks()?.toCollection(lookedTracks)
+    }
 
     init {
         initRecycler()
         restoreTracks()
     }
 
-    private fun initRecycler() {
-        viewContainer.recyclerView.layoutManager =
-            LinearLayoutManager(app.applicationContext, LinearLayoutManager.VERTICAL, false)
-        viewContainer.recyclerView.adapter = adapter
-    }
-
-    private fun restoreTracks() {
-        if (lookedTracks.isEmpty()) searchHistory.getSavedTracks()?.toCollection(lookedTracks)
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     /**
@@ -117,52 +159,53 @@ class TracksHandler(
         isHistory = false
     }
 
-    /**
-     * Содержит View сообщений-заглушек: [nothingFoundView] - "Ничего не нашлось",
-     * [connectionFailureView] - "Проблемы со связью", [recyclerView] - RecyclerView с треклистом и
-     * управляет отображением их на экране.
-     */
-    inner class ViewContainer(
-        val recyclerView: RecyclerView,
-        val nothingFoundView: View,
-        val connectionFailureView: View
+    private inner class ViewContainer(
+        private val recycler: RecyclerView,
+        nothingFound: View,
+        connectionFailure: View,
+        progressBar: ProgressBar,
+        history: TextView
     ) {
-        /**
-         * В соответствии с [RequestState] переданном в [requestState] устанавливает значение visibility
-         * для [recyclerView], [nothingFoundView], [connectionFailureView], [historyTitle].
-         */
-        fun setVisibility(requestState: RequestState) {
-            recyclerView.visibility = requestState.recyclerVisibility
-            nothingFoundView.visibility = requestState.nothingFoundViewVisibility
-            connectionFailureView.visibility = requestState.connectionFailureViewVisibility
-            historyTitle.visibility = requestState.historyTitleVisibility
+        private val views: EnumMap<RequestState, View> = EnumMap(RequestState::class.java)
+        private var currentVisibleView: View? = null
+
+        init {
+            views.apply {
+                put(RequestState.FOUND, recycler)
+                put(RequestState.NOTHING_FOUND, nothingFound)
+                put(RequestState.CONNECTION_FAILURE, connectionFailure)
+                put(RequestState.REQUESTING, progressBar)
+                put(RequestState.HISTORY, history)
+            }
         }
 
+        fun setVisibility(state: RequestState) {
+            if (isHistory) {
+                recycler.visibility = GONE
+            }
+
+            currentVisibleView?.visibility = GONE
+            currentVisibleView = views[state]
+            currentVisibleView?.visibility = VISIBLE
+
+            if (state == RequestState.HISTORY) {
+                recycler.visibility = VISIBLE
+            }
+        }
+
+
         fun clearVisibility() {
-            recyclerView.visibility = GONE
-            nothingFoundView.visibility = GONE
-            connectionFailureView.visibility = GONE
-            historyTitle.visibility = GONE
+            currentVisibleView?.visibility = GONE
+            currentVisibleView = null
         }
     }
 
-    /**
-     * Статус поискового запроса.
-     * Каждый экземпляр сожержит значение visibility для сообщений-заглушек и RecyclerView:
-     *  [ViewContainer.recyclerView] = [recyclerVisibility],
-     *  [ViewContainer.nothingFoundView] = [nothingFoundViewVisibility],
-     *  [ViewContainer.connectionFailureView] = [connectionFailureViewVisibility].
-     */
-    enum class RequestState(
-        val recyclerVisibility: Int,
-        val nothingFoundViewVisibility: Int,
-        val connectionFailureViewVisibility: Int,
-        val historyTitleVisibility: Int
-    ) {
-        FOUND(VISIBLE, GONE, GONE, GONE),
-        NOTHING_FOUND(GONE, VISIBLE, GONE, GONE),
-        CONNECTION_FAILURE(GONE, GONE, VISIBLE, GONE),
-        HISTORY(VISIBLE, GONE, GONE, VISIBLE)
+    enum class RequestState {
+        FOUND,
+        NOTHING_FOUND,
+        CONNECTION_FAILURE,
+        REQUESTING,
+        HISTORY,
     }
 
     private inner class SearchHistory(private val sharedPreferences: SharedPreferences) {
@@ -216,5 +259,7 @@ class TracksHandler(
          *  Список просмотренных треков.
          */
         private val lookedTracks: ArrayList<Track> = arrayListOf()
+
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

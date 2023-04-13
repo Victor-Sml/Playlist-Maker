@@ -118,14 +118,10 @@
     </style>
 
     <style name="SmallButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:backgroundTint">?attr/colorSecondary</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle_ExtraSmall</item>
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="cornerRadius">@dimen/small_button_radius</item>
-        <item name="android:paddingVertical">@dimen/small_button_puddingVertical</item>
-        <item name="android:paddingHorizontal">@dimen/small_button_puddingHorizontal</item>
     </style>
 
     <style name="FAB">
@@ -133,6 +129,8 @@
     </style>
 
     <style name="BigFAB" parent="FAB">
+        <item name="backgroundTint">@color/fab_background_tint</item>
+        <item name="tint">@color/fab_tint</item>
         <item name="fabCustomSize">@dimen/big_fab_size</item>
         <item name="maxImageSize">@dimen/big_fab_size</item>
     </style>

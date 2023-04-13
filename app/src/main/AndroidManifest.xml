@@ -23,7 +23,7 @@
         <activity
             android:name="com.victor_sml.playlistmaker.SearchActivity"
             android:exported="false"
-             />
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name="com.victor_sml.playlistmaker.SettingsActivity"
             android:exported="false" />

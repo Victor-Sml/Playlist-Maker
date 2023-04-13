@@ -32,4 +32,5 @@
     <dimen name="media_content_text_layout_height">36dp</dimen>
     <dimen name="media_content_text_layout_marginHorizontal">16dp</dimen>
 
+    <dimen name="progress_bar_dimensions">44dp</dimen>
 </resources>
