@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 object Utils {
-    fun millisToMMSS(progress: Number): String =
-        SimpleDateFormat("mm:ss", Locale.getDefault()).format(progress)
+    fun millisToMMSS(millis: Number): String =
+        SimpleDateFormat("mm:ss", Locale.getDefault()).format(millis)
 
     fun dpToPx(dp: Int, context: Context): Int {
         val resources = context.resources
