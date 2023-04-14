@@ -43,11 +43,6 @@ class PlayerPresenterImpl(
 
     override fun onViewDestroyed() {
         view = null
-        repository.run {
-            controllerAction.removeObserver(actionObserver)
-            controllerAvailability.removeObserver(availabilityObserver)
-            progress.removeObserver(progressObserver)
-            releasePlayer()
-        }
+        repository.releasePlayer()
     }
 }
