@@ -1,58 +1,53 @@
 package com.victor_sml.playlistmaker.data.player
 
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import com.victor_sml.playlistmaker.data.Player
-import com.victor_sml.playlistmaker.data.PlayerRepository
+import com.victor_sml.playlistmaker.domain.api.PlayerInteractor.PlayerStateConsumer
+import com.victor_sml.playlistmaker.domain.PlayerState
+import com.victor_sml.playlistmaker.domain.PlayerState.DEFAULT
+import com.victor_sml.playlistmaker.domain.PlayerState.PREPARED
+import com.victor_sml.playlistmaker.domain.PlayerState.STARTED
+import com.victor_sml.playlistmaker.domain.PlayerState.PAUSED
+import com.victor_sml.playlistmaker.domain.PlayerState.PLAYBACK_COMPLETION
 
 class PlayerImpl : Player {
     private val player = MediaPlayer()
-    override var playerState: Player.PlayerState = Player.PlayerState.DEFAULT
-    private var handler = Handler(Looper.getMainLooper())
-    private lateinit var repository: PlayerRepository.PlayerCallback
-
-    private val playbackProgress = object : Runnable {
-        override fun run() {
-            repository.onPlaybackProgressChanged(player.currentPosition)
-            handler.postDelayed(this, PLAYBACK_PROGRESS_DELAY_MILLIS)
+    private var playerState: PlayerState = DEFAULT
+        private set(value) {
+            field = value
+            playerStateConsumer.consume(value)
         }
-    }
 
-    override fun prepare(source: String, playerCallback: PlayerRepository.PlayerCallback) {
-        repository = playerCallback
+    private lateinit var playerStateConsumer: PlayerStateConsumer
+
+    override fun prepare(source: String, playerStateConsumer: PlayerStateConsumer) {
+        this.playerStateConsumer = playerStateConsumer
+
         player.setDataSource(source)
         player.prepareAsync()
 
         player.setOnPreparedListener {
-            playerCallback.onPlayerPrepared()
-            playerState = Player.PlayerState.PREPARED
+            playerState = PREPARED
         }
 
         player.setOnCompletionListener {
-            handler.removeCallbacks(playbackProgress)
-            playerState = Player.PlayerState.PREPARED
-            playerCallback.onPlaybackCompleted()
+            playerState = PLAYBACK_COMPLETION
         }
     }
 
     override fun startPlayer() {
         player.start()
-        playbackProgress.run()
-        playerState = Player.PlayerState.STARTED
+        playerState = STARTED
     }
 
     override fun pausePlayer() {
         player.pause()
-        handler.removeCallbacks(playbackProgress)
-        playerState = Player.PlayerState.PAUSED
+        playerState = PAUSED
     }
 
     override fun releasePlayer() {
         player.release()
     }
 
-    companion object {
-        private const val PLAYBACK_PROGRESS_DELAY_MILLIS = 300L
-    }
+    override fun getPlaybackProgress(): Int = player.currentPosition
 }

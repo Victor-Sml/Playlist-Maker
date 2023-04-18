@@ -1,17 +1,11 @@
 package com.victor_sml.playlistmaker.data
 
-interface Player {
-    var playerState: PlayerState
+import com.victor_sml.playlistmaker.domain.api.PlayerInteractor.PlayerStateConsumer
 
-    fun prepare(source: String, playerCallback: PlayerRepository.PlayerCallback)
+interface Player {
+    fun prepare(source: String, playerStateConsumer: PlayerStateConsumer)
     fun startPlayer()
     fun pausePlayer()
     fun releasePlayer()
-
-    enum class PlayerState {
-        DEFAULT,
-        PREPARED,
-        STARTED,
-        PAUSED
-    }
+    fun getPlaybackProgress(): Int
 }

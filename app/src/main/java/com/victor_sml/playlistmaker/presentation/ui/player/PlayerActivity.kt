@@ -4,14 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.victor_sml.playlistmaker.Creator
+import com.victor_sml.playlistmaker.Creator.providePlayerPresenter
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.TRACK_FOR_PLAYER
-import com.victor_sml.playlistmaker.domain.Track
+import com.victor_sml.playlistmaker.domain.models.Track
 import com.victor_sml.playlistmaker.Utils.dpToPx
 import com.victor_sml.playlistmaker.databinding.ActivityPlayerBinding
-import com.victor_sml.playlistmaker.presentation.player.PlayerPresenter
-import com.victor_sml.playlistmaker.presentation.player.PlayerView
+import com.victor_sml.playlistmaker.presentation.player.api.PlayerPresenter
+import com.victor_sml.playlistmaker.presentation.player.api.PlayerView
 
 class PlayerActivity : AppCompatActivity(), PlayerView {
     private lateinit var binding: ActivityPlayerBinding
@@ -27,7 +27,10 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
 
         initViews()
         setListeners()
-        presenter = Creator.providePlayerPresenter(this, track?.previewUrl)
+
+        presenter = providePlayerPresenter(
+            view = this,
+            trackSource = track?.previewUrl.toString())
     }
 
     override fun onPause() {
@@ -88,6 +91,6 @@ class PlayerActivity : AppCompatActivity(), PlayerView {
     }
 
     companion object {
-        const val BIG_ARTWORK_RADIUS_DP = 8
+        private const val BIG_ARTWORK_RADIUS_DP = 8
     }
 }

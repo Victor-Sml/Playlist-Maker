@@ -1,48 +1,88 @@
 package com.victor_sml.playlistmaker.presentation.player
 
-import androidx.lifecycle.LifecycleOwner
-import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.Utils.millisToMMSS
-import com.victor_sml.playlistmaker.data.PlayerRepository
+import com.victor_sml.playlistmaker.domain.api.PlayerInteractor
+import com.victor_sml.playlistmaker.domain.PlayerState
+import com.victor_sml.playlistmaker.domain.PlayerState.DEFAULT
+import com.victor_sml.playlistmaker.domain.PlayerState.PREPARED
+import com.victor_sml.playlistmaker.domain.PlayerState.STARTED
+import com.victor_sml.playlistmaker.domain.PlayerState.PAUSED
+import com.victor_sml.playlistmaker.domain.PlayerState.PLAYBACK_COMPLETION
+import com.victor_sml.playlistmaker.domain.api.PlayerInteractor.PlayerStateConsumer
+import com.victor_sml.playlistmaker.presentation.IterativeLambda
+import com.victor_sml.playlistmaker.presentation.IterativeLambdaImpl
+import com.victor_sml.playlistmaker.presentation.player.api.PlayerPresenter
+import com.victor_sml.playlistmaker.presentation.player.api.PlayerView
+import java.io.IOException
 
 class PlayerPresenterImpl(
     private var view: PlayerView?,
-    private val repository: PlayerRepository
+    private val interactor: PlayerInteractor,
+    trackSource: String?
 ) : PlayerPresenter {
-    private var progressObserver =
-        { progress: Int -> view?.updatePlaybackProgress(millisToMMSS(progress)) ?: Unit }
+    private var playerState: PlayerState = DEFAULT
+    private val iterativeLambda: IterativeLambda = IterativeLambdaImpl()
+    private val playerController = view?.let { PlaybackControllerImpl(it) }
 
-    private var availabilityObserver =
-        { isEnable: Boolean -> view?.updateControllerAvailability(isEnable) ?: Unit }
-
-    private var actionObserver =
-        { action: PlayerRepository.ControllerAction ->
-            when (action) {
-                PlayerRepository.ControllerAction.PLAY -> view?.updateControllerImage(R.drawable.ic_play)
-                    ?: Unit
-                PlayerRepository.ControllerAction.PAUSE -> view?.updateControllerImage(R.drawable.ic_pause)
-                    ?: Unit
+    private val playerStateConsumer: PlayerStateConsumer =
+        object : PlayerStateConsumer {
+            override fun consume(state: PlayerState) {
+                if (state == PLAYBACK_COMPLETION) iterativeLambda.stop()
+                playerController?.setControllerState(state) ?: Unit
+                playerState = state
             }
         }
 
     init {
-        (view as LifecycleOwner).let { playerView ->
-            repository.progress.observe(playerView, progressObserver)
-            repository.controllerAvailability.observe(playerView, availabilityObserver)
-            repository.controllerAction.observe(playerView, actionObserver)
+        try {
+            trackSource?.let { preparePlayer(it, playerStateConsumer) }
+        } catch (e: IOException) {
         }
     }
 
+    private val setProgress =
+        {
+            val progress = interactor.getPlaybackProgress()
+            view?.updatePlaybackProgress(millisToMMSS(progress)) ?: Unit
+        }
+
+    private fun preparePlayer(
+        source: String,
+        playerStateConsumer: PlayerStateConsumer
+    ) {
+        interactor.preparePlayer(source, playerStateConsumer)
+    }
+
     override fun playbackControl() {
-        repository.playbackControl()
+        when (playerState) {
+            PREPARED, PAUSED, PLAYBACK_COMPLETION -> startPlayer()
+            STARTED -> pausePlayer()
+            else -> {}
+        }
+    }
+
+    private fun startPlayer() {
+        interactor.startPlayer()
+        iterativeLambda.start(PLAYBACK_PROGRESS_DELAY_MILLIS, setProgress)
+    }
+
+    private fun pausePlayer() {
+        iterativeLambda.stop()
+        interactor.pausePlayer()
     }
 
     override fun onViewPaused() {
-        repository.pausePlayer()
+        if (playerState == STARTED) {
+            pausePlayer()
+        }
     }
 
     override fun onViewDestroyed() {
         view = null
-        repository.releasePlayer()
+        interactor.releasePlayer()
+    }
+
+    companion object {
+        private const val PLAYBACK_PROGRESS_DELAY_MILLIS = 300L
     }
 }
