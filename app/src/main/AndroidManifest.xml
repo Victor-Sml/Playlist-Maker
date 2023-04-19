@@ -17,18 +17,18 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name="com.victor_sml.playlistmaker.PlayerActivity"
+            android:name="com.victor_sml.playlistmaker.presentation.ui.player.PlayerActivity"
             android:exported="false"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name="com.victor_sml.playlistmaker.SearchActivity"
+            android:name="com.victor_sml.playlistmaker.presentation.ui.search.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name="com.victor_sml.playlistmaker.SettingsActivity"
+            android:name="com.victor_sml.playlistmaker.presentation.ui.settings.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name="com.victor_sml.playlistmaker.MainActivity"
+            android:name="com.victor_sml.playlistmaker.presentation.ui.main.MainActivity"
             android:exported="true"
             android:theme="@style/ThemeOverlay.PlaylistMaker.MainActivity">
             <intent-filter>

@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.Track
+import com.victor_sml.playlistmaker.domain.models.Track
 import com.victor_sml.playlistmaker.TracksHandler
-import com.victor_sml.playlistmaker.utils.dpToPx
+import com.victor_sml.playlistmaker.Utils.dpToPx
 
 class TrackDelegate(
     private val tracksHandler: TracksHandler,

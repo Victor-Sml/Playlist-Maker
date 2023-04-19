@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker
+package com.victor_sml.playlistmaker.domain.models
 
 import android.os.Parcelable
 import com.google.gson.TypeAdapter
