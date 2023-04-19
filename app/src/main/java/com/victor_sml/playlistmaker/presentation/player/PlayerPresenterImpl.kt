@@ -10,7 +10,7 @@ import com.victor_sml.playlistmaker.domain.PlayerState.PAUSED
 import com.victor_sml.playlistmaker.domain.PlayerState.PLAYBACK_COMPLETION
 import com.victor_sml.playlistmaker.domain.api.PlayerInteractor.PlayerStateConsumer
 import com.victor_sml.playlistmaker.presentation.IterativeLambda
-import com.victor_sml.playlistmaker.presentation.IterativeLambdaImpl
+import com.victor_sml.playlistmaker.presentation.IterativeLambdaIml
 import com.victor_sml.playlistmaker.presentation.player.api.PlayerPresenter
 import com.victor_sml.playlistmaker.presentation.player.api.PlayerView
 import java.io.IOException
@@ -21,7 +21,6 @@ class PlayerPresenterImpl(
     trackSource: String?
 ) : PlayerPresenter {
     private var playerState: PlayerState = DEFAULT
-    private val iterativeLambda: IterativeLambda = IterativeLambdaImpl()
     private val playerController = view?.let { PlaybackControllerImpl(it) }
 
     private val playerStateConsumer: PlayerStateConsumer =
@@ -46,6 +45,10 @@ class PlayerPresenterImpl(
             view?.updatePlaybackProgress(millisToMMSS(progress)) ?: Unit
         }
 
+    private val iterativeLambda: IterativeLambda = IterativeLambdaIml(
+        PLAYBACK_PROGRESS_DELAY_MILLIS, setProgress
+    )
+
     private fun preparePlayer(
         source: String,
         playerStateConsumer: PlayerStateConsumer
@@ -63,7 +66,7 @@ class PlayerPresenterImpl(
 
     private fun startPlayer() {
         interactor.startPlayer()
-        iterativeLambda.start(PLAYBACK_PROGRESS_DELAY_MILLIS, setProgress)
+        iterativeLambda.start()
     }
 
     private fun pausePlayer() {
