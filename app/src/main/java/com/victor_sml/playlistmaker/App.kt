@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 
 const val PM_PREFERENCES = "playlist_preferences"
-const val DARK_THEME_ENABLED = "dark_theme_enabled"
+const val APP_THEME = "dark_theme_enabled"
 
 class App : Application() {
     private var darkTheme = false
@@ -14,7 +14,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = getSharedPreferences(PM_PREFERENCES, MODE_PRIVATE)
-        switchTheme(sharedPreferences.getBoolean(DARK_THEME_ENABLED, false))
+        switchTheme(sharedPreferences.getBoolean(APP_THEME, false))
     }
 
     fun isDarkThemeEnabled() = darkTheme

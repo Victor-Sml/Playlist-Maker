@@ -104,6 +104,12 @@
         <item name="android:textColor">@color/yp_text_gray</item>
     </style>
 
+    <style name="MediaContentValueText" parent="MediaContentText">
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
     <style name="BigButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>

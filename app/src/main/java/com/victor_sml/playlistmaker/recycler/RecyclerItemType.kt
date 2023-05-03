@@ -1,3 +1,0 @@
-package com.victor_sml.playlistmaker.recycler
-
-interface RecyclerItemType
