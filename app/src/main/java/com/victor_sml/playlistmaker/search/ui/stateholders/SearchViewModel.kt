@@ -86,11 +86,6 @@ class SearchViewModel(
         )
     }
 
-    override fun onCleared() {
-        super.onCleared()
-
-    }
-
     companion object {
         fun getViewModelFactory(context: Context): ViewModelProvider.Factory = viewModelFactory {
             initializer {

@@ -45,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var viewModel: SearchViewModel
     private lateinit var recyclerController: RecyclerController
     private var thisRestored: Boolean = false
-    private var screenState: SearchScreenState = Loading
+    private lateinit var screenState: SearchScreenState
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable =
