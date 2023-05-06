@@ -174,7 +174,7 @@
 
         <TextView
             android:id="@+id/tv_track_time_value"
-            style="@style/MediaContentText"
+            style="@style/MediaContentValueText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"
@@ -186,7 +186,7 @@
 
         <TextView
             android:id="@+id/tv_album_value"
-            style="@style/MediaContentText"
+            style="@style/MediaContentValueText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"
@@ -200,7 +200,7 @@
 
         <TextView
             android:id="@+id/tv_release_data_value"
-            style="@style/MediaContentText"
+            style="@style/MediaContentValueText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"
@@ -212,7 +212,7 @@
 
         <TextView
             android:id="@+id/tv_genre_value"
-            style="@style/MediaContentText"
+            style="@style/MediaContentValueText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"
@@ -223,7 +223,7 @@
 
         <TextView
             android:id="@+id/tv_country_value"
-            style="@style/MediaContentText"
+            style="@style/MediaContentValueText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"

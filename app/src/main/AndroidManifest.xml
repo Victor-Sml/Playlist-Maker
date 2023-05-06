@@ -4,6 +4,7 @@
     package="com.victor_sml.playlistmaker">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -17,18 +18,18 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name="com.victor_sml.playlistmaker.presentation.ui.player.PlayerActivity"
+            android:name="com.victor_sml.playlistmaker.player.ui.view.PlayerActivity"
             android:exported="false"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name="com.victor_sml.playlistmaker.presentation.ui.search.SearchActivity"
+            android:name="com.victor_sml.playlistmaker.search.ui.view.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name="com.victor_sml.playlistmaker.presentation.ui.settings.SettingsActivity"
+            android:name="com.victor_sml.playlistmaker.settings.ui.view.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name="com.victor_sml.playlistmaker.presentation.ui.main.MainActivity"
+            android:name="com.victor_sml.playlistmaker.main.ui.MainActivity"
             android:exported="true"
             android:theme="@style/ThemeOverlay.PlaylistMaker.MainActivity">
             <intent-filter>

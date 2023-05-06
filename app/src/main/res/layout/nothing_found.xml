@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/search_message_margin_top"
+    android:drawablePadding="@dimen/search_message_drawable_padding"
+    android:textAlignment="center"
+    android:text="@string/nothing_found"
+    android:textAppearance="?attr/textAppearanceSubtitle_Medium"
+    app:drawableTopCompat="@drawable/ic_nothing_found">
+</TextView>

@@ -38,7 +38,7 @@
             android:textColorHint="?attr/colorOnSurface" />
 
         <ImageView
-            android:id="@+id/clearIcon"
+            android:id="@+id/clearInput"
             android:layout_width="40dp"
             android:layout_height="@dimen/search_field_height"
             android:layout_gravity="center_vertical|end"
@@ -53,10 +53,10 @@
         android:id="@+id/progressBar"
         android:layout_width="@dimen/progress_bar_dimensions"
         android:layout_height="@dimen/progress_bar_dimensions"
-        android:layout_marginTop="148dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="148dp"
         android:indeterminateTint="@color/yp_blue"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_historyTitle"
@@ -69,20 +69,20 @@
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rw_tracklist"
+        android:id="@+id/rw_tracks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:visibility="gone" />
 
     <include
-        android:id="@+id/nothing_found_layout"
-        layout="@layout/nothing_found_layout"
-        android:visibility="gone"/>
+        android:id="@+id/nothing_found"
+        layout="@layout/nothing_found"
+        android:visibility="gone" />
 
     <include
-        android:id="@+id/connection_failure_layout"
-        layout="@layout/connection_failure_layout"
-        android:visibility="gone"/>
+        android:id="@+id/connection_failure"
+        layout="@layout/connection_failure"
+        android:visibility="gone" />
 
 </LinearLayout>
