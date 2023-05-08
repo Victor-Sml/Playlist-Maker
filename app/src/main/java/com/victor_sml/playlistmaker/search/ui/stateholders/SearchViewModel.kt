@@ -1,21 +1,15 @@
 package com.victor_sml.playlistmaker.search.ui.stateholders
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.victor_sml.playlistmaker.App
 import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
 import com.victor_sml.playlistmaker.common.models.TrackUi
 import com.victor_sml.playlistmaker.search.domain.Resource
 import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
-import com.victor_sml.playlistmaker.creator.Creator
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loading
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.History
@@ -84,17 +78,5 @@ class SearchViewModel(
             track.country,
             track.previewUrl
         )
-    }
-
-    companion object {
-        fun getViewModelFactory(context: Context): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as App)
-                SearchViewModel(
-                    Creator.provideSearchInteractor(context),
-                    Creator.provideHistoryInteractor(app)
-                )
-            }
-        }
     }
 }

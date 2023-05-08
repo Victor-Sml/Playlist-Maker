@@ -8,18 +8,12 @@ import android.net.NetworkCapabilities.TRANSPORT_ETHERNET
 import com.victor_sml.playlistmaker.search.data.api.NetworkClient
 import com.victor_sml.playlistmaker.search.data.dto.Response
 import com.victor_sml.playlistmaker.search.data.dto.TracksSearchRequest
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-class RetrofitNetworkClient(private var context: Context) : NetworkClient {
-    private val iTunesService =
-        Retrofit
-            .Builder()
-            .baseUrl(ITUNES_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ItunesAPIService::class.java)
+class RetrofitNetworkClient(
+    private val iTunesService: ItunesAPIService,
+    private var context: Context
+) : NetworkClient {
 
     override fun doRequest(dto: Any): Response {
         if (!isConnected()) {
