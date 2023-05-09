@@ -4,8 +4,7 @@ import android.media.MediaPlayer
 import com.victor_sml.playlistmaker.player.data.api.Player
 import com.victor_sml.playlistmaker.player.domain.api.PlayerInteractor.StateObserver
 
-class PlayerImpl : Player {
-    private val player = MediaPlayer()
+class PlayerImpl(private val player: MediaPlayer) : Player {
     private lateinit var stateObserver: StateObserver
 
     override fun prepare(source: String, stateObserver: StateObserver) {

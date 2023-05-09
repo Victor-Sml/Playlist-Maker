@@ -3,23 +3,29 @@ package com.victor_sml.playlistmaker.common.utils
 import android.os.Handler
 import android.os.Looper
 
-class IterativeLambdaIml(
-    override val delayMillis: Long,
-    override val lambda: () -> Unit
-) : IterativeLambda {
+class IterativeLambdaIml : IterativeLambda {
+    private var delayMillis: Long = 0L
+    private lateinit var lambda: () -> Unit
+    private lateinit var lambdaIterator: Runnable
     private val handler = Handler(Looper.getMainLooper())
-    private val lambdaIterator = object : Runnable {
-        override fun run() {
-            lambda()
-            handler.postDelayed(this, delayMillis)
+
+    override fun initialize(delayMillis: Long, lambda: () -> Unit) {
+        this.delayMillis = delayMillis
+        this.lambda = lambda
+
+        lambdaIterator = object : Runnable {
+            override fun run() {
+                lambda()
+                handler.postDelayed(this, delayMillis)
+            }
         }
     }
 
     override fun start() {
-        lambdaIterator.run()
+        if (this::lambdaIterator.isInitialized) lambdaIterator.run()
     }
 
     override fun stop() {
-        handler.removeCallbacks(lambdaIterator)
+        if (this::lambdaIterator.isInitialized) handler.removeCallbacks(lambdaIterator)
     }
 }
