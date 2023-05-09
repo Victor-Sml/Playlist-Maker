@@ -2,7 +2,12 @@ package com.victor_sml.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.victor_sml.playlistmaker.di.*
+import com.victor_sml.playlistmaker.di.appModule
+import com.victor_sml.playlistmaker.di.historyModule
+import com.victor_sml.playlistmaker.di.playerModule
+import com.victor_sml.playlistmaker.di.searchModule
+import com.victor_sml.playlistmaker.di.settingsModule
+import com.victor_sml.playlistmaker.di.sharingModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

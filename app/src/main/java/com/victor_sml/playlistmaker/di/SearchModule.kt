@@ -9,10 +9,8 @@ import com.victor_sml.playlistmaker.search.domain.SearchInteractorImpl
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
-import com.victor_sml.playlistmaker.search.ui.view.recycler.ClearButtonDelegate
 import com.victor_sml.playlistmaker.search.ui.view.recycler.ClearButtonDelegate.ClickListener
 import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
-import com.victor_sml.playlistmaker.search.ui.view.recycler.TrackDelegate
 import com.victor_sml.playlistmaker.search.ui.view.recycler.TrackDelegate.TrackClickListener
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
