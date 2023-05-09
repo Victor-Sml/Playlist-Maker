@@ -1,37 +1,28 @@
 package com.victor_sml.playlistmaker
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
-import com.victor_sml.playlistmaker.di.*
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
 
 const val PM_PREFERENCES = "playlist_preferences"
 const val APP_THEME = "dark_theme_enabled"
 
 class App : Application() {
-    var isDarkTheme = false
-        private set
+    private var darkTheme = false
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate() {
         super.onCreate()
-        startKoin {
-            androidContext(this@App)
-            modules(
-                appModule,
-                historyModule,
-                playerModule,
-                searchModule,
-                settingsModule,
-                sharingModule
-            )
-        }
-
-        switchTheme(getSharedPreferences(PM_PREFERENCES, MODE_PRIVATE).getBoolean(APP_THEME, false))
+        sharedPreferences = getSharedPreferences(PM_PREFERENCES, MODE_PRIVATE)
+        switchTheme(sharedPreferences.getBoolean(APP_THEME, false))
     }
 
+    fun isDarkThemeEnabled() = darkTheme
+
+    fun getSharedPreferences() = sharedPreferences
+
     fun switchTheme(darkThemeEnabled: Boolean) {
-        isDarkTheme = darkThemeEnabled
+        darkTheme = darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
                 AppCompatDelegate.MODE_NIGHT_YES

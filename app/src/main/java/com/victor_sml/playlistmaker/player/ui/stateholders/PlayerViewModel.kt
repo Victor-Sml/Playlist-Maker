@@ -3,33 +3,32 @@ package com.victor_sml.playlistmaker.player.ui.stateholders
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.victor_sml.playlistmaker.common.utils.IterativeLambda
-import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.DEFAULT
-import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PREPARED
-import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.STARTED
-import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PAUSED
-import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PLAYBACK_COMPLETION
+import com.victor_sml.playlistmaker.common.utils.IterativeLambdaIml
+import com.victor_sml.playlistmaker.creator.Creator
+import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.*
 import com.victor_sml.playlistmaker.player.domain.api.PlayerInteractor
 import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
 import java.io.IOException
 
-class PlayerViewModel(
-    trackSource: String?,
-    private var progressCounter: IterativeLambda,
-    private val interactor: PlayerInteractor
-) :
+class PlayerViewModel(trackSource: String, private val interactor: PlayerInteractor) :
     ViewModel(), PlayerInteractor.StateObserver {
 
     init {
         try {
-            trackSource?.let { interactor.preparePlayer(it, this) }
+            trackSource.let { interactor.preparePlayer(it, this) }
         } catch (e: IOException) {
         }
+    }
 
-        progressCounter.initialize(PLAYBACK_PROGRESS_DELAY_MILLIS) {
-            interactor.getPlaybackProgress().toTimeMMSS().let { progress ->
-                playbackProgress.postValue(progress)
-            }
+    private val progressCounter: IterativeLambda = IterativeLambdaIml(
+        PLAYBACK_PROGRESS_DELAY_MILLIS
+    ) {
+        interactor.getPlaybackProgress().toTimeMMSS().let { progress ->
+            playbackProgress.postValue(progress)
         }
     }
 
@@ -83,6 +82,15 @@ class PlayerViewModel(
     }
 
     companion object {
+        fun getViewModelFactory(trackSource: String): ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                PlayerViewModel(
+                    trackSource,
+                    Creator.providePlayerInteractor()
+                )
+            }
+        }
+
         private const val DEFAULT_PLAYBACK_PROGRESS = "00:00"
         private const val PLAYBACK_PROGRESS_DELAY_MILLIS = 300L
     }

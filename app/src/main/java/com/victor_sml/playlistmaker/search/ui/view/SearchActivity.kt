@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -14,6 +15,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.databinding.ActivitySearchBinding
 import com.victor_sml.playlistmaker.player.ui.view.PlayerActivity
@@ -35,28 +37,17 @@ import com.victor_sml.playlistmaker.search.ui.view.recycler.ClearButtonDelegate.
 import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 const val TRACK_FOR_PLAYER = "track for player"
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var screenState: SearchScreenState
-    private val viewModel by viewModel<SearchViewModel>()
-    private val handler: Handler by inject()
+    private lateinit var viewModel: SearchViewModel
+    private lateinit var recyclerController: RecyclerController
     private var thisRestored: Boolean = false
+    private lateinit var screenState: SearchScreenState
     private var isClickAllowed = true
-
-    private val recyclerController: RecyclerController by inject {
-        parametersOf(
-            binding.rwTracks,
-            trackClickListener,
-            clearHistoryClickListener
-        )
-    }
-
+    private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable =
         Runnable { viewModel.searchTracks(binding.inputEditText.text.toString()) }
 
@@ -82,6 +73,15 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         thisRestored = savedInstanceState?.getBoolean(RESTORE_INSTANCE_STATE) ?: false
+
+        viewModel = ViewModelProvider(
+            this,
+            SearchViewModel.getViewModelFactory(this)
+        )[SearchViewModel::class.java]
+
+        recyclerController =
+            RecyclerController(binding.rwTracks, trackClickListener, clearHistoryClickListener)
+
         setListeners()
 
         viewModel.getScreenState().observe(this) { screenState ->

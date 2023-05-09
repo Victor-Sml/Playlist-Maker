@@ -4,7 +4,9 @@ import com.victor_sml.playlistmaker.player.data.api.Player
 import com.victor_sml.playlistmaker.player.domain.api.PlayerInteractor.StateObserver
 import com.victor_sml.playlistmaker.player.domain.api.PlayerRepository
 
-class PlayerRepositoryImpl(private var player: Player) : PlayerRepository {
+class PlayerRepositoryImpl(
+    private val player: Player
+) : PlayerRepository {
 
     override fun preparePlayer(source: String, stateObserver: StateObserver) {
         player.prepare(source, stateObserver)
