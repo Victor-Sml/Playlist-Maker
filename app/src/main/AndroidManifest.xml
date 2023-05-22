@@ -26,6 +26,9 @@
             android:exported="false"
             android:windowSoftInputMode="adjustNothing" />
         <activity
+            android:name=".library.ui.view.LibraryActivity"
+            android:exported="false" />
+        <activity
             android:name="com.victor_sml.playlistmaker.settings.ui.view.SettingsActivity"
             android:exported="false" />
         <activity
