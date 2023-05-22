@@ -2,7 +2,6 @@ package com.victor_sml.playlistmaker.player.ui.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.victor_sml.playlistmaker.R
@@ -13,10 +12,14 @@ import com.victor_sml.playlistmaker.search.ui.view.TRACK_FOR_PLAYER
 import com.victor_sml.playlistmaker.common.utils.Utils.dpToPx
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+    private val viewModel by viewModel<PlayerViewModel> {
+        parametersOf(track?.previewUrl)
+    }
     private var track: TrackUi? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,11 +28,6 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         track = intent.getParcelableExtra(TRACK_FOR_PLAYER)
-
-        viewModel = ViewModelProvider(
-            this,
-            PlayerViewModel.getViewModelFactory(track?.previewUrl ?: "")
-        )[PlayerViewModel::class.java]
 
         viewModel.getPlayerState().observe(this) { playerState ->
             renderController(playerState)
@@ -42,7 +40,6 @@ class PlayerActivity : AppCompatActivity() {
         initViews()
         setListeners()
     }
-
 
     override fun onPause() {
         super.onPause()

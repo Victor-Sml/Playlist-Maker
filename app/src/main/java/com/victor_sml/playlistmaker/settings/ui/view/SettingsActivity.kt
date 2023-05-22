@@ -2,28 +2,23 @@ package com.victor_sml.playlistmaker.settings.ui.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.victor_sml.playlistmaker.App
 import com.victor_sml.playlistmaker.databinding.ActivitySettingsBinding
 import com.victor_sml.playlistmaker.settings.domain.model.ThemeSettings
 import com.victor_sml.playlistmaker.settings.ui.stateholders.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel by viewModel<SettingsViewModel>() { parametersOf(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getViewModelFactory(this)
-        )[SettingsViewModel::class.java]
-
         binding.themeSwitcher.isChecked = viewModel.getThemeSettings().isDarkTheme
-
         setListeners()
     }
 
@@ -49,5 +44,4 @@ class SettingsActivity : AppCompatActivity() {
             viewModel.openTerms()
         }
     }
-
 }
