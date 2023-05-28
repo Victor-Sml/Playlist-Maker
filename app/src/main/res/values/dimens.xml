@@ -9,8 +9,8 @@
     <dimen name="small_button_puddingVertical">4dp</dimen>
     <dimen name="small_button_puddingHorizontal">14dp</dimen>
 
-    <dimen name="search_message_margin_top">102dp</dimen>
-    <dimen name="search_message_drawable_padding">16dp</dimen>
+    <dimen name="screen_message_marginTop">102dp</dimen>
+    <dimen name="screen_message_drawablePadding">16dp</dimen>
 
     <dimen name="list_height">60dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>

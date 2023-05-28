@@ -2,7 +2,7 @@ package com.victor_sml.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.victor_sml.playlistmaker.di.appModule
+import com.victor_sml.playlistmaker.di.commonModule
 import com.victor_sml.playlistmaker.di.historyModule
 import com.victor_sml.playlistmaker.di.playerModule
 import com.victor_sml.playlistmaker.di.searchModule
@@ -23,7 +23,7 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             modules(
-                appModule,
+                commonModule,
                 historyModule,
                 playerModule,
                 searchModule,

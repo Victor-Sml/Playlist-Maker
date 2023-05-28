@@ -11,8 +11,7 @@ import org.koin.core.parameter.parametersOf
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private val viewModel by viewModel<SettingsViewModel>() { parametersOf(this) }
-
+    private val viewModel by viewModel<SettingsViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)

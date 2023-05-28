@@ -23,6 +23,10 @@
     <string name="country">Страна</string>
     <string name="default_playback_progress">00:00</string>
     <string name="not_applicable">n/a</string>
-    <string name="nothing_to_play_toast">Трек не доступен для воспроизведения :(</string>
     <string name="refresh">Обновить</string>
+    <string name="empty_library">Ваша медиатека пуста</string>
+    <string name="playlists_are_absent">Вы не создали\nни одного плейлиста</string>
+    <string name="favorite_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
+    <string name="new_playlist">Новый плейлист</string>
 </resources>

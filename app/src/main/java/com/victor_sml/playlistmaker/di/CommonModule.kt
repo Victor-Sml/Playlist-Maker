@@ -14,7 +14,7 @@ import org.koin.dsl.module
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-val appModule = module {
+val commonModule = module {
     single {
         androidApplication() as App
     }

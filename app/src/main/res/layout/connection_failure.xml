@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/RootLinearLayout.ErrorLayout">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/search_message_margin_top"
-        android:drawablePadding="@dimen/search_message_drawable_padding"
-        android:layout_marginBottom="24dp"
-        android:textAlignment="center"
-        android:text="@string/connection_failure"
-        android:textAppearance="?attr/textAppearanceSubtitle_Medium"
-        app:drawableTopCompat="@drawable/ic_connection_failure">
-    </TextView>
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/RootLinearLayout.ErrorLayout">
 
-    <Button
-        android:id="@+id/btn_refresh"
-        style="@style/SmallButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/small_button_puddingVertical"
-        android:paddingHorizontal="@dimen/small_button_puddingHorizontal"
-        android:text="@string/refresh" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/screen_message_marginTop"
+            android:layout_marginBottom="24dp"
+            android:drawablePadding="@dimen/screen_message_drawablePadding"
+            android:text="@string/connection_failure"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceSubtitle_Medium"
+            app:drawableTopCompat="@drawable/ic_connection_failure" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btn_refresh"
+            style="@style/SmallButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/small_button_puddingHorizontal"
+            android:paddingVertical="@dimen/small_button_puddingVertical"
+            android:text="@string/refresh" />
+
+    </LinearLayout>
+</ScrollView>

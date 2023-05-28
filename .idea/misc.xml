@@ -3,6 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android_Projects/Playlist-Maker/app/src/main/res/drawable/tab_indicator.xml" value="0.1" />
+        <entry key="..\:/Android_Projects/Playlist-Maker/app/src/main/res/layout/activity_library.xml" value="0.17074275362318841" />
+        <entry key="..\:/Android_Projects/Playlist-Maker/app/src/main/res/layout/connection_failure.xml" value="0.1" />
+        <entry key="..\:/Android_Projects/Playlist-Maker/app/src/main/res/layout/fragment_favorites.xml" value="0.17074275362318841" />
+        <entry key="..\:/Android_Projects/Playlist-Maker/app/src/main/res/layout/fragment_playlists.xml" value="0.17074275362318841" />
+        <entry key="..\:/Android_Projects/Playlist-Maker/app/src/main/res/layout/nothing_found.xml" value="0.1" />
         <entry key="..\:/Android_Projects/Playlist_Maker/app/src/main/res/drawable/default_artwork.xml" value="0.154" />
         <entry key="..\:/Android_Projects/Playlist_Maker/app/src/main/res/drawable/ic_arrow_back.xml" value="0.246" />
         <entry key="..\:/Android_Projects/Playlist_Maker/app/src/main/res/drawable/ic_arrow_back_24.xml" value="0.143" />
