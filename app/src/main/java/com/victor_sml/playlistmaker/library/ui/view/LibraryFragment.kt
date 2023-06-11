@@ -14,7 +14,8 @@ import com.victor_sml.playlistmaker.library.ui.view.fragments.ViewPagerAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : Fragment() {
-    private lateinit var binding: FragmentLibraryBinding
+    private var _binding: FragmentLibraryBinding? = null
+    private val binding get() = _binding!!
     private var tabLayoutMediator: TabLayoutMediator? = null
     private val favoritesViewModel by viewModel<FavoritesViewModel>()
     private val playlistViewModel by viewModel<PlaylistViewModel>()
@@ -24,7 +25,7 @@ class LibraryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentLibraryBinding.inflate(inflater, container, false)
+        _binding = FragmentLibraryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -39,6 +40,11 @@ class LibraryFragment : Fragment() {
                 }
             }
         tabLayoutMediator?.attach()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onDestroy() {

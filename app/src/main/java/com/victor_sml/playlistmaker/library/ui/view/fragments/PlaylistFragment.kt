@@ -9,8 +9,9 @@ import com.victor_sml.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.victor_sml.playlistmaker.library.ui.stateholder.PlaylistViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlaylistFragment: Fragment() {
-    private lateinit var binding: FragmentPlaylistsBinding
+class PlaylistFragment : Fragment() {
+    private var _binding: FragmentPlaylistsBinding? = null
+    private val binding get() = _binding!!
     private val viewModel by viewModel<PlaylistViewModel>()
 
     override fun onCreateView(
@@ -18,8 +19,13 @@ class PlaylistFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+        _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
