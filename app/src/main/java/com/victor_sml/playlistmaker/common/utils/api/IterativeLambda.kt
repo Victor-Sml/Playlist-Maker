@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.common.utils
+package com.victor_sml.playlistmaker.common.utils.api
 
 interface IterativeLambda {
     fun initialize(delayMillis: Long, lambda: () -> Unit)

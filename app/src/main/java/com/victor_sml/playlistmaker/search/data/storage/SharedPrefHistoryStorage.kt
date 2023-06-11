@@ -2,27 +2,26 @@ package com.victor_sml.playlistmaker.search.data.storage
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.victor_sml.playlistmaker.common.models.TrackUi
 import com.victor_sml.playlistmaker.search.data.api.StorageClient
 
 class SharedPrefHistoryStorage(
     private val sharedPreferences: SharedPreferences,
     private val gson: Gson
-) :
-    StorageClient {
-    override fun putTracks(tracks: List<TrackUi>) {
+) : StorageClient {
+
+    override fun putTrackIds(trackIds: List<Int>) {
         sharedPreferences.edit()
-            .putString(LOOKED_TRACKS, gson.toJson(tracks))
+            .putString(LOOKED_TRACKS, gson.toJson(trackIds))
             .apply()
     }
 
-    override fun getTracks(): Array<TrackUi>? =
+    override fun getTrackIds(): Array<Int>? =
         gson.fromJson(
             sharedPreferences.getString(LOOKED_TRACKS, null),
-            Array<TrackUi>::class.java
+            Array<Int>::class.java
         )
 
-    override fun removeTracks() {
+    override fun removeTrackIds() {
         sharedPreferences.edit().remove(LOOKED_TRACKS).apply()
     }
 

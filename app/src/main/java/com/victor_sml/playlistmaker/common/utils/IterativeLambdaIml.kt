@@ -2,6 +2,7 @@ package com.victor_sml.playlistmaker.common.utils
 
 import android.os.Handler
 import android.os.Looper
+import com.victor_sml.playlistmaker.common.utils.api.IterativeLambda
 
 class IterativeLambdaIml : IterativeLambda {
     private var delayMillis: Long = 0L

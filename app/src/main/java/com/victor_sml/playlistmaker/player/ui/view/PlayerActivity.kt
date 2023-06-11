@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.common.models.TrackUi
+import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.databinding.ActivityPlayerBinding
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.STARTED
 import com.victor_sml.playlistmaker.search.ui.view.TRACK_FOR_PLAYER
@@ -20,7 +20,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel> {
         parametersOf(track?.previewUrl)
     }
-    private var track: TrackUi? = null
+    private var track: Track? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

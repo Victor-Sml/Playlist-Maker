@@ -10,7 +10,7 @@ import org.koin.dsl.module
 
 val historyModule = module {
     single<HistoryInteractor> {
-        HistoryInteractorImpl(get(), get())
+        HistoryInteractorImpl(get(), get(), get())
     }
 
     single<HistoryRepository> {

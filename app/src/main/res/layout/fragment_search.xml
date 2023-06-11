@@ -4,18 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/RootLinearLayout">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/searchToolbar"
-        style="@style/Toolbar"
-        app:title="@string/search" />
-
     <FrameLayout
         android:id="@+id/searchFieldContainer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/search_field_height"
         android:layout_marginHorizontal="@dimen/container_paddingHorizontal"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/search_field"
         android:paddingStart="12dp"
         tools:ignore="RtlSymmetry">
@@ -73,16 +68,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/nothing_found"
-        layout="@layout/nothing_found"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/connection_failure"
-        layout="@layout/connection_failure"
         android:visibility="gone" />
 
 </LinearLayout>
