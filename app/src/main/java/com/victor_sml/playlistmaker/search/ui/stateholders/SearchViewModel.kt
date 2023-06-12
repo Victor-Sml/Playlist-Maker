@@ -8,6 +8,7 @@ import com.victor_sml.playlistmaker.common.stringProvider.domain.api.StringInter
 import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
 import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.utils.DpToPxConverter
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loading
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.History
@@ -22,12 +23,14 @@ import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState.SUCCESS
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Button
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Header
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Message
+import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Space
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.TrackItem
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
     private val historyInteractor: HistoryInteractor,
-    private val stringInteractor: StringInteractor
+    private val stringInteractor: StringInteractor,
+    private val dpToPxConverter: DpToPxConverter
 ) : ViewModel() {
     private var screenState = MutableLiveData<SearchScreenState>(Loading)
     private val getString: (stringId: Int) -> String = { stringInteractor.getString(it) }
@@ -113,8 +116,9 @@ class SearchViewModel(
                 Button(getString(CLEAR_HISTORY_STR)) { clearHistory() }) as ArrayList<RecyclerItem>
 
     private fun getNothingFoundItems() =
-        arrayListOf<RecyclerItem>(
-            Message(UPSET_EMOJI_DRAWABLE, getString(NOTHING_FOUND_STR))
+        arrayListOf(
+            Message(UPSET_EMOJI_DRAWABLE, getString(NOTHING_FOUND_STR)),
+            Space(dpToPxConverter.convert(NOTHING_FOUND_BOTTOM_SPACE_DP))
         )
 
     private fun getConnectionFailureItems(callback: () -> Unit) =
@@ -136,5 +140,7 @@ class SearchViewModel(
 
         const val UPSET_EMOJI_DRAWABLE = R.drawable.ic_nothing_found
         const val CONNECTION_FAILURE_DRAWABLE = R.drawable.ic_connection_failure
+
+        const val NOTHING_FOUND_BOTTOM_SPACE_DP = 24
     }
 }

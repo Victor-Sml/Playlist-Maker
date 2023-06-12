@@ -9,6 +9,7 @@ import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.MessageDel
 import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate
 import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate.TrackClickListener
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.SpaceDelegate
 
 class RecyclerController(
     recyclerView: RecyclerView,
@@ -20,7 +21,8 @@ class RecyclerController(
             TrackDelegate(trackClickListener),
             ButtonDelegate(buttonClickListener),
             MessageDelegate(),
-            HeaderDelegate()
+            HeaderDelegate(),
+            SpaceDelegate()
         )
     )
 

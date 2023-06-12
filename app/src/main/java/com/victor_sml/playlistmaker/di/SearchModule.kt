@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val searchModule = module {
     viewModel {
-        SearchViewModel(get(), get(), get())
+        SearchViewModel(get(), get(), get(), get())
     }
 
     single<SearchInteractor> {

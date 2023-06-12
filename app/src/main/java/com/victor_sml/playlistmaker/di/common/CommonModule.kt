@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.victor_sml.playlistmaker.App
 import com.victor_sml.playlistmaker.PM_PREFERENCES
 import com.victor_sml.playlistmaker.common.utils.IterativeLambdaIml
+import com.victor_sml.playlistmaker.common.utils.DpToPxConverter
 import com.victor_sml.playlistmaker.common.utils.api.IterativeLambda
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -41,5 +42,9 @@ val commonModule = module {
 
     factory<IterativeLambda> {
         IterativeLambdaIml()
+    }
+
+    factory {
+        DpToPxConverter(get())
     }
 }
