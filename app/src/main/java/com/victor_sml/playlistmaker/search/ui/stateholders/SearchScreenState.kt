@@ -1,18 +1,17 @@
 package com.victor_sml.playlistmaker.search.ui.stateholders
 
-import com.victor_sml.playlistmaker.common.models.TrackUi
+import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
 
-sealed class SearchScreenState {
+sealed class SearchScreenState(val items: ArrayList<RecyclerItem>? = null) {
+    object Empty : SearchScreenState()
     object Loading : SearchScreenState()
 
-    data class SearchResult(val tracks: List<TrackUi>) : SearchScreenState()
+    class SearchResult(items: ArrayList<RecyclerItem>) : SearchScreenState(items)
 
-    data class History(val tracks: List<TrackUi>) : SearchScreenState()
+    class History(items: ArrayList<RecyclerItem>) : SearchScreenState(items)
 
-    object NothingFound : SearchScreenState()
+    class NothingFound(items: ArrayList<RecyclerItem>) : SearchScreenState(items)
 
-    object ConnectionFailure : SearchScreenState()
-
-    object Empty : SearchScreenState()
+    class ConnectionFailure(items: ArrayList<RecyclerItem>) : SearchScreenState(items)
 }
 

@@ -25,7 +25,7 @@
             android:text="@string/playlists_are_absent"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceSubtitle_Medium"
-            app:drawableTopCompat="@drawable/ic_upset_emoji" />
+            app:drawableTopCompat="@drawable/ic_nothing_found" />
 
     </LinearLayout>
 </ScrollView>

@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.search.ui.view.recycler
+package com.victor_sml.playlistmaker.search.ui.view.recycler.delegates
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,26 +10,26 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.utils.Utils
-import com.victor_sml.playlistmaker.common.models.TrackUi
+import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.AdapterDelegate
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
 
 class TrackDelegate(private val clickListener: TrackClickListener) : AdapterDelegate {
-    override fun forItem(item: RecyclerItem): Boolean = item is TrackUi
+    override fun forItem(item: RecyclerItem): Boolean = item is RecyclerItem.TrackItem
 
     override fun getViewHolder(parent: ViewGroup): RecyclerView.ViewHolder = TrackViewHolder(parent)
 
     override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: RecyclerItem) {
         val trackViewHolder = viewHolder as TrackViewHolder
-        val track = item as TrackUi
+        val track = item as RecyclerItem.TrackItem
         val context = trackViewHolder.itemView.context
 
-        trackViewHolder.trackName.text = track.trackName
-        trackViewHolder.artistName.text = track.artistName
-        trackViewHolder.trackTime.text = track.trackTime
+        trackViewHolder.trackName.text = track.track.trackName
+        trackViewHolder.artistName.text = track.track.artistName
+        trackViewHolder.trackTime.text = track.track.trackTime
 
         Utils.dpToPx(SMALL_ARTWORK_RADIUS, context).let { radius ->
-            Glide.with(context).load(track.artworkUrl100)
+            Glide.with(context).load(track.track.artworkUrl100)
                 .placeholder(R.drawable.default_artwork)
                 .centerCrop()
                 .transform(RoundedCorners(radius))
@@ -37,17 +37,17 @@ class TrackDelegate(private val clickListener: TrackClickListener) : AdapterDele
         }
 
         viewHolder.itemView.setOnClickListener {
-            clickListener.onTrackClick(track, context)
+            clickListener.onTrackClick(track.track, context)
         }
     }
 
     interface TrackClickListener {
-        fun onTrackClick(trackUi: TrackUi, context: Context)
+        fun onTrackClick(track: Track, context: Context)
     }
 
     private inner class TrackViewHolder(parentView: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parentView.context)
-            .inflate(R.layout.tracklist_item_view, parentView, false)
+            .inflate(R.layout.recycler_track_item, parentView, false)
     ) {
         val artwork: ImageView = itemView.findViewById(R.id.iv_artwork)
         val trackName: TextView = itemView.findViewById(R.id.tv_track_name)

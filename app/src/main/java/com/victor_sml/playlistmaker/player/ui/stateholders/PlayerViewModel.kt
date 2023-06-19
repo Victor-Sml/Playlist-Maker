@@ -3,7 +3,7 @@ package com.victor_sml.playlistmaker.player.ui.stateholders
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.victor_sml.playlistmaker.common.utils.IterativeLambda
+import com.victor_sml.playlistmaker.common.utils.api.IterativeLambda
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.DEFAULT
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PREPARED
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.STARTED

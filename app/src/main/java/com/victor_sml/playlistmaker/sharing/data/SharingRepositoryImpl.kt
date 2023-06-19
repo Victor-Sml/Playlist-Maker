@@ -1,39 +1,28 @@
 package com.victor_sml.playlistmaker.sharing.data
 
-import com.victor_sml.playlistmaker.sharing.data.SharingRepositoryImpl.StringId.SHARE_APP_URI
-import com.victor_sml.playlistmaker.sharing.data.SharingRepositoryImpl.StringId.SUPPORT_EMAIL_URI
-import com.victor_sml.playlistmaker.sharing.data.SharingRepositoryImpl.StringId.SUPPORT_EMAIL_SUBJECT
-import com.victor_sml.playlistmaker.sharing.data.SharingRepositoryImpl.StringId.SUPPORT_EMAIL_BODY
-import com.victor_sml.playlistmaker.sharing.data.SharingRepositoryImpl.StringId.USER_AGREEMENT_URI
-import com.victor_sml.playlistmaker.sharing.data.api.StringSource
+import com.victor_sml.playlistmaker.R
+import com.victor_sml.playlistmaker.common.stringProvider.data.api.StringSource
 import com.victor_sml.playlistmaker.sharing.domain.api.SharingRepository
 import com.victor_sml.playlistmaker.sharing.domain.model.EmailData
 
-class SharingRepositoryImpl(private val sharingSource: StringSource) : SharingRepository {
-    override fun getShareAppLink(): String = sharingSource.getString(SHARE_APP_URI)
+class SharingRepositoryImpl(private val stringSource: StringSource) : SharingRepository {
+    override fun getShareAppLink(): String = stringSource.getString(SHARE_APP_URI)
 
     override fun getSupportEmailData(): EmailData {
-        val emailDetails = sharingSource.getStrings(
-            arrayOf(
-                SUPPORT_EMAIL_URI,
-                SUPPORT_EMAIL_SUBJECT,
-                SUPPORT_EMAIL_BODY
-            )
-        )
         return EmailData(
-            emailUri = emailDetails[0],
-            subject = emailDetails[1],
-            body = emailDetails[2]
+            stringSource.getString(SUPPORT_EMAIL_URI),
+            stringSource.getString(SUPPORT_EMAIL_SUBJECT),
+            stringSource.getString(SUPPORT_EMAIL_BODY)
         )
     }
 
-    override fun getTermsLink(): String = sharingSource.getString(USER_AGREEMENT_URI)
+    override fun getTermsLink(): String = stringSource.getString(USER_AGREEMENT_URI)
 
-    enum class StringId(val value: String) {
-        SHARE_APP_URI("share_app_uri"),
-        SUPPORT_EMAIL_URI("support_email_uri"),
-        SUPPORT_EMAIL_SUBJECT("support_email_subject"),
-        SUPPORT_EMAIL_BODY("support_email_body"),
-        USER_AGREEMENT_URI("user_agreement_uri")
+    companion object {
+        const val SHARE_APP_URI = R.string.share_app_uri
+        const val SUPPORT_EMAIL_URI = R.string.support_email_uri
+        const val SUPPORT_EMAIL_SUBJECT = R.string.support_email_subject
+        const val SUPPORT_EMAIL_BODY = R.string.support_email_body
+        const val USER_AGREEMENT_URI = R.string.user_agreement_uri
     }
 }

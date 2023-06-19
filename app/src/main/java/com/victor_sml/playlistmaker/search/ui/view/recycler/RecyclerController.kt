@@ -2,10 +2,14 @@ package com.victor_sml.playlistmaker.search.ui.view.recycler
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.victor_sml.playlistmaker.common.models.TrackUi
-import com.victor_sml.playlistmaker.search.ui.view.recycler.ClearButtonDelegate.ClickListener
-import com.victor_sml.playlistmaker.search.ui.view.recycler.TrackDelegate.TrackClickListener
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.ButtonDelegate
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.ButtonDelegate.ClickListener
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.HeaderDelegate
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.MessageDelegate
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate.TrackClickListener
 import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.SpaceDelegate
 
 class RecyclerController(
     recyclerView: RecyclerView,
@@ -15,7 +19,10 @@ class RecyclerController(
     private val adapter = TrackAdapter(
         delegates = arrayListOf(
             TrackDelegate(trackClickListener),
-            ClearButtonDelegate(buttonClickListener)
+            ButtonDelegate(buttonClickListener),
+            MessageDelegate(),
+            HeaderDelegate(),
+            SpaceDelegate()
         )
     )
 
@@ -25,27 +32,11 @@ class RecyclerController(
         recyclerView.adapter = adapter
     }
 
-    fun addTracks(tracks: List<TrackUi>, isHistory: Boolean) {
-        if (isHistory)
-            addHistory(tracks)
-        else
-            addSearchResult(tracks)
+    fun clearContent() {
+        updateContent()
     }
 
-    private fun addSearchResult(tracks: List<TrackUi>) {
-        val items = arrayListOf<RecyclerItem>()
-        items.addAll(tracks)
-        updateContent(items)
-    }
-
-    private fun addHistory(tracks: List<TrackUi>) {
-        val items = arrayListOf<RecyclerItem>()
-        items.addAll(tracks)
-        items.add(ClearButton())
-        updateContent(items)
-    }
-
-    private fun updateContent(content: ArrayList<RecyclerItem>? = null) {
+    fun updateContent(content: ArrayList<RecyclerItem>? = null) {
         adapter.update(content)
     }
 }

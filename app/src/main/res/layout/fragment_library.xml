@@ -3,11 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/RootLinearLayout">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/libraryToolbar"
-        style="@style/Toolbar"
-        app:title="@string/library" />
-
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.di
+package com.victor_sml.playlistmaker.di.common
 
 import android.app.Application
 import android.os.Handler
@@ -6,8 +6,9 @@ import android.os.Looper
 import com.google.gson.Gson
 import com.victor_sml.playlistmaker.App
 import com.victor_sml.playlistmaker.PM_PREFERENCES
-import com.victor_sml.playlistmaker.common.utils.IterativeLambda
 import com.victor_sml.playlistmaker.common.utils.IterativeLambdaIml
+import com.victor_sml.playlistmaker.common.utils.DpToPxConverter
+import com.victor_sml.playlistmaker.common.utils.api.IterativeLambda
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -20,6 +21,10 @@ val commonModule = module {
     }
 
     single {
+        androidContext().resources
+    }
+
+    single {
         androidContext().getSharedPreferences(PM_PREFERENCES, Application.MODE_PRIVATE)
     }
 
@@ -28,14 +33,18 @@ val commonModule = module {
     }
 
     factory {
-        Gson()
+        Handler(Looper.getMainLooper())
     }
 
     factory {
-        Handler(Looper.getMainLooper())
+        Gson()
     }
 
     factory<IterativeLambda> {
         IterativeLambdaIml()
+    }
+
+    factory {
+        DpToPxConverter(get())
     }
 }

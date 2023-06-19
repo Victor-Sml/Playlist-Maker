@@ -6,43 +6,40 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
-import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.databinding.ActivitySearchBinding
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.databinding.FragmentSearchBinding
 import com.victor_sml.playlistmaker.player.ui.view.PlayerActivity
-import com.victor_sml.playlistmaker.search.ui.view.recycler.TrackDelegate.TrackClickListener
-import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loading
-import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
-import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.History
-import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.NothingFound
+import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.ConnectionFailure
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Empty
-import com.victor_sml.playlistmaker.common.models.TrackUi
-import com.victor_sml.playlistmaker.search.ui.view.SearchActivity.StateVisibility.LOADING
-import com.victor_sml.playlistmaker.search.ui.view.SearchActivity.StateVisibility.SEARCH_RESULT
-import com.victor_sml.playlistmaker.search.ui.view.SearchActivity.StateVisibility.HISTORY
-import com.victor_sml.playlistmaker.search.ui.view.SearchActivity.StateVisibility.NOTHING_FOUND
-import com.victor_sml.playlistmaker.search.ui.view.SearchActivity.StateVisibility.CONNECTION_FAILURE
-import com.victor_sml.playlistmaker.search.ui.view.SearchActivity.StateVisibility.EMPTY
-import com.victor_sml.playlistmaker.search.ui.view.recycler.ClearButtonDelegate.ClickListener
-import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
-import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState
+import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.History
+import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loading
+import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.NothingFound
+import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
+import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.ButtonDelegate.ClickListener
+import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate.TrackClickListener
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 const val TRACK_FOR_PLAYER = "track for player"
 
-class SearchActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySearchBinding
+class SearchFragment : Fragment() {
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var backPressedCallback: OnBackPressedCallback
     private lateinit var screenState: SearchScreenState
     private val viewModel by viewModel<SearchViewModel>()
     private val handler: Handler by inject()
@@ -53,7 +50,7 @@ class SearchActivity : AppCompatActivity() {
         parametersOf(
             binding.rwTracks,
             trackClickListener,
-            clearHistoryClickListener
+            recyclerButtonClickListener
         )
     }
 
@@ -61,44 +58,56 @@ class SearchActivity : AppCompatActivity() {
         Runnable { viewModel.searchTracks(binding.inputEditText.text.toString()) }
 
     private val trackClickListener = object : TrackClickListener {
-        override fun onTrackClick(trackUi: TrackUi, context: Context) {
+        override fun onTrackClick(track: Track, context: Context) {
             if (clickDebounce()) {
-                viewModel.addToHistory(trackUi)
+                viewModel.addToHistory(track)
                 Intent(context, PlayerActivity::class.java)
-                    .putExtra(TRACK_FOR_PLAYER, trackUi).let { context.startActivity(it) }
+                    .putExtra(TRACK_FOR_PLAYER, track).let { context.startActivity(it) }
             }
         }
     }
 
-    private val clearHistoryClickListener = object : ClickListener {
-        override fun onButtonClick() {
-            if (clickDebounce()) viewModel.clearHistory()
+    private val recyclerButtonClickListener = object : ClickListener {
+        override fun onButtonClick(callback: () -> Unit) {
+            if (clickDebounce()) callback()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
+        backPressedCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                viewModel.getHistory()
+                isEnabled = false
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this, backPressedCallback
+        )
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         thisRestored = savedInstanceState?.getBoolean(RESTORE_INSTANCE_STATE) ?: false
+
         setListeners()
 
-        viewModel.getScreenState().observe(this) { screenState ->
+        viewModel.getScreenState().observe(viewLifecycleOwner) { screenState ->
             this.screenState = screenState
-            when (screenState) {
-                is Loading -> renderViews(LOADING)
+            renderViews(screenState)
 
-                is SearchResult -> renderViews(SEARCH_RESULT, screenState.tracks)
-
-                is History -> renderViews(HISTORY, screenState.tracks)
-
-                is NothingFound -> renderViews(NOTHING_FOUND)
-
-                is ConnectionFailure -> renderViews(CONNECTION_FAILURE)
-
-                is Empty -> renderViews(EMPTY)
-            }
+            backPressedCallback.isEnabled = screenState is SearchResult
         }
     }
 
@@ -112,31 +121,54 @@ class SearchActivity : AppCompatActivity() {
         if (screenState is History) viewModel.getHistory()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(RESTORE_INSTANCE_STATE, true)
     }
 
-    private fun renderViews(
-        state: StateVisibility,
-        tracks: List<TrackUi>? = null,
-    ) {
-        when (state) {
-            SEARCH_RESULT -> tracks?.let { recyclerController.addTracks(tracks, false) }
-            HISTORY -> tracks?.let { recyclerController.addTracks(tracks, true) }
-            else -> Unit
-        }
-        setVisibility(state)
+    private fun renderViews(state: SearchScreenState) {
+        updateRecycler(state)
+        setViewVisibility(state)
     }
 
-    private fun setVisibility(state: StateVisibility) {
-        binding.apply {
-            progressBar.visibility = state.progressBar
-            tvHistoryTitle.visibility = state.historyTitle
-            rwTracks.visibility = state.recycler
+    private fun updateRecycler(state: SearchScreenState) {
+        with(recyclerController) {
+            when (state) {
+                is SearchResult,
+                is History,
+                is NothingFound,
+                is ConnectionFailure -> updateContent(state.items)
+                is Empty, Loading -> clearContent()
+            }
         }
-        findViewById<View>(R.id.nothing_found).visibility = state.nothingFound
-        findViewById<View>(R.id.connection_failure).visibility = state.connectionFailure
+    }
+
+    private fun setViewVisibility(state: SearchScreenState) {
+        when (state) {
+            is Loading -> showProgressBar()
+            is SearchResult, is History, is NothingFound, is ConnectionFailure -> showRecycler()
+            is Empty -> clearScreen()
+        }
+    }
+
+    private fun showRecycler() {
+        binding.progressBar.isVisible = false
+        binding.rwTracks.isVisible = true
+    }
+
+    private fun showProgressBar() {
+        binding.rwTracks.isVisible = false
+        binding.progressBar.isVisible = true
+    }
+
+    private fun clearScreen() {
+        binding.rwTracks.isVisible = false
+        binding.progressBar.isVisible = false
     }
 
     private fun setListeners() {
@@ -183,34 +215,27 @@ class SearchActivity : AppCompatActivity() {
                 viewModel.getHistory()
             }
         }
-
-        binding.connectionFailure.btnRefresh.setOnClickListener {
-            if (clickDebounce())
-                viewModel.searchTracks(binding.inputEditText.text.toString())
-        }
-
-        binding.searchToolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
-            GONE
+            View.GONE
         } else {
-            VISIBLE
+            View.VISIBLE
         }
     }
 
     private fun showSoftInput() {
         binding.inputEditText.requestFocus()
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
     }
 
     private fun hideSoftInput() {
-        val view = this.currentFocus
+        val view = activity?.currentFocus
         val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
-        currentFocus?.clearFocus()
+        activity?.currentFocus?.clearFocus()
     }
 
     private fun searchDebounce(searchRunnable: Runnable) {
@@ -227,25 +252,10 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
-    enum class StateVisibility(
-        val progressBar: Int,
-        val historyTitle: Int,
-        val recycler: Int,
-        val nothingFound: Int,
-        val connectionFailure: Int
-    ) {
-        LOADING(VISIBLE, GONE, GONE, GONE, GONE),
-        SEARCH_RESULT(GONE, GONE, VISIBLE, GONE, GONE),
-        HISTORY(GONE, VISIBLE, VISIBLE, GONE, GONE),
-        NOTHING_FOUND(GONE, GONE, GONE, VISIBLE, GONE),
-        CONNECTION_FAILURE(GONE, GONE, GONE, GONE, VISIBLE),
-        EMPTY(GONE, GONE, GONE, GONE, GONE)
-    }
-
     companion object {
+        private const val RESTORE_INSTANCE_STATE = "restore state"
+
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-
-        private const val RESTORE_INSTANCE_STATE = "restore state"
     }
 }
