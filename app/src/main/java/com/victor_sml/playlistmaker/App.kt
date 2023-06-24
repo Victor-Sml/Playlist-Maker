@@ -26,7 +26,6 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 commonModule,
-                domainModule,
                 dataModule,
                 domainModule,
                 historyModule,
