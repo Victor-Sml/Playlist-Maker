@@ -3,26 +3,35 @@ package com.victor_sml.playlistmaker.search.data.storage
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.victor_sml.playlistmaker.search.data.api.StorageClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SharedPrefHistoryStorage(
     private val sharedPreferences: SharedPreferences,
     private val gson: Gson
 ) : StorageClient {
 
-    override fun putTrackIds(trackIds: List<Int>) {
-        sharedPreferences.edit()
-            .putString(LOOKED_TRACKS, gson.toJson(trackIds))
-            .apply()
+    override suspend fun putTrackIds(trackIds: List<Int>) {
+        withContext(Dispatchers.IO) {
+            sharedPreferences.edit()
+                .putString(LOOKED_TRACKS, gson.toJson(trackIds))
+                .apply()
+        }
     }
 
-    override fun getTrackIds(): Array<Int>? =
-        gson.fromJson(
-            sharedPreferences.getString(LOOKED_TRACKS, null),
-            Array<Int>::class.java
-        )
+    override suspend fun getTrackIds(): Array<Int>? {
+        return withContext(Dispatchers.IO) {
+            gson.fromJson(
+                sharedPreferences.getString(LOOKED_TRACKS, null),
+                Array<Int>::class.java
+            )
+        }
+    }
 
-    override fun removeTrackIds() {
-        sharedPreferences.edit().remove(LOOKED_TRACKS).apply()
+    override suspend fun removeTrackIds() {
+        withContext(Dispatchers.IO) {
+            sharedPreferences.edit().remove(LOOKED_TRACKS).apply()
+        }
     }
 
     companion object {

@@ -1,15 +1,11 @@
 package com.victor_sml.playlistmaker.search.domain.api
 
 import com.victor_sml.playlistmaker.common.models.Track
-import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState
+import com.victor_sml.playlistmaker.common.utils.Resource
 
 interface HistoryInteractor {
-    fun restoreHistory(consumer: HistoryConsumer)
-    fun addTrack(track: Track)
-    fun getHistory(consumer: HistoryConsumer)
-    fun clearHistory()
-
-    interface HistoryConsumer {
-        fun consume(tracks: List<Track>? = null, requestState: ResponseState)
-    }
+    suspend fun restoreHistory(): Resource<List<Track>>
+    suspend fun addTrack(track: Track)
+    suspend fun getHistory(): Resource<List<Track>>
+    suspend fun clearHistory()
 }

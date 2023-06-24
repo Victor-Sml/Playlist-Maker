@@ -9,30 +9,30 @@ import com.victor_sml.playlistmaker.search.data.api.NetworkClient
 import com.victor_sml.playlistmaker.search.data.dto.Response
 import com.victor_sml.playlistmaker.search.data.dto.TracksLookupRequest
 import com.victor_sml.playlistmaker.search.data.dto.TracksSearchRequest
-import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 class RetrofitNetworkClient(
     private val iTunesService: ItunesAPIService,
     private var context: Context
 ) : NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
         if (!isConnected()) return Response().apply { resultCode = -1 }
 
-        try {
-            val response = when (dto) {
-                is TracksSearchRequest -> iTunesService.searchTracks(dto.expression).execute()
-                is TracksLookupRequest -> iTunesService.getTracks(dto.expression).execute()
-                else -> return Response().apply { resultCode = 400 }
+        return withContext(Dispatchers.IO) {
+            try {
+                when (dto) {
+                    is TracksSearchRequest -> iTunesService.searchTracks(dto.expression)
+                        .apply { resultCode = 200 }
+                    is TracksLookupRequest -> iTunesService.getTracks(dto.expression)
+                        .apply { resultCode = 200 }
+                    else -> Response().apply { resultCode = 400 }
+                }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = (e as HttpException).code() }
             }
-            val body = response.body()
-            return if (body != null) {
-                body.apply { resultCode = response.code() }
-            } else {
-                Response().apply { resultCode = response.code() }
-            }
-        } catch (e: IOException) {
-            return Response().apply { resultCode = -1 }
         }
     }
 

@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         binding.bnvMain.setupWithNavController(navController)
-        binding.tbMain.setupWithNavController(navController)
         binding.tbMain.setupWithNavController(navController, appBarConfiguration)
 
         initMenuItems()

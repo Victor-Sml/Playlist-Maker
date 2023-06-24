@@ -11,26 +11,30 @@ import com.victor_sml.playlistmaker.search.data.dto.TracksLookupRequest
 import com.victor_sml.playlistmaker.search.data.dto.TracksLookupResponse
 import com.victor_sml.playlistmaker.search.data.dto.TracksSearchRequest
 import com.victor_sml.playlistmaker.search.data.dto.TracksSearchResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SearchRepositoryImpl(private val networkClient: NetworkClient) : SearchRepository {
-    override fun searchTracks(expression: String): Resource<List<Track>> {
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TracksSearchRequest(expression))
 
         if (response.resultCode in 200..299) {
             val results = (response as TracksSearchResponse).results
-            return handleSuccessResponse(results)
+            emit(handleSuccessResponse(results))
+            return@flow
         }
-        return handleErrorResponse(response.resultCode)
+        emit(handleErrorResponse(response.resultCode))
     }
 
-    override fun lookupTracks(trackIds: Array<Int>): Resource<List<Track>> {
+    override fun lookupTracks(trackIds: Array<Int>): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TracksLookupRequest(trackIds))
 
         if (response.resultCode in 200..299) {
             val results = (response as TracksLookupResponse).results
-            return handleSuccessResponse(results)
+            emit(handleSuccessResponse(results))
+            return@flow
         }
-        return handleErrorResponse(response.resultCode)
+        emit(handleErrorResponse(response.resultCode))
     }
 
     private fun handleSuccessResponse(results: List<TrackDto>): Resource<List<Track>> {
