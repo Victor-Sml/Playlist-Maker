@@ -3,12 +3,13 @@ package com.victor_sml.playlistmaker
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.victor_sml.playlistmaker.di.common.commonModule
+import com.victor_sml.playlistmaker.di.common.dataModule
+import com.victor_sml.playlistmaker.di.common.domainModule
 import com.victor_sml.playlistmaker.di.historyModule
 import com.victor_sml.playlistmaker.di.playerModule
 import com.victor_sml.playlistmaker.di.searchModule
 import com.victor_sml.playlistmaker.di.settingsModule
 import com.victor_sml.playlistmaker.di.sharingModule
-import com.victor_sml.playlistmaker.di.common.stringProviderModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -25,7 +26,8 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 commonModule,
-                stringProviderModule,
+                dataModule,
+                domainModule,
                 historyModule,
                 playerModule,
                 searchModule,

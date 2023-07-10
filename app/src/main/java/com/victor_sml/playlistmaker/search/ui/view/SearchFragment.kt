@@ -3,7 +3,6 @@ package com.victor_sml.playlistmaker.search.ui.view
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -16,7 +15,9 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentSearchBinding
 import com.victor_sml.playlistmaker.player.ui.view.PlayerActivity
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState
@@ -30,6 +31,9 @@ import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
 import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
 import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.ButtonDelegate.ClickListener
 import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate.TrackClickListener
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -39,12 +43,26 @@ const val TRACK_FOR_PLAYER = "track for player"
 class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    private lateinit var backPressedCallback: OnBackPressedCallback
-    private lateinit var screenState: SearchScreenState
+
     private val viewModel by viewModel<SearchViewModel>()
-    private val handler: Handler by inject()
+    private lateinit var backPressedCallback: OnBackPressedCallback
+    private var searchJob: Job? = null
     private var thisRestored: Boolean = false
-    private var isClickAllowed = true
+    private lateinit var screenState: SearchScreenState
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var onRecyclerButtonClickDebounce: (() -> Unit) -> Unit
+
+    private val trackClickListener = object : TrackClickListener {
+        override fun onTrackClick(track: Track, context: Context) {
+            onTrackClickDebounce(track)
+        }
+    }
+
+    private val recyclerButtonClickListener = object : ClickListener {
+        override fun onButtonClick(callback: () -> Unit) {
+            onRecyclerButtonClickDebounce(callback)
+        }
+    }
 
     private val recyclerController: RecyclerController by inject {
         parametersOf(
@@ -52,25 +70,6 @@ class SearchFragment : Fragment() {
             trackClickListener,
             recyclerButtonClickListener
         )
-    }
-
-    private val searchRunnable =
-        Runnable { viewModel.searchTracks(binding.inputEditText.text.toString()) }
-
-    private val trackClickListener = object : TrackClickListener {
-        override fun onTrackClick(track: Track, context: Context) {
-            if (clickDebounce()) {
-                viewModel.addToHistory(track)
-                Intent(context, PlayerActivity::class.java)
-                    .putExtra(TRACK_FOR_PLAYER, track).let { context.startActivity(it) }
-            }
-        }
-    }
-
-    private val recyclerButtonClickListener = object : ClickListener {
-        override fun onButtonClick(callback: () -> Unit) {
-            if (clickDebounce()) callback()
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +89,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
@@ -101,7 +100,15 @@ class SearchFragment : Fragment() {
 
         thisRestored = savedInstanceState?.getBoolean(RESTORE_INSTANCE_STATE) ?: false
 
-        setListeners()
+        onTrackClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
+                viewModel.addToHistory(track)
+                Intent(context, PlayerActivity::class.java)
+                    .putExtra(TRACK_FOR_PLAYER, track).let { context?.startActivity(it) }
+            }
+
+        onRecyclerButtonClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { callback -> callback() }
 
         viewModel.getScreenState().observe(viewLifecycleOwner) { screenState ->
             this.screenState = screenState
@@ -109,6 +116,8 @@ class SearchFragment : Fragment() {
 
             backPressedCallback.isEnabled = screenState is SearchResult
         }
+
+        setListeners()
     }
 
     override fun onResume() {
@@ -142,7 +151,8 @@ class SearchFragment : Fragment() {
                 is SearchResult,
                 is History,
                 is NothingFound,
-                is ConnectionFailure -> updateContent(state.items)
+                is ConnectionFailure,
+                -> updateContent(state.items)
                 is Empty, Loading -> clearContent()
             }
         }
@@ -176,19 +186,14 @@ class SearchFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.clearInput.visibility = clearButtonVisibility(s)
+                binding.clearInput.isVisible = clearButtonVisibility(s)
 
                 if (thisRestored) {
                     thisRestored = false
                     return
                 }
 
-                if (s.isNullOrEmpty()) {
-                    handler.removeCallbacks(searchRunnable)
-                    viewModel.getHistory()
-                } else {
-                    searchDebounce(searchRunnable)
-                }
+                processSearchRequestChange(s)
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -201,7 +206,7 @@ class SearchFragment : Fragment() {
 
         binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                handler.removeCallbacks(searchRunnable)
+                searchDebounce(false)
                 viewModel.searchTracks(binding.inputEditText.text.toString())
                 hideSoftInput()
                 true
@@ -217,13 +222,16 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
+    private fun processSearchRequestChange(searchRequest: CharSequence?) {
+        if (searchRequest.isNullOrEmpty()) {
+            searchDebounce(false)
+            viewModel.getHistory()
         } else {
-            View.VISIBLE
+            searchDebounce()
         }
     }
+
+    private fun clearButtonVisibility(s: CharSequence?) = !s.isNullOrEmpty()
 
     private fun showSoftInput() {
         binding.inputEditText.requestFocus()
@@ -238,18 +246,14 @@ class SearchFragment : Fragment() {
         activity?.currentFocus?.clearFocus()
     }
 
-    private fun searchDebounce(searchRunnable: Runnable) {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+    private fun searchDebounce(isActive: Boolean = true) {
+        searchJob?.cancel()
+        searchJob = viewLifecycleOwner.lifecycleScope.launch {
+            if (isActive) {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                viewModel.searchTracks(binding.inputEditText.text.toString())
+            }
         }
-        return current
     }
 
     companion object {

@@ -13,7 +13,7 @@ import org.koin.dsl.module
 
 val playerModule = module {
     viewModel { (trackSource: String?) ->
-        PlayerViewModel(trackSource, get(), get())
+        PlayerViewModel(trackSource, get())
     }
 
     factory<PlayerInteractor> {

@@ -7,13 +7,13 @@ class HistoryRepositoryImpl(
     private val storage: StorageClient
 ) : HistoryRepository {
 
-    override fun getTracksIds(): Array<Int>? = storage.getTrackIds()
+    override suspend fun getTracksIds(): Array<Int>? = storage.getTrackIds()
 
-    override fun putTrackIds(trackIds: ArrayList<Int>) {
+    override suspend fun putTrackIds(trackIds: ArrayList<Int>) {
         storage.putTrackIds(trackIds)
     }
 
-    override fun clearHistory() {
+    override suspend fun clearHistory() {
         storage.removeTrackIds()
     }
 }

@@ -1,19 +1,17 @@
 package com.victor_sml.playlistmaker.search.domain
 
+import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.utils.Resource
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
-import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor.SearchResultConsumer
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository
-import java.util.concurrent.ExecutorService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SearchInteractorImpl(
-    private val repository: SearchRepository,
-    private val executor: ExecutorService
+    private val repository: SearchRepository
 ) : SearchInteractor {
-    override fun searchTracks(expression: String, consumer: SearchResultConsumer) {
-        executor.execute {
-            val resource = repository.searchTracks(expression)
-            val resourceData = resource.data?.filterNot { it.previewUrl.isNullOrEmpty() }
-            consumer.consume(resourceData, resource.responseState)
-        }
+    override fun searchTracks(expression: String): Flow<Pair<List<Track>?, Resource.ResponseState>> {
+        return repository.searchTracks(expression)
+            .map { result -> Pair(result.data, result.responseState) }
     }
 }
