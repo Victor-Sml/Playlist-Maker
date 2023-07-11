@@ -1,17 +1,26 @@
 package com.victor_sml.playlistmaker.common.utils
 
-import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState.SUCCESS
+import com.victor_sml.playlistmaker.common.utils.Resource.State.EMPTY
+import com.victor_sml.playlistmaker.common.utils.Resource.State.SUCCESS
 
 sealed class Resource<T>(val data: T? = null, val responseState: ResponseState) {
     operator fun component1() = data
     operator fun component2() = responseState
 
+    class Empty<T>: Resource<T>(null, EMPTY)
     class Success<T>(data: T): Resource<T>(data, SUCCESS)
-    class Error<T>(responseState: ResponseState, data: T? = null): Resource<T>(data, responseState)
+    class Error<T>(responseState: ErrorState): Resource<T>(null, responseState)
 
-    enum class ResponseState {
+
+    interface ResponseState
+
+    enum class State: ResponseState {
         SUCCESS,
-        NOTHING_FOUND,
-        CONNECTION_FAILURE
+        EMPTY
+    }
+
+    enum class ErrorState: ResponseState {
+        CONNECTION_FAILURE,
+        NOTHING_FOUND
     }
 }

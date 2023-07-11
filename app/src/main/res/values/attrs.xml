@@ -8,9 +8,15 @@
     <attr name="textAppearanceBody_Small" format="reference"/>
     <attr name="textAppearanceBody_XSmall" format="reference"/>
 
-    <attr name="smallFabColor" format="reference"/>
     <attr name="fabEnabledBackgroundTint" format="reference"/>
     <attr name="fabDisabledBackgroundTint" format="reference"/>
     <attr name="fabEnabledTint" format="reference"/>
     <attr name="fabDisabledTint" format="reference"/>
+
+    <attr name="smallFabBackgroundTint" format="reference"/>
+
+    <attr name="likeButtonEnabledBackgroundTint" format="reference"/>
+    <attr name="likeButtonDisabledBackgroundTint" format="reference"/>
+    <attr name="likeButtonEnabledTint" format="reference"/>
+    <attr name="likeButtonDisabledTint" format="reference" />
 </resources>

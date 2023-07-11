@@ -1,8 +1,9 @@
-package com.victor_sml.playlistmaker.main.ui
+package com.victor_sml.playlistmaker.main.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -72,6 +73,13 @@ class MainActivity : AppCompatActivity() {
                 else -> {
                     true
                 }
+            }
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.destination_player -> binding.bnvMain.isVisible = false
+                else -> binding.bnvMain.isVisible = true
             }
         }
     }

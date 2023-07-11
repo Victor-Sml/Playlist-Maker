@@ -7,23 +7,17 @@ import com.victor_sml.playlistmaker.settings.domain.SettingsInteractorImpl
 import com.victor_sml.playlistmaker.settings.domain.api.SettingsInteractor
 import com.victor_sml.playlistmaker.settings.domain.api.SettingsRepository
 import com.victor_sml.playlistmaker.settings.ui.stateholders.SettingsViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val settingsModule = module {
-    viewModel {
-        SettingsViewModel(get(), get())
-    }
+    viewModelOf(::SettingsViewModel)
 
-    single<SettingsInteractor> {
-        SettingsInteractorImpl(get())
-    }
+    singleOf(::SettingsInteractorImpl) bind SettingsInteractor::class
 
-    single<SettingsRepository> {
-        SettingsRepositoryImpl(get())
-    }
+    singleOf(::SettingsRepositoryImpl) bind SettingsRepository::class
 
-    single<SettingsStorage> {
-        SharedPrefSettingStorage(get(), get())
-    }
+    singleOf(::SharedPrefSettingStorage) bind SettingsStorage::class
 }

@@ -15,7 +15,7 @@ import retrofit2.HttpException
 
 class RetrofitNetworkClient(
     private val iTunesService: ItunesAPIService,
-    private var context: Context
+    private var context: Context,
 ) : NetworkClient {
 
     override suspend fun doRequest(dto: Any): Response {
@@ -31,7 +31,11 @@ class RetrofitNetworkClient(
                     else -> Response().apply { resultCode = 400 }
                 }
             } catch (e: Throwable) {
-                Response().apply { resultCode = (e as HttpException).code() }
+                if (e is HttpException) {
+                    Response().apply { resultCode = e.code() }
+                } else {
+                    Response().apply { resultCode = -1 }
+                }
             }
         }
     }

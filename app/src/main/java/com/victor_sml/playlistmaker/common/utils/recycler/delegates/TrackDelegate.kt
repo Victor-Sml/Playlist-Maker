@@ -1,6 +1,5 @@
-package com.victor_sml.playlistmaker.search.ui.view.recycler.delegates
+package com.victor_sml.playlistmaker.common.utils.recycler.delegates
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -11,8 +10,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.utils.Utils
 import com.victor_sml.playlistmaker.common.models.Track
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.AdapterDelegate
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
+import com.victor_sml.playlistmaker.common.utils.recycler.api.AdapterDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
 
 class TrackDelegate(private val clickListener: TrackClickListener) : AdapterDelegate {
     override fun forItem(item: RecyclerItem): Boolean = item is RecyclerItem.TrackItem
@@ -26,7 +26,7 @@ class TrackDelegate(private val clickListener: TrackClickListener) : AdapterDele
 
         trackViewHolder.trackName.text = track.track.trackName
         trackViewHolder.artistName.text = track.track.artistName
-        trackViewHolder.trackTime.text = track.track.trackTime
+        trackViewHolder.trackTime.text = track.track.trackTimeMillis?.toTimeMMSS()
 
         Utils.dpToPx(SMALL_ARTWORK_RADIUS, context).let { radius ->
             Glide.with(context).load(track.track.artworkUrl100)
@@ -37,12 +37,12 @@ class TrackDelegate(private val clickListener: TrackClickListener) : AdapterDele
         }
 
         viewHolder.itemView.setOnClickListener {
-            clickListener.onTrackClick(track.track, context)
+            clickListener.onTrackClick(track.track)
         }
     }
 
     interface TrackClickListener {
-        fun onTrackClick(track: Track, context: Context)
+        fun onTrackClick(track: Track)
     }
 
     private inner class TrackViewHolder(parentView: ViewGroup) : RecyclerView.ViewHolder(

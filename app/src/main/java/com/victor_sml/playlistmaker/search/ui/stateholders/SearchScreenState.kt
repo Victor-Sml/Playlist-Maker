@@ -1,6 +1,6 @@
 package com.victor_sml.playlistmaker.search.ui.stateholders
 
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
 
 sealed class SearchScreenState(val items: ArrayList<RecyclerItem>? = null) {
     object Empty : SearchScreenState()
@@ -14,4 +14,3 @@ sealed class SearchScreenState(val items: ArrayList<RecyclerItem>? = null) {
 
     class ConnectionFailure(items: ArrayList<RecyclerItem>) : SearchScreenState(items)
 }
-

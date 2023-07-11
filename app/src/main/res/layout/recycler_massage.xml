@@ -8,5 +8,5 @@
     android:drawablePadding="@dimen/screen_message_drawablePadding"
     android:textAlignment="center"
     android:textAppearance="?attr/textAppearanceSubtitle_Medium"
-    tools:drawableTopCompat="@drawable/ic_upset_emoji"
+    tools:drawableTopCompat="@drawable/ic_nothing_found"
     tools:text="@string/nothing_found" />

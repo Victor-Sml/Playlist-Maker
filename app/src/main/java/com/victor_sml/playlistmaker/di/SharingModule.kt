@@ -6,18 +6,14 @@ import com.victor_sml.playlistmaker.sharing.domain.SharingInteractorImpl
 import com.victor_sml.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.victor_sml.playlistmaker.sharing.domain.api.SharingInteractor
 import com.victor_sml.playlistmaker.sharing.domain.api.SharingRepository
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val sharingModule = module {
-    single<SharingInteractor> {
-        SharingInteractorImpl(get(), get())
-    }
+    singleOf(::SharingInteractorImpl) bind SharingInteractor::class
 
-    single<ExternalNavigator> {
-        ExternalNavigatorImpl(get())
-    }
+    singleOf(::ExternalNavigatorImpl) bind ExternalNavigator::class
 
-    single<SharingRepository> {
-        SharingRepositoryImpl(get())
-    }
+    singleOf(::SharingRepositoryImpl) bind SharingRepository::class
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.victor_sml.playlistmaker.R
+import com.victor_sml.playlistmaker.common.Constants.UI_BOTTOM_SPACE_DP
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
 import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
@@ -16,35 +17,55 @@ import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.His
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.NothingFound
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.ConnectionFailure
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Empty
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
 import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState
-import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState.CONNECTION_FAILURE
-import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState.NOTHING_FOUND
-import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState.SUCCESS
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Button
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Header
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Message
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Space
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.TrackItem
+import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
+import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.CONNECTION_FAILURE
+import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.NOTHING_FOUND
+import com.victor_sml.playlistmaker.common.utils.Resource.State.EMPTY
+import com.victor_sml.playlistmaker.common.utils.Resource.State.SUCCESS
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
     private val historyInteractor: HistoryInteractor,
     private val getStringUseCase: GetStringUseCase,
 ) : ViewModel() {
-    private var screenState = MutableLiveData<SearchScreenState>(Loading)
-    private var lastSearchRequest = ""
+    var isFragmentDestroyed = false
+
+    private val recyclerBuilder: RecyclerItemsBuilder by inject(RecyclerItemsBuilder::class.java)
+    private val cache = SearchCache()
     private var viewRequireHistory = false
+
+    private var screenState = MutableLiveData<SearchScreenState>(Loading)
 
     fun getScreenState(): LiveData<SearchScreenState> = screenState
 
     fun searchTracks(searchRequest: String) {
-        if (searchRequest == lastSearchRequest) return
+        val (tracks, state) = cache.getResponse(searchRequest)
 
-        viewRequireHistory = false
+        if (searchRequest == cache.getRequest() && state != CONNECTION_FAILURE && state != EMPTY) {
+            processSearchResponse(searchRequest, tracks, state)
+        } else {
+            viewRequireHistory = false
+            screenState.postValue(Loading)
+            requestSearchResult(searchRequest)
+        }
+    }
+
+    fun getHistory() {
+        if (screenState.value is History) return
+
+        viewRequireHistory = true
         screenState.postValue(Loading)
+        requestHistory()
+    }
 
+    fun addToHistory(track: Track) {
+        viewModelScope.launch { historyInteractor.addTrack(track) }
+    }
+
+    private fun requestSearchResult(searchRequest: String) {
         viewModelScope.launch {
             searchInteractor.searchTracks(searchRequest).collect { (tracks, state) ->
                 if (viewRequireHistory) return@collect
@@ -53,19 +74,12 @@ class SearchViewModel(
         }
     }
 
-    fun getHistory() {
-        viewRequireHistory = true
-        screenState.postValue(Loading)
-
+    private fun requestHistory() {
         viewModelScope.launch {
             historyInteractor
                 .getHistory()
                 .let { processHistoryResponse(it) }
         }
-    }
-
-    fun addToHistory(track: Track) {
-        viewModelScope.launch { historyInteractor.addTrack(track) }
     }
 
     private fun processSearchResponse(
@@ -74,12 +88,18 @@ class SearchViewModel(
         state: ResponseState,
     ) {
         when (state) {
-            SUCCESS -> tracks?.let {
-                postSuccessState(it)
-                lastSearchRequest = searchRequest
+            SUCCESS -> tracks?.let { tracks ->
+                postSuccessState(tracks)
+                cache.fillCache(searchRequest, Resource.Success(tracks))
             }
-            NOTHING_FOUND -> postNothingFoundState()
-            CONNECTION_FAILURE -> postConnectionFailureState { searchTracks(searchRequest) }
+            NOTHING_FOUND -> {
+                postNothingFoundState()
+                cache.fillCache(searchRequest, Resource.Error(NOTHING_FOUND))
+            }
+            CONNECTION_FAILURE -> {
+                postConnectionFailureState { searchTracks(searchRequest) }
+                cache.fillCache(searchRequest, Resource.Error(CONNECTION_FAILURE))
+            }
         }
     }
 
@@ -94,7 +114,8 @@ class SearchViewModel(
         when (state) {
             SUCCESS -> tracks?.let { postHistoryState(tracks) }
             NOTHING_FOUND -> screenState.postValue(Empty)
-            CONNECTION_FAILURE -> { postConnectionFailureState { connectionFailureCallback() }
+            CONNECTION_FAILURE -> {
+                postConnectionFailureState { connectionFailureCallback() }
             }
         }
     }
@@ -105,59 +126,63 @@ class SearchViewModel(
     }
 
     private fun postSuccessState(tracks: List<Track>) {
-        val recyclerItems = getSearchResultItems(tracks)
-        screenState.postValue(SearchResult(recyclerItems))
+        recyclerBuilder
+            .addTracks(tracks)
+            .getItems()
+            .let { recyclerItems ->
+                screenState.postValue(SearchResult(recyclerItems))
+            }
     }
 
     private fun postHistoryState(tracks: List<Track>) {
-        val recyclerItems = getHistoryItems(tracks)
-        screenState.postValue(History(recyclerItems))
+        recyclerBuilder
+            .addHeader(getStringUseCase.execute(SEARCH_HISTORY_STR_ID))
+            .addTracks(tracks)
+            .addButton(getStringUseCase.execute(CLEAR_HISTORY_STR_ID)) { clearHistory() }
+            .getItems()
+            .let { recyclerItems ->
+                screenState.postValue(History(recyclerItems))
+            }
     }
 
     private fun postNothingFoundState() {
-        screenState.postValue(NothingFound(getNothingFoundItems()))
+        recyclerBuilder
+            .addMessage(NOTHING_FOUND_DRAWABLE_ID, getStringUseCase.execute(NOTHING_FOUND_STR_ID))
+            .addSpace(UI_BOTTOM_SPACE_DP)
+            .getItems()
+            .let { recyclerItems -> screenState.postValue(NothingFound(recyclerItems)) }
     }
 
     private fun postConnectionFailureState(callback: () -> Unit) {
-        screenState.postValue(
-            ConnectionFailure(getConnectionFailureItems { callback() })
-        )
+        recyclerBuilder
+            .addMessage(CONNECTION_FAILURE_DRAWABLE_ID,
+                getStringUseCase.execute(CONNECTION_FAILURE_STR_ID))
+            .addButton(getStringUseCase.execute(REFRESH_STR_ID), callback)
+            .getItems()
+            .let { recyclerItems -> screenState.postValue(ConnectionFailure(recyclerItems)) }
     }
 
-    private fun getSearchResultItems(tracks: List<Track>) = getTrackItems(tracks)
+    private inner class SearchCache {
+        private var latestRequest = ""
+        private var latestResponse: Resource<List<Track>> = Resource.Empty()
 
-    private fun getHistoryItems(tracks: List<Track>) =
-        (arrayListOf<RecyclerItem>() +
-                Header(getStringUseCase.execute(SEARCH_HISTORY_ID)) +
-                getTrackItems(tracks) +
-                Button(getStringUseCase.execute(CLEAR_HISTORY_ID)) { clearHistory() }) as ArrayList<RecyclerItem>
+        fun fillCache(searchRequest: String, searchResponse: Resource<List<Track>>) {
+            latestRequest = searchRequest
+            latestResponse = searchResponse
+        }
 
-    private fun getNothingFoundItems() =
-        arrayListOf(
-            Message(NOTHING_FOUND_DRAWABLE, getStringUseCase.execute(NOTHING_FOUND_ID)),
-            Space(NOTHING_FOUND_BOTTOM_SPACE_DP)
-        )
-
-    private fun getConnectionFailureItems(callback: () -> Unit) =
-        arrayListOf(
-            Message(CONNECTION_FAILURE_DRAWABLE, getStringUseCase.execute(CONNECTION_FAILURE_ID)),
-            Button(getStringUseCase.execute(REFRESH_ID), callback)
-        )
-
-    private fun getTrackItems(tracks: List<Track>) =
-        ArrayList<RecyclerItem>(tracks.map { TrackItem(it) })
-
+        fun getRequest() = latestRequest
+        fun getResponse(searchRequest: String): Resource<List<Track>> = latestResponse
+    }
 
     companion object {
-        const val SEARCH_HISTORY_ID = "search_history"
-        const val CLEAR_HISTORY_ID = "clear_history"
-        const val NOTHING_FOUND_ID = "nothing_found"
-        const val CONNECTION_FAILURE_ID = "connection_failure"
-        const val REFRESH_ID = "refresh"
+        const val SEARCH_HISTORY_STR_ID = "search_history"
+        const val CLEAR_HISTORY_STR_ID = "clear_history"
+        const val NOTHING_FOUND_STR_ID = "nothing_found"
+        const val CONNECTION_FAILURE_STR_ID = "connection_failure"
+        const val REFRESH_STR_ID = "refresh"
 
-        const val NOTHING_FOUND_DRAWABLE = R.drawable.ic_nothing_found
-        const val CONNECTION_FAILURE_DRAWABLE = R.drawable.ic_connection_failure
-
-        const val NOTHING_FOUND_BOTTOM_SPACE_DP = 24
+        const val NOTHING_FOUND_DRAWABLE_ID = R.drawable.ic_nothing_found
+        const val CONNECTION_FAILURE_DRAWABLE_ID = R.drawable.ic_connection_failure
     }
 }

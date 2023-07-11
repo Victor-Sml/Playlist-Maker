@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.search.ui.view.recycler.api
+package com.victor_sml.playlistmaker.common.utils.recycler.api
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

@@ -1,17 +1,18 @@
-package com.victor_sml.playlistmaker.search.ui.view.recycler
+package com.victor_sml.playlistmaker.common.utils.recycler
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.AdapterDelegate
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.common.utils.recycler.api.AdapterDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
 
 class TrackAdapter(private val delegates: List<AdapterDelegate>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items: ArrayList<RecyclerItem> = arrayListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        delegates[viewType].getViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return delegates[viewType].getViewHolder(parent)
+    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         delegates[getItemViewType(position)].bindViewHolder(holder, items[position])

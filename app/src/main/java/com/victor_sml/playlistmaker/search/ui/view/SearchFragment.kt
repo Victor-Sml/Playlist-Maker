@@ -1,7 +1,6 @@
 package com.victor_sml.playlistmaker.search.ui.view
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,12 +13,17 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.victor_sml.playlistmaker.R
+import com.victor_sml.playlistmaker.common.Constants.CLICK_DEBOUNCE_DELAY
+import com.victor_sml.playlistmaker.common.Constants.TRACK_FOR_PLAYER
 import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.ui.BindingFragment
 import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentSearchBinding
-import com.victor_sml.playlistmaker.player.ui.view.PlayerActivity
+import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.ConnectionFailure
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Empty
@@ -28,23 +32,25 @@ import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loa
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.NothingFound
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
-import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
-import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.ButtonDelegate.ClickListener
-import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate.TrackClickListener
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.ButtonDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.ButtonDelegate.ClickListener
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.HeaderDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.MessageDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.SpaceDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.TrackDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.delegates.TrackDelegate.TrackClickListener
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-const val TRACK_FOR_PLAYER = "track for player"
-
-class SearchFragment : Fragment() {
-    private var _binding: FragmentSearchBinding? = null
-    private val binding get() = _binding!!
-
+class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel by viewModel<SearchViewModel>()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
     private lateinit var backPressedCallback: OnBackPressedCallback
     private var searchJob: Job? = null
     private var thisRestored: Boolean = false
@@ -52,8 +58,10 @@ class SearchFragment : Fragment() {
     private lateinit var onTrackClickDebounce: (Track) -> Unit
     private lateinit var onRecyclerButtonClickDebounce: (() -> Unit) -> Unit
 
+    private lateinit var recyclerController: RecyclerController
+
     private val trackClickListener = object : TrackClickListener {
-        override fun onTrackClick(track: Track, context: Context) {
+        override fun onTrackClick(track: Track) {
             onTrackClickDebounce(track)
         }
     }
@@ -62,14 +70,6 @@ class SearchFragment : Fragment() {
         override fun onButtonClick(callback: () -> Unit) {
             onRecyclerButtonClickDebounce(callback)
         }
-    }
-
-    private val recyclerController: RecyclerController by inject {
-        parametersOf(
-            binding.rwTracks,
-            trackClickListener,
-            recyclerButtonClickListener
-        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,29 +86,38 @@ class SearchFragment : Fragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
-        return binding.root
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
+        return FragmentSearchBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        thisRestored = savedInstanceState?.getBoolean(RESTORE_INSTANCE_STATE) ?: false
+        thisRestored = viewModel.isFragmentDestroyed
+
+        recyclerController = get(null) {
+            parametersOf(
+                binding.rwTracks,
+                arrayListOf(
+                    TrackDelegate(trackClickListener),
+                    ButtonDelegate(recyclerButtonClickListener),
+                    MessageDelegate(),
+                    HeaderDelegate(),
+                    SpaceDelegate()
+                )
+            )
+        }
 
         onTrackClickDebounce =
             debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
+                sharedViewModel.passTrack(TRACK_FOR_PLAYER, track)
                 viewModel.addToHistory(track)
-                Intent(context, PlayerActivity::class.java)
-                    .putExtra(TRACK_FOR_PLAYER, track).let { context?.startActivity(it) }
+                findNavController().navigate(R.id.action_global_player)
             }
 
         onRecyclerButtonClickDebounce =
-            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { callback -> callback() }
+            debounce(CLICK_DEBOUNCE_DELAY,
+                viewLifecycleOwner.lifecycleScope) { callback -> callback() }
 
         viewModel.getScreenState().observe(viewLifecycleOwner) { screenState ->
             this.screenState = screenState
@@ -132,12 +141,7 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(RESTORE_INSTANCE_STATE, true)
+        viewModel.isFragmentDestroyed = true
     }
 
     private fun renderViews(state: SearchScreenState) {
@@ -192,7 +196,6 @@ class SearchFragment : Fragment() {
                     thisRestored = false
                     return
                 }
-
                 processSearchRequestChange(s)
             }
 
@@ -257,9 +260,6 @@ class SearchFragment : Fragment() {
     }
 
     companion object {
-        private const val RESTORE_INSTANCE_STATE = "restore state"
-
         const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
