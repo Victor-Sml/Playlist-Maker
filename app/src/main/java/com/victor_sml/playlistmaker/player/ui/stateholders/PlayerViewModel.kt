@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.victor_sml.playlistmaker.common.domain.api.LibraryInteractor
+import com.victor_sml.playlistmaker.common.domain.api.TrackInteractor
 import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.DEFAULT
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PREPARED
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     private val track: Track,
     private val playerInteractor: PlayerInteractor,
-    private val libraryInteractor: LibraryInteractor
+    private val trackInteractor: TrackInteractor
 ) :
     ViewModel(), PlayerInteractor.StateObserver {
 
@@ -68,8 +68,8 @@ class PlayerViewModel(
     }
 
     private suspend fun changeFavoriteState() {
-        if (track.isFavorite) libraryInteractor.addTrackToFavorites(track)
-        else libraryInteractor.deleteTrackFromFavorites(track.trackId)
+        if (track.isFavorite) trackInteractor.addTrackToFavorites(track)
+        else trackInteractor.deleteTrackFromFavorites(track.trackId)
     }
 
     private fun startPlayer() {

@@ -7,14 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.Constants.UI_BOTTOM_SPACE_DP
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
-import com.victor_sml.playlistmaker.common.domain.api.LibraryInteractor
+import com.victor_sml.playlistmaker.common.domain.api.TrackInteractor
 import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
 import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
-    private val libraryInteractor: LibraryInteractor,
+    private val trackInteractor: TrackInteractor,
     private val getStringUseCase: GetStringUseCase,
 ) : ViewModel() {
     private val recyclerBuilder = RecyclerItemsBuilder()
@@ -28,7 +28,7 @@ class FavoritesViewModel(
 
     fun updateFavorites() {
         viewModelScope.launch {
-            libraryInteractor.getFavoriteTracks().collect { tracks ->
+            trackInteractor.getFavoriteTracks().collect { tracks ->
                 if (tracks.isNotEmpty()) postFavorites(tracks)
                 else postEmptyMessage()
             }
