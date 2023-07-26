@@ -1,7 +1,7 @@
 package com.victor_sml.playlistmaker.di
 
-import com.victor_sml.playlistmaker.common.data.LibraryRepositoryImpl
-import com.victor_sml.playlistmaker.common.domain.api.LibraryRepository
+import com.victor_sml.playlistmaker.common.data.TrackRepositoryImpl
+import com.victor_sml.playlistmaker.common.domain.api.TrackRepository
 import com.victor_sml.playlistmaker.library.ui.stateholder.FavoritesViewModel
 import com.victor_sml.playlistmaker.library.ui.stateholder.PlaylistViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -14,5 +14,5 @@ val libraryModule = module {
 
     viewModelOf(::PlaylistViewModel)
 
-    singleOf(::LibraryRepositoryImpl) bind LibraryRepository::class
+    singleOf(::TrackRepositoryImpl) bind TrackRepository::class
 }

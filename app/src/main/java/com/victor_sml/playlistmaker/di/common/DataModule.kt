@@ -1,12 +1,12 @@
 package com.victor_sml.playlistmaker.di.common
 
 import androidx.room.Room
-import com.victor_sml.playlistmaker.common.data.LibraryRepositoryImpl
+import com.victor_sml.playlistmaker.common.data.TrackRepositoryImpl
 import com.victor_sml.playlistmaker.common.data.StringRepositoryImpl
 import com.victor_sml.playlistmaker.common.data.StringSourceImpl
 import com.victor_sml.playlistmaker.common.data.api.StringSource
 import com.victor_sml.playlistmaker.common.data.db.AppDatabase
-import com.victor_sml.playlistmaker.common.domain.api.LibraryRepository
+import com.victor_sml.playlistmaker.common.domain.api.TrackRepository
 import com.victor_sml.playlistmaker.common.domain.api.StringRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
@@ -22,5 +22,5 @@ val dataModule = module {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
     }
 
-    singleOf(::LibraryRepositoryImpl) bind LibraryRepository::class
+    singleOf(::TrackRepositoryImpl) bind TrackRepository::class
 }

@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -186,21 +187,15 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun setListeners() {
-        binding.inputEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        binding.inputEditText.doOnTextChanged { text, _, _, _ ->
+            binding.clearInput.isVisible = clearButtonVisibility(text)
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.clearInput.isVisible = clearButtonVisibility(s)
-
-                if (thisRestored) {
-                    thisRestored = false
-                    return
-                }
-                processSearchRequestChange(s)
+            if (thisRestored) {
+                thisRestored = false
+                return@doOnTextChanged
             }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
+            processSearchRequestChange(text)
+        }
 
         binding.clearInput.setOnClickListener {
             binding.inputEditText.setText("")
