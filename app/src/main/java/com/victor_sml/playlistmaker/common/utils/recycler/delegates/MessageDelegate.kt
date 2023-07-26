@@ -1,13 +1,13 @@
-package com.victor_sml.playlistmaker.search.ui.view.recycler.delegates
+package com.victor_sml.playlistmaker.common.utils.recycler.delegates
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem.Message
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.AdapterDelegate
-import com.victor_sml.playlistmaker.search.ui.view.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem.Message
+import com.victor_sml.playlistmaker.common.utils.recycler.api.AdapterDelegate
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
 
 class MessageDelegate : AdapterDelegate {
     override fun forItem(item: RecyclerItem): Boolean = item is Message

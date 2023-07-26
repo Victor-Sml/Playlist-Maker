@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.victor_sml.playlistmaker.di.common.commonModule
 import com.victor_sml.playlistmaker.di.common.dataModule
 import com.victor_sml.playlistmaker.di.common.domainModule
+import com.victor_sml.playlistmaker.di.common.uiModule
 import com.victor_sml.playlistmaker.di.historyModule
+import com.victor_sml.playlistmaker.di.libraryModule
 import com.victor_sml.playlistmaker.di.playerModule
 import com.victor_sml.playlistmaker.di.searchModule
 import com.victor_sml.playlistmaker.di.settingsModule
@@ -28,7 +30,9 @@ class App : Application() {
                 commonModule,
                 dataModule,
                 domainModule,
+                uiModule,
                 historyModule,
+                libraryModule,
                 playerModule,
                 searchModule,
                 settingsModule,

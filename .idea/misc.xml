@@ -60,15 +60,21 @@
         <entry key="..\:/Android_Projects/Playlist_Maker/app/src/main/res/layout/nothing_found.xml" value="0.1" />
         <entry key="..\:/Android_Projects/Playlist_Maker/app/src/main/res/layout/nothing_found_layout.xml" value="0.20863616930312098" />
         <entry key="..\:/Android_Projects/Playlist_Maker/app/src/main/res/layout/tracklist_item_view.xml" value="0.20863616930312098" />
+        <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/drawable/ic_dot.xml" value="0.124" />
+        <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/drawable/ic_heart.xml" value="0.1495" />
+        <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/drawable/ic_outline_heart.xml" value="0.1495" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/activity_main.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/activity_player.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/fragment_favorites.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/fragment_library.xml" value="0.20380434782608695" />
+        <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/fragment_playlists.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/fragment_search.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/fragment_settings.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/recycler_button.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/recycler_header.xml" value="0.20380434782608695" />
         <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/recycler_massage.xml" value="0.20380434782608695" />
+        <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/recycler_space.xml" value="0.20380434782608695" />
+        <entry key="..\:/Android_Projects/Playlist_Maker_Current/app/src/main/res/layout/recycler_track_item.xml" value="0.20380434782608695" />
       </map>
     </option>
   </component>

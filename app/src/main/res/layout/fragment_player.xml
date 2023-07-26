@@ -11,12 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/libraryToolbar"
-            style="@style/Toolbar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/iv_artwork"
             android:layout_width="@dimen/player_artwork_dimensions"
@@ -27,7 +21,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/libraryToolbar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_track_name"
@@ -65,7 +59,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/fab_playback_control"
             app:layout_constraintStart_toStartOf="@+id/iv_artwork"
             app:layout_constraintTop_toTopOf="@+id/fab_playback_control"
-            app:srcCompat="@drawable/ic_add_to_playlist" />
+            app:srcCompat="@drawable/ic_add_to_playlist"
+            app:tint="@color/yp_white" />
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -90,7 +85,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/fab_playback_control"
             app:layout_constraintEnd_toEndOf="@id/iv_artwork"
             app:layout_constraintTop_toTopOf="@+id/fab_playback_control"
-            app:srcCompat="@drawable/ic_like" />
+            app:srcCompat="@drawable/ic_heart" />
 
         <TextView
             android:id="@+id/tv_playback_progress"
@@ -112,7 +107,7 @@
             android:layout_height="wrap_content"
             app:barrierDirection="end"
             app:barrierMargin="10dp"
-            app:constraint_referenced_ids="tv_track_time, tv_album, tv_release_date, tv_genre, tv_country" />
+            app:constraint_referenced_ids="tv_track_time, tv_album, tv_release_year, tv_genre, tv_country" />
 
         <TextView
             android:id="@+id/tv_track_time"
@@ -134,12 +129,12 @@
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginStart="@dimen/media_content_text_layout_marginHorizontal"
             android:text="@string/collection_name"
-            app:layout_constraintBottom_toTopOf="@+id/tv_release_date"
+            app:layout_constraintBottom_toTopOf="@+id/tv_release_year"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_track_time" />
 
         <TextView
-            android:id="@+id/tv_release_date"
+            android:id="@+id/tv_release_year"
             style="@style/MediaContentText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
@@ -159,7 +154,7 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_country"
             app:layout_constraintHeight_percent="0.032"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_release_date" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_release_year" />
 
         <TextView
             android:id="@+id/tv_country"
@@ -191,7 +186,7 @@
             android:layout_height="@dimen/media_content_text_layout_height"
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"
             app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toTopOf="@+id/tv_release_data_value"
+            app:layout_constraintBottom_toTopOf="@+id/tv_release_year_value"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/barrier"
@@ -199,7 +194,7 @@
             tools:text="Yesterday (Remastered 2009)" />
 
         <TextView
-            android:id="@+id/tv_release_data_value"
+            android:id="@+id/tv_release_year_value"
             style="@style/MediaContentValueText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/media_content_text_layout_height"
@@ -218,7 +213,7 @@
             android:layout_marginEnd="@dimen/media_content_text_layout_marginHorizontal"
             app:layout_constraintBottom_toTopOf="@+id/tv_country_value"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_release_data_value"
+            app:layout_constraintTop_toBottomOf="@+id/tv_release_year_value"
             tools:text="Rock" />
 
         <TextView

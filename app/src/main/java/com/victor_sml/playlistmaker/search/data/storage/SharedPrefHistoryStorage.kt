@@ -11,7 +11,7 @@ class SharedPrefHistoryStorage(
     private val gson: Gson
 ) : StorageClient {
 
-    override suspend fun putTrackIds(trackIds: List<Int>) {
+    override suspend fun putTrackIds(trackIds: IntArray) {
         withContext(Dispatchers.IO) {
             sharedPreferences.edit()
                 .putString(LOOKED_TRACKS, gson.toJson(trackIds))
@@ -19,11 +19,11 @@ class SharedPrefHistoryStorage(
         }
     }
 
-    override suspend fun getTrackIds(): Array<Int>? {
+    override suspend fun getTrackIds(): IntArray? {
         return withContext(Dispatchers.IO) {
             gson.fromJson(
                 sharedPreferences.getString(LOOKED_TRACKS, null),
-                Array<Int>::class.java
+                IntArray::class.java
             )
         }
     }

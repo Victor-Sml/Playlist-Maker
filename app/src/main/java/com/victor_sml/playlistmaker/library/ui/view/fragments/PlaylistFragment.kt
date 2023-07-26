@@ -1,31 +1,17 @@
 package com.victor_sml.playlistmaker.library.ui.view.fragments
 
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import com.victor_sml.playlistmaker.common.ui.BindingFragment
 import com.victor_sml.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.victor_sml.playlistmaker.library.ui.stateholder.PlaylistViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlaylistFragment : Fragment() {
-    private var _binding: FragmentPlaylistsBinding? = null
-    private val binding get() = _binding!!
+class PlaylistFragment : BindingFragment<FragmentPlaylistsBinding>() {
     private val viewModel by viewModel<PlaylistViewModel>()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentPlaylistsBinding {
+        return FragmentPlaylistsBinding.inflate(inflater, container, false)
     }
 
     companion object {

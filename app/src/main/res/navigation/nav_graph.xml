@@ -19,12 +19,16 @@
         android:name="com.victor_sml.playlistmaker.settings.ui.view.SettingFragment"
         android:label="@string/settings" />
 
+    <fragment
+        android:id="@+id/destination_player"
+        android:name="com.victor_sml.playlistmaker.player.ui.view.PlayerFragment"
+        android:label="@string/player_label" />
+
     <action
         android:id="@+id/action_global_search"
         app:destination="@id/destination_search"
         app:enterAnim="@anim/slid_in_left"
         app:popExitAnim="@anim/slid_out_left"
-        app:popEnterAnim="@anim/fade_in"
         app:popUpTo="@id/destination_library" />
 
     <action
@@ -32,14 +36,17 @@
         app:destination="@id/destination_library"
         app:enterAnim="@anim/fade_in"
         app:popUpTo="@id/destination_library"
-        app:popUpToInclusive="true"/>
+        app:popUpToInclusive="true" />
 
     <action
         android:id="@+id/action_global_settings"
         app:destination="@id/destination_settings"
         app:enterAnim="@anim/slid_in_right"
         app:popExitAnim="@anim/slid_out_right"
-        app:popEnterAnim="@anim/fade_in"
         app:popUpTo="@id/destination_library" />
+
+    <action
+        android:id="@+id/action_global_player"
+        app:destination="@id/destination_player" />
 
 </navigation>

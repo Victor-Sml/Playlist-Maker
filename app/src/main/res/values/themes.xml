@@ -19,11 +19,18 @@
         <item name="android:textColorPrimary">@color/yp_black</item>
         <item name="android:textColorSecondary">@color/yp_text_gray</item>
 
-        <item name="smallFabColor">@color/yp_fab_dark_grey</item>
+        <item name="colorControlNormal">@color/yp_black</item>
+
         <item name="fabEnabledBackgroundTint">@color/yp_black</item>
         <item name="fabEnabledTint">@color/yp_white</item>
-        <item name="fabDisabledBackgroundTint">@color/yp_fab_dark_grey</item>
+        <item name="fabDisabledBackgroundTint">@color/yp_black_25alpha</item>
         <item name="fabDisabledTint">@color/yp_white</item>
+
+        <item name="smallFabBackgroundTint">@color/yp_black_25alpha</item>
+
+        <item name="likeButtonEnabledBackgroundTint">@color/yp_black_25alpha</item>
+        <item name="likeButtonDisabledBackgroundTint">@color/yp_white_25alpha</item>
+        <item name="likeButtonEnabledTint">@color/yp_red</item>
 
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
         <item name="textAppearanceSubtitle_Medium">@style/TextAppearance.YS_Medium19</item>

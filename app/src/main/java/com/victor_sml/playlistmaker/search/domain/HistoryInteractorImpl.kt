@@ -5,7 +5,7 @@ import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.HistoryRepository
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository
 import com.victor_sml.playlistmaker.common.utils.Resource
-import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState.NOTHING_FOUND
+import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.NOTHING_FOUND
 
 class HistoryInteractorImpl(
     private val historyRepository: HistoryRepository,
@@ -20,9 +20,15 @@ class HistoryInteractorImpl(
 
     override suspend fun getHistory(): Resource<List<Track>> {
         if (!isRestored) return restoreHistory()
-
-        if (lookedTracks.isNotEmpty()) return Resource.Success(lookedTracks)
+        if (lookedTracks.isNotEmpty()) return Resource.Success(verifyTrackFavorites(lookedTracks))
         return Resource.Error(NOTHING_FOUND)
+    }
+
+    private suspend fun verifyTrackFavorites(tracks: List<Track>): List<Track> {
+        val tracks = tracks
+        val favoriteIds = historyRepository.getFavoriteIds()
+        tracks.forEach { it.isFavorite = favoriteIds.contains(it.trackId) }
+        return tracks
     }
 
     override suspend fun clearHistory() {
@@ -44,6 +50,7 @@ class HistoryInteractorImpl(
                 updateLookedTracks(resource.data)
             }
         } ?: updateLookedTracks(null)
+
         return result
     }
 
@@ -55,8 +62,8 @@ class HistoryInteractorImpl(
         lookedTracks.add(0, track)
     }
 
-    private fun getLookedTracksIds(): ArrayList<Int> =
-        lookedTracks.map { it.trackId }.toCollection(arrayListOf())
+    private fun getLookedTracksIds(): IntArray =
+        lookedTracks.map { it.trackId }.toIntArray()
 
     companion object {
         private const val HISTORY_SIZE = 10

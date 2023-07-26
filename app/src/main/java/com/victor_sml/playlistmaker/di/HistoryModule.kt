@@ -6,18 +6,14 @@ import com.victor_sml.playlistmaker.search.data.storage.SharedPrefHistoryStorage
 import com.victor_sml.playlistmaker.search.domain.HistoryInteractorImpl
 import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.HistoryRepository
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val historyModule = module {
-    single<HistoryInteractor> {
-        HistoryInteractorImpl(get(), get())
-    }
+    singleOf(::HistoryInteractorImpl) bind HistoryInteractor::class
 
-    single<HistoryRepository> {
-        HistoryRepositoryImpl(get())
-    }
+    singleOf(::HistoryRepositoryImpl) bind HistoryRepository::class
 
-    single<StorageClient> {
-        SharedPrefHistoryStorage(get(), get())
-    }
+    singleOf(::SharedPrefHistoryStorage) bind StorageClient::class
 }

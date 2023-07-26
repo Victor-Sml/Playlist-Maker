@@ -1,8 +1,6 @@
 package com.victor_sml.playlistmaker.search.data.dto
 
 import com.victor_sml.playlistmaker.common.models.Track
-import com.victor_sml.playlistmaker.common.utils.Utils.toDateYYYY
-import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
 
 data class TrackDto(
     val trackId: Int,
@@ -16,18 +14,19 @@ data class TrackDto(
     val country: String?,
     val previewUrl: String?
 ) {
-    fun mapToTrack(): Track {
+    fun mapToTrack(isFavorite: Boolean): Track {
         return Track(
             trackId,
             artistName,
             trackName,
             artworkUrl100,
-            trackTimeMillis?.toTimeMMSS(),
+            trackTimeMillis,
             collectionName,
-            releaseDate?.toDateYYYY(),
+            releaseDate,
             primaryGenreName,
             country,
-            previewUrl
+            previewUrl,
+            isFavorite
         )
     }
 }

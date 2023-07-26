@@ -8,27 +8,19 @@ import com.victor_sml.playlistmaker.player.domain.PlayerInteractorImpl
 import com.victor_sml.playlistmaker.player.domain.api.PlayerInteractor
 import com.victor_sml.playlistmaker.player.domain.api.PlayerRepository
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val playerModule = module {
-    viewModel { (trackSource: String?) ->
-        PlayerViewModel(trackSource, get())
-    }
+    viewModelOf(::PlayerViewModel)
 
-    factory<PlayerInteractor> {
-        PlayerInteractorImpl(get())
-    }
+    factoryOf(::PlayerInteractorImpl) bind PlayerInteractor::class
 
-    factory<PlayerRepository> {
-        PlayerRepositoryImpl(get())
-    }
+    factoryOf(::PlayerRepositoryImpl) bind PlayerRepository::class
 
-    factory<Player> {
-        PlayerImpl(get())
-    }
+    factoryOf(::PlayerImpl) bind Player::class
 
-    factory {
-        MediaPlayer()
-    }
+    factoryOf(::MediaPlayer)
 }

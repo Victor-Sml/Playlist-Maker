@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.victor_sml.playlistmaker.common.domain.api.LibraryInteractor
+import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.DEFAULT
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PREPARED
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.STARTED
@@ -11,33 +13,40 @@ import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PAUSED
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PLAYBACK_COMPLETION
 import com.victor_sml.playlistmaker.player.domain.api.PlayerInteractor
 import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
+import com.victor_sml.playlistmaker.player.ui.stateholders.FavoriteState.Dislike
+import com.victor_sml.playlistmaker.player.ui.stateholders.FavoriteState.Like
 import java.io.IOException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    trackSource: String?,
-    private val interactor: PlayerInteractor,
+    private val track: Track,
+    private val playerInteractor: PlayerInteractor,
+    private val libraryInteractor: LibraryInteractor
 ) :
     ViewModel(), PlayerInteractor.StateObserver {
 
-    var timerJob: Job? = null
-
-    init {
-        try {
-            trackSource?.let { interactor.preparePlayer(it, this) }
-        } catch (e: IOException) {
-        }
-    }
+    private var timerJob: Job? = null
 
     private var playerState = MutableLiveData(DEFAULT)
     private var playbackProgress = MutableLiveData<String>()
+    private var favoriteState = MutableLiveData<FavoriteState>()
 
     fun getPlayerState(): LiveData<PlayerState> = playerState
     fun getPlaybackProgress(): LiveData<String> = playbackProgress
+    fun getFavoriteState(): LiveData<FavoriteState> = favoriteState
 
-    fun playbackControl() {
+    init {
+        try {
+            track.previewUrl?.let { playerInteractor.preparePlayer(it, this) }
+        } catch (e: IOException) {
+        }
+
+        postFavoriteState()
+    }
+
+    fun onPlaybackControlClick() {
         when (playerState.value) {
             PREPARED, PAUSED, PLAYBACK_COMPLETION -> startPlayer()
             STARTED -> pausePlayer()
@@ -45,12 +54,30 @@ class PlayerViewModel(
         }
     }
 
+    fun onLikeClick() {
+        viewModelScope.launch {
+            track.isFavorite = !track.isFavorite
+            postFavoriteState()
+            changeFavoriteState()
+        }
+    }
+
+    private fun postFavoriteState() {
+        if (track.isFavorite) favoriteState.postValue(Like)
+        else favoriteState.postValue(Dislike)
+    }
+
+    private suspend fun changeFavoriteState() {
+        if (track.isFavorite) libraryInteractor.addTrackToFavorites(track)
+        else libraryInteractor.deleteTrackFromFavorites(track.trackId)
+    }
+
     private fun startPlayer() {
-        interactor.startPlayer()
+        playerInteractor.startPlayer()
     }
 
     private fun pausePlayer() {
-        interactor.pausePlayer()
+        playerInteractor.pausePlayer()
     }
 
     override fun onPrepared() {
@@ -78,7 +105,7 @@ class PlayerViewModel(
         timerJob = viewModelScope.launch {
             while (true) {
                 delay(PLAYBACK_PROGRESS_DELAY_MILLIS)
-                interactor.getPlaybackProgress().toTimeMMSS().let { progress ->
+                playerInteractor.getPlaybackProgress().toTimeMMSS().let { progress ->
                     playbackProgress.postValue(progress)
                 }
             }
@@ -92,7 +119,7 @@ class PlayerViewModel(
     override fun onCleared() {
         super.onCleared()
         stopTimer()
-        interactor.releasePlayer()
+        playerInteractor.releasePlayer()
     }
 
     companion object {

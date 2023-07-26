@@ -1,6 +1,5 @@
 package com.victor_sml.playlistmaker.di
 
-import androidx.recyclerview.widget.RecyclerView
 import com.victor_sml.playlistmaker.search.data.SearchRepositoryImpl
 import com.victor_sml.playlistmaker.search.data.api.NetworkClient
 import com.victor_sml.playlistmaker.search.data.network.ItunesAPIService
@@ -9,30 +8,24 @@ import com.victor_sml.playlistmaker.search.domain.SearchInteractorImpl
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
-import com.victor_sml.playlistmaker.search.ui.view.recycler.RecyclerController
-import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.ButtonDelegate.ClickListener
-import com.victor_sml.playlistmaker.search.ui.view.recycler.delegates.TrackDelegate.TrackClickListener
-import org.koin.androidx.viewmodel.dsl.viewModel
+import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerControllerIml
+import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val searchModule = module {
-    viewModel {
-        SearchViewModel(get(), get(), get())
-    }
+    viewModelOf(::SearchViewModel)
 
-    single<SearchInteractor> {
-        SearchInteractorImpl(get())
-    }
+    singleOf(::SearchInteractorImpl) bind SearchInteractor::class
 
-    single<SearchRepository> {
-        SearchRepositoryImpl(get())
-    }
+    singleOf(::SearchRepositoryImpl) bind SearchRepository::class
 
-    single<NetworkClient> {
-        RetrofitNetworkClient(get(), get())
-    }
+    singleOf(::RetrofitNetworkClient) bind NetworkClient::class
 
     single<ItunesAPIService> {
         Retrofit
@@ -43,13 +36,6 @@ val searchModule = module {
             .create(ItunesAPIService::class.java)
     }
 
-    factory { (recyclerView: RecyclerView,
-                  trackClickListener: TrackClickListener,
-                  buttonClickListener: ClickListener) ->
-        RecyclerController(
-            recyclerView,
-            trackClickListener,
-            buttonClickListener
-        )
-    }
+    factoryOf(::RecyclerControllerIml) bind RecyclerController::class
+
 }

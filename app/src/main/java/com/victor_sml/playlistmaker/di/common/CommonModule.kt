@@ -4,8 +4,10 @@ import android.app.Application
 import com.google.gson.Gson
 import com.victor_sml.playlistmaker.App
 import com.victor_sml.playlistmaker.PM_PREFERENCES
+import com.victor_sml.playlistmaker.common.utils.TrackHolder
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -17,7 +19,7 @@ val commonModule = module {
         androidContext().getSharedPreferences(PM_PREFERENCES, Application.MODE_PRIVATE)
     }
 
-    factory {
-        Gson()
-    }
+    factoryOf(::Gson)
+
+    factoryOf(::TrackHolder)
 }
