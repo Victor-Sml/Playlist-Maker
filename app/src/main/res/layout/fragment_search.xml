@@ -28,7 +28,7 @@
             android:inputType="textCapSentences"
             android:paddingEnd="40dp"
             android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceBody_Medium"
+            android:textAppearance="?attr/textAppearanceBody_ExtraLarge"
             android:textColor="@color/yp_black"
             android:textColorHint="?attr/colorOnSurface" />
 
@@ -60,7 +60,7 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="@string/search_history"
-        android:textAppearance="?attr/textAppearanceSubtitle_Medium"
+        android:textAppearance="?attr/textAppearanceBody_ExtraLarge"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView

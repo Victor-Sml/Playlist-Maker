@@ -1,20 +1,19 @@
-package com.victor_sml.playlistmaker.library.ui.stateholder
+package com.victor_sml.playlistmaker.library.favorites.ui.stateholder
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.common.Constants.UI_BOTTOM_SPACE_DP
+import com.victor_sml.playlistmaker.common.Constants.NOTHING_FOUND_DRAWABLE_ID
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
-import com.victor_sml.playlistmaker.common.domain.api.TrackInteractor
+import com.victor_sml.playlistmaker.common.domain.api.TracksInteractor
 import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
 import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
-    private val trackInteractor: TrackInteractor,
+    private val libraryInteractor: TracksInteractor,
     private val getStringUseCase: GetStringUseCase,
 ) : ViewModel() {
     private val recyclerBuilder = RecyclerItemsBuilder()
@@ -28,7 +27,7 @@ class FavoritesViewModel(
 
     fun updateFavorites() {
         viewModelScope.launch {
-            trackInteractor.getFavoriteTracks().collect { tracks ->
+            libraryInteractor.getFavoriteTracks().collect { tracks ->
                 if (tracks.isNotEmpty()) postFavorites(tracks)
                 else postEmptyMessage()
             }
@@ -44,15 +43,17 @@ class FavoritesViewModel(
 
     private fun postEmptyMessage() {
         recyclerBuilder
+            .addSpace(102)
             .addMessage(NOTHING_FOUND_DRAWABLE_ID,
                 getStringUseCase.execute(EMPTY_LIBRARY_STR_ID))
-            .addSpace(UI_BOTTOM_SPACE_DP)
+            .addSpace(BOTTOM_SPACE_DP)
             .getItems()
             .let { favoriteTracks.postValue(it) }
     }
 
     companion object {
         const val EMPTY_LIBRARY_STR_ID = "empty_library"
-        const val NOTHING_FOUND_DRAWABLE_ID = R.drawable.ic_nothing_found
+
+        const val BOTTOM_SPACE_DP = 24
     }
 }

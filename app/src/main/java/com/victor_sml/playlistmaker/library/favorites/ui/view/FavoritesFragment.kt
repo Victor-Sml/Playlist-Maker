@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.library.ui.view.fragments
+package com.victor_sml.playlistmaker.library.favorites.ui.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,7 +15,7 @@ import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.common.ui.BindingFragment
 import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentFavoritesBinding
-import com.victor_sml.playlistmaker.library.ui.stateholder.FavoritesViewModel
+import com.victor_sml.playlistmaker.library.favorites.ui.stateholder.FavoritesViewModel
 import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
 import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
 import com.victor_sml.playlistmaker.common.utils.recycler.delegates.MessageDelegate
@@ -28,8 +28,6 @@ import org.koin.core.parameter.parametersOf
 class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
     private val viewModel by viewModel<FavoritesViewModel>()
     private val sharedViewModel: SharedViewModel by activityViewModels()
-
-    private var isFavoritesChanged: Boolean = false
 
     private lateinit var recyclerController: RecyclerController
     private lateinit var onTrackClickDebounce: (Track) -> Unit
@@ -69,18 +67,7 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
         viewModel.getFavoriteTracks().observe(viewLifecycleOwner) { recyclerItems ->
             binding.rwFavoriteTracks.isVisible = true
             recyclerController.updateContent(recyclerItems)
-            isFavoritesChanged = true
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.rwFavoriteTracks.isVisible = !isFavoritesChanged
-    }
-
-    override fun onPause() {
-        super.onPause()
-        isFavoritesChanged = false
     }
 
     companion object {

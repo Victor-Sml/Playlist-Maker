@@ -28,6 +28,8 @@
 
         <item name="smallFabBackgroundTint">@color/yp_black_25alpha</item>
 
+        <item name="emptyOutlinedInputColor">@color/empty_outlined_input_stroke_color</item>
+
         <item name="likeButtonEnabledBackgroundTint">@color/yp_black_25alpha</item>
         <item name="likeButtonDisabledBackgroundTint">@color/yp_white_25alpha</item>
         <item name="likeButtonEnabledTint">@color/yp_red</item>
@@ -35,9 +37,25 @@
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
         <item name="textAppearanceSubtitle_Medium">@style/TextAppearance.YS_Medium19</item>
         <item name="textAppearanceSubtitle_ExtraSmall">@style/TextAppearance.YS_Medium14</item>
-        <item name="textAppearanceBody_Small">@style/TextAppearance.YS_Regular13</item>
-        <item name="textAppearanceBody_Medium">@style/TextAppearance.YS_Regular16</item>
-        <item name="textAppearanceBody_XSmall">@style/TextAppearance.YS_Regular11</item>
+        <item name="textAppearanceBody_ExtraLarge">@style/TextAppearance.YS_Regular16</item>
+        <item name="textAppearanceBody_Large">@style/TextAppearance.YS_Regular14</item>
+        <item name="textAppearanceBody_Medium">@style/TextAppearance.YS_Regular13</item>
+        <item name="textAppearanceBody_Small">@style/TextAppearance.YS_Regular12</item>
+        <item name="textAppearanceBody_ExtraSmall">@style/TextAppearance.YS_Regular11</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/yp_white</item>
+        <item name="colorSecondary">@color/yp_black</item>
+        <item name="colorSurface">@color/yp_white</item>
+        <item name="colorAccent">@color/yp_blue</item>
+
+        <item name="materialAlertDialogTitleTextStyle">@style/DialogTitleText</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/DialogBodyText</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogButton</item>
     </style>
 
 </resources>

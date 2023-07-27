@@ -2,6 +2,7 @@ package com.victor_sml.playlistmaker.common.utils.recycler
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.victor_sml.playlistmaker.common.utils.recycler.adapters.TrackAdapter
 import com.victor_sml.playlistmaker.common.utils.recycler.api.AdapterDelegate
 import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
 import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem

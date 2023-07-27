@@ -29,8 +29,16 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="TextAppearance.YS_Regular14" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="TextAppearance.YS_Regular13" parent="TextAppearance.AppCompat">
         <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.YS_Regular12" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="TextAppearance.YS_Regular11" parent="TextAppearance.AppCompat">
@@ -51,6 +59,12 @@
     <style name="RootLinearLayout.ErrorLayout">
         <item name="android:layout_marginHorizontal">24dp</item>
         <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="ThemeOverlay.PlaylistMaker.MainActivity" parent="Theme.PlaylistMaker">
+        <item name="android:colorBackground">@color/yp_blue</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
@@ -94,13 +108,13 @@
 
     <style name="MediaContentText" parent="EllipsizedTextView">
         <item name="android:gravity">center</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Medium</item>
         <item name="android:textColor">@color/yp_text_gray</item>
     </style>
 
     <style name="MediaContentValueText" parent="MediaContentText">
         <item name="android:gravity">center</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody_Small</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Medium</item>
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
@@ -136,10 +150,42 @@
     </style>
 
     <style name="SmallFAB" parent="FAB">
+        <item name="tint">@color/yp_white</item>
         <item name="backgroundTint">?attr/smallFabBackgroundTint</item>
         <item name="borderWidth">@dimen/small_fab_border_width</item>
         <item name="fabCustomSize">@dimen/small_fab_size</item>
         <item name="maxImageSize">@dimen/small_fab_size</item>
+    </style>
+
+    <style name="ThemeOverlay.PlaylistMaker.InputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText">
+        <item name="colorPrimary">@color/yp_blue</item>
+    </style>
+
+    <style name="DialogTitleText" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:fontWeight">400</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DialogBodyText" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:fontWeight">400</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DialogButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/yp_black</item>
+        <item name="hintTextColor">@color/filled_in_outlined_input_stroke_color</item>
+        <item name="boxStrokeColor">@color/empty_outlined_input_stroke_color</item>
+        <item name="hintTextAppearance">?attr/textAppearanceBody_Small</item>
     </style>
 
 </resources>

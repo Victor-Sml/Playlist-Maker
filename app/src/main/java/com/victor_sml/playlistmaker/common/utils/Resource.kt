@@ -11,7 +11,6 @@ sealed class Resource<T>(val data: T? = null, val responseState: ResponseState) 
     class Success<T>(data: T): Resource<T>(data, SUCCESS)
     class Error<T>(responseState: ErrorState): Resource<T>(null, responseState)
 
-
     interface ResponseState
 
     enum class State: ResponseState {

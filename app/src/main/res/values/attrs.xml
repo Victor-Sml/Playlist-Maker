@@ -4,9 +4,11 @@
     <attr name="textAppearanceSubtitle_Medium" format="reference"/>
     <attr name="textAppearanceSubtitle_ExtraSmall" format="reference"/>
 
+    <attr name="textAppearanceBody_ExtraLarge" format="reference"/>
+    <attr name="textAppearanceBody_Large" format="reference"/>
     <attr name="textAppearanceBody_Medium" format="reference"/>
     <attr name="textAppearanceBody_Small" format="reference"/>
-    <attr name="textAppearanceBody_XSmall" format="reference"/>
+    <attr name="textAppearanceBody_ExtraSmall" format="reference"/>
 
     <attr name="fabEnabledBackgroundTint" format="reference"/>
     <attr name="fabDisabledBackgroundTint" format="reference"/>
@@ -19,4 +21,6 @@
     <attr name="likeButtonDisabledBackgroundTint" format="reference"/>
     <attr name="likeButtonEnabledTint" format="reference"/>
     <attr name="likeButtonDisabledTint" format="reference" />
+
+    <attr name="emptyOutlinedInputColor" format="color" />
 </resources>
