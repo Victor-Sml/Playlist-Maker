@@ -22,6 +22,7 @@ import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.CONNECTION_
 import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.NOTHING_FOUND
 import com.victor_sml.playlistmaker.common.utils.Resource.State.EMPTY
 import com.victor_sml.playlistmaker.common.utils.Resource.State.SUCCESS
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
@@ -65,7 +66,7 @@ class SearchViewModel(
     }
 
     private fun requestSearchResult(searchRequest: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             searchInteractor.searchTracks(searchRequest).collect { (tracks, state) ->
                 if (viewRequireHistory) return@collect
                 processSearchResponse(searchRequest, tracks, state)

@@ -10,6 +10,7 @@ import com.victor_sml.playlistmaker.common.domain.api.TracksInteractor
 import com.victor_sml.playlistmaker.common.models.Track
 import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
 import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
@@ -26,7 +27,7 @@ class FavoritesViewModel(
     fun getFavoriteTracks(): LiveData<ArrayList<RecyclerItem>> = favoriteTracks
 
     fun updateFavorites() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             libraryInteractor.getFavoriteTracks().collect { tracks ->
                 if (tracks.isNotEmpty()) postFavorites(tracks)
                 else postEmptyMessage()
