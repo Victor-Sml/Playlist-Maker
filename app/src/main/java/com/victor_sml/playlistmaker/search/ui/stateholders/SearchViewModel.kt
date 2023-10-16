@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.common.Constants.UI_BOTTOM_SPACE_DP
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
 import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
@@ -23,6 +22,7 @@ import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.CONNECTION_
 import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.NOTHING_FOUND
 import com.victor_sml.playlistmaker.common.utils.Resource.State.EMPTY
 import com.victor_sml.playlistmaker.common.utils.Resource.State.SUCCESS
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
@@ -44,7 +44,7 @@ class SearchViewModel(
     fun searchTracks(searchRequest: String) {
         val (tracks, state) = cache.getResponse(searchRequest)
 
-        if (searchRequest == cache.getRequest() && state != CONNECTION_FAILURE && state != EMPTY) {
+        if (searchRequest == cache.getRequest() && state in setOf( CONNECTION_FAILURE, EMPTY)) {
             processSearchResponse(searchRequest, tracks, state)
         } else {
             viewRequireHistory = false
@@ -66,7 +66,7 @@ class SearchViewModel(
     }
 
     private fun requestSearchResult(searchRequest: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             searchInteractor.searchTracks(searchRequest).collect { (tracks, state) ->
                 if (viewRequireHistory) return@collect
                 processSearchResponse(searchRequest, tracks, state)
@@ -147,14 +147,16 @@ class SearchViewModel(
 
     private fun postNothingFoundState() {
         recyclerBuilder
+            .addSpace(MESSAGE_MARGIN_TOP_DP)
             .addMessage(NOTHING_FOUND_DRAWABLE_ID, getStringUseCase.execute(NOTHING_FOUND_STR_ID))
-            .addSpace(UI_BOTTOM_SPACE_DP)
+            .addSpace(MESSAGE_FOUND_MARGIN_BOTTOM_DP)
             .getItems()
             .let { recyclerItems -> screenState.postValue(NothingFound(recyclerItems)) }
     }
 
     private fun postConnectionFailureState(callback: () -> Unit) {
         recyclerBuilder
+            .addSpace(MESSAGE_MARGIN_TOP_DP)
             .addMessage(CONNECTION_FAILURE_DRAWABLE_ID,
                 getStringUseCase.execute(CONNECTION_FAILURE_STR_ID))
             .addButton(getStringUseCase.execute(REFRESH_STR_ID), callback)
@@ -172,7 +174,11 @@ class SearchViewModel(
         }
 
         fun getRequest() = latestRequest
-        fun getResponse(searchRequest: String): Resource<List<Track>> = latestResponse
+
+        fun getResponse(searchRequest: String): Resource<List<Track>> {
+            return if (searchRequest == latestRequest) latestResponse
+            else Resource.Empty()
+        }
     }
 
     companion object {
@@ -184,5 +190,8 @@ class SearchViewModel(
 
         const val NOTHING_FOUND_DRAWABLE_ID = R.drawable.ic_nothing_found
         const val CONNECTION_FAILURE_DRAWABLE_ID = R.drawable.ic_connection_failure
+
+        const val MESSAGE_MARGIN_TOP_DP = 106
+        const val MESSAGE_FOUND_MARGIN_BOTTOM_DP = 24
     }
 }

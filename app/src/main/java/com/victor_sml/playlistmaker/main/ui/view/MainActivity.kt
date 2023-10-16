@@ -12,7 +12,7 @@ import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var searchMenu: MenuItem
     private lateinit var libraryMenu: MenuItem
@@ -38,6 +38,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.bnvMain.setupWithNavController(navController)
         binding.tbMain.setupWithNavController(navController, appBarConfiguration)
+
+        binding.tbMain.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         initMenuItems()
         setListener()
@@ -78,7 +82,8 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.destination_player -> binding.bnvMain.isVisible = false
+                R.id.destination_player,
+                R.id.destination_new_playlist-> binding.bnvMain.isVisible = false
                 else -> binding.bnvMain.isVisible = true
             }
         }

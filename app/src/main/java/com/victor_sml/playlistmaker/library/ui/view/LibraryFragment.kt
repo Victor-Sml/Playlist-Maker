@@ -8,9 +8,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.ui.BindingFragment
 import com.victor_sml.playlistmaker.databinding.FragmentLibraryBinding
-import com.victor_sml.playlistmaker.library.ui.stateholder.FavoritesViewModel
-import com.victor_sml.playlistmaker.library.ui.stateholder.PlaylistViewModel
-import com.victor_sml.playlistmaker.library.ui.view.fragments.ViewPagerAdapter
+import com.victor_sml.playlistmaker.library.favorites.ui.stateholder.FavoritesViewModel
+import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : BindingFragment<FragmentLibraryBinding>() {
@@ -33,6 +32,8 @@ class LibraryFragment : BindingFragment<FragmentLibraryBinding>() {
                 }
             }
         tabLayoutMediator?.attach()
+
+        binding.viewPager.offscreenPageLimit = 2
     }
 
     override fun onDestroy() {

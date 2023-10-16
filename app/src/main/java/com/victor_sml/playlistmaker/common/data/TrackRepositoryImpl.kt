@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class TrackRepositoryImpl(private val db: AppDatabase) : TrackRepository {
-    override suspend fun addTrackToFavorites(track: Track) {
+    override suspend fun addTrack(track: Track) {
         db.trackDao().insertTrack(track.toTrackEntity())
     }
 

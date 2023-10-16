@@ -1,9 +1,11 @@
-package com.victor_sml.playlistmaker.library.ui.view.fragments
+package com.victor_sml.playlistmaker.library.ui.view
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.victor_sml.playlistmaker.library.favorites.ui.view.FavoritesFragment
+import com.victor_sml.playlistmaker.library.playlists.ui.view.PlaylistFragment
 
 class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {

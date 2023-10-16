@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceBody_Medium" />
+            android:textAppearance="?attr/textAppearanceBody_ExtraLarge" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
                 android:ellipsize="end"
                 android:maxWidth="300dp"
                 android:maxLines="1"
-                android:textAppearance="?attr/textAppearanceBody_XSmall"
+                android:textAppearance="?attr/textAppearanceBody_ExtraSmall"
                 android:textColor="?attr/colorSecondaryVariant" />
 
             <ImageView
@@ -58,7 +58,7 @@
                 android:id="@+id/tv_track_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody_XSmall"
+                android:textAppearance="?attr/textAppearanceBody_ExtraSmall"
                 android:textColor="?attr/colorSecondaryVariant" />
 
         </LinearLayout>

@@ -22,7 +22,12 @@
     <fragment
         android:id="@+id/destination_player"
         android:name="com.victor_sml.playlistmaker.player.ui.view.PlayerFragment"
-        android:label="@string/player_label" />
+        android:label="" />
+
+    <fragment
+        android:id="@+id/destination_new_playlist"
+        android:name="com.victor_sml.playlistmaker.library.ui.view.NewPlaylistFragment"
+        android:label="@string/new_playlist" />
 
     <action
         android:id="@+id/action_global_search"
@@ -48,5 +53,10 @@
     <action
         android:id="@+id/action_global_player"
         app:destination="@id/destination_player" />
+
+    <action
+        android:id="@+id/action_global_new_playlist"
+        app:destination="@id/destination_new_playlist"
+        app:enterAnim="@anim/fade_in" />
 
 </navigation>
