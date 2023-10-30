@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/RootLinearLayout">
+    style="@style/RootLinearLayout"
+    android:id="@+id/ll_root">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tb_library"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="?attr/colorPrimary"
+        android:backgroundTint="?attr/colorPrimary"
+        android:elevation="0dp"
+        android:gravity="center"
+        app:contentInsetStartWithNavigation="0dp"
+        app:icon="?attr/colorSecondary"
+        app:title="@string/library"
+        app:titleTextAppearance="?attr/textAppearanceSubtitle_Large"
+        app:titleTextColor="?attr/colorSecondary" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"

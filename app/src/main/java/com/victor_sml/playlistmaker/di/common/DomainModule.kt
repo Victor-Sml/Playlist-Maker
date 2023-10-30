@@ -2,7 +2,7 @@ package com.victor_sml.playlistmaker.di.common
 
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
 import com.victor_sml.playlistmaker.common.domain.TracksInteractorImpl
-import com.victor_sml.playlistmaker.common.domain.api.TracksInteractor
+import com.victor_sml.playlistmaker.common.domain.api.tracks.TracksInteractor
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module

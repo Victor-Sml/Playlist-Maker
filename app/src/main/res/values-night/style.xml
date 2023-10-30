@@ -30,4 +30,14 @@
         <item name="boxStrokeColor">@color/empty_outlined_input_stroke_color</item>
         <item name="hintTextAppearance">?attr/textAppearanceBody_Small</item>
     </style>
+
+    <style name="Widget.PlaylistMaker.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:backgroundTint">@color/yp_white</item>
+    </style>
+
+    <style name="Widget.PlaylistMaker.SnackbarTextViewStyle" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_Large</item>
+        <item name="android:textAlignment">center</item>
+    </style>
 </resources>

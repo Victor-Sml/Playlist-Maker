@@ -2,7 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_root"
     style="@style/RootLinearLayout">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tb_search"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="?attr/colorPrimary"
+        android:backgroundTint="?attr/colorPrimary"
+        android:elevation="0dp"
+        android:gravity="center"
+        app:contentInsetStartWithNavigation="0dp"
+        app:icon="?attr/colorSecondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/search"
+        app:titleTextAppearance="?attr/textAppearanceSubtitle_Large"
+        app:titleTextColor="?attr/colorSecondary" />
 
     <FrameLayout
         android:id="@+id/searchFieldContainer"

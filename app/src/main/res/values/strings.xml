@@ -12,7 +12,7 @@
     <string name="support_email_body">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="user_agreement_uri">https://yandex.ru/legal/practicum_offer</string>
     <string name="share_app_uri">https://practicum.yandex.ru/android-developer</string>
-    <string name="connection_failure">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="connection_failure">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету.</string>
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="search_history">Вы искали</string>
     <string name="clear_history">Очистить истоию</string>
@@ -25,14 +25,14 @@
     <string name="not_applicable">n/a</string>
     <string name="refresh">Обновить</string>
     <string name="empty_library">Ваша медиатека пуста</string>
-    <string name="playlists_are_absent">Вы не создали\nни одного плейлиста</string>
+    <string name="playlists_are_absent">Вы не создали\nни одного плейлиста.</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
     <string name="new_playlist">Новый плейлист</string>
     <string name="cancellation">Отмена</string>
     <string name="complete">Завершить</string>
     <string name="new_playlist_dialog_title">Завершить создание плейлиста?</string>
-    <string name="new_playlist_dialog_body">Все несохраненные данные будут потеряны</string>
+    <string name="new_playlist_dialog_body">Все несохраненные данные будут потеряны.</string>
     <string name="playlist_creation">Плейлист, %1$s создан.</string>
     <string name="playlist_creation_fail">Не удалось создать плейлист :("</string>
     <string name="add_to_playlist">Добавить в плейлист"</string>

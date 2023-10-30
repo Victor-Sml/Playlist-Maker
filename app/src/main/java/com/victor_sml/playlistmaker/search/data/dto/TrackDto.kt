@@ -1,6 +1,6 @@
 package com.victor_sml.playlistmaker.search.data.dto
 
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 
 data class TrackDto(
     val trackId: Int,

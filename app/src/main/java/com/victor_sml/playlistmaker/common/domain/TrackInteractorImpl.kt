@@ -1,8 +1,8 @@
 package com.victor_sml.playlistmaker.common.domain
 
-import com.victor_sml.playlistmaker.common.domain.api.TracksInteractor
-import com.victor_sml.playlistmaker.common.domain.api.TrackRepository
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.api.tracks.TracksInteractor
+import com.victor_sml.playlistmaker.common.domain.api.tracks.TrackRepository
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 class TracksInteractorImpl(private val trackRepository: TrackRepository) : TracksInteractor {

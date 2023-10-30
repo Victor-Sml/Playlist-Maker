@@ -18,6 +18,7 @@
 
     <dimen name="small_artwork_dimensions">45dp</dimen>
 
+    <dimen name="recycler_linear_item_height">60dp</dimen>
     <dimen name="recycler_item_height">60dp</dimen>
 
     <dimen name="player_artwork_dimensions">0dp</dimen>

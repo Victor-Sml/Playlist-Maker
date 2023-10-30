@@ -1,6 +1,6 @@
 package com.victor_sml.playlistmaker.search.domain
 
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import com.victor_sml.playlistmaker.common.utils.Resource
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository

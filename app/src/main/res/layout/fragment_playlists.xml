@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingHorizontal="12dp"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btn_recycler_button"
-        style="@style/SmallButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/new_playlist" />
-
-    <TextView
-        android:id="@+id/tv_not_playlists"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="46dp"
-        android:drawablePadding="@dimen/screen_message_drawablePadding"
-        android:textAlignment="center"
-        android:textAppearance="?attr/textAppearanceSubtitle_Medium"
-        android:drawableTop="@drawable/ic_nothing_found"
-        android:text="@string/playlists_are_absent"
-        android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rw_playlists"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+        android:orientation="vertical"
+        android:paddingHorizontal="12dp">
 
-    <ProgressBar
-        android:id="@+id/pb_playlists_layout"
-        android:layout_width="@dimen/progress_bar_dimensions"
-        android:layout_height="@dimen/progress_bar_dimensions"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="148dp"
-        android:indeterminateTint="@color/yp_blue"
-        android:visibility="gone" />
+        <Button
+            android:id="@+id/btn_recycler_button"
+            style="@style/SmallButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:text="@string/new_playlist" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_not_playlists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="46dp"
+            android:layout_marginBottom="24dp"
+            android:drawableTop="@drawable/ic_nothing_found"
+            android:drawablePadding="@dimen/screen_message_drawablePadding"
+            android:text="@string/playlists_are_absent"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceSubtitle_Medium"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rw_playlists"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</ScrollView>

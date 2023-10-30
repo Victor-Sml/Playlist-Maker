@@ -1,7 +1,7 @@
 package com.victor_sml.playlistmaker.common.utils
 
 import android.os.Bundle
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 
 class TrackHolder() {
     private var track = Bundle(1)

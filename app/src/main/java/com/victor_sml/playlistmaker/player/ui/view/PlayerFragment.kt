@@ -1,34 +1,35 @@
 package com.victor_sml.playlistmaker.player.ui.view
 
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.view.ViewTreeObserver.OnDrawListener
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN
+import com.google.android.material.snackbar.Snackbar
 import com.victor_sml.playlistmaker.R
-import com.victor_sml.playlistmaker.common.Constants.BIG_ARTWORK_RADIUS_DP
 import com.victor_sml.playlistmaker.common.Constants.CLICK_DEBOUNCE_DELAY
+import com.victor_sml.playlistmaker.common.Constants.DEFAULT_ARTWORK_DRAWABLE_ID
 import com.victor_sml.playlistmaker.common.Constants.TRACK_FOR_PLAYER
-import com.victor_sml.playlistmaker.common.models.Playlist
-import com.victor_sml.playlistmaker.common.models.Track
-import com.victor_sml.playlistmaker.common.ui.BindingFragment
-import com.victor_sml.playlistmaker.common.utils.Utils
+import com.victor_sml.playlistmaker.common.domain.models.Playlist
+import com.victor_sml.playlistmaker.common.domain.models.Track
+import com.victor_sml.playlistmaker.common.ui.nonBottomNavFragment.NonBottomNavFragmentImpl
+import com.victor_sml.playlistmaker.common.ui.recycler.adapters.RecyclerAdapter
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.PlaylistDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.PlaylistDelegate.PlaylistClickListener
 import com.victor_sml.playlistmaker.common.utils.Utils.toDateYYYY
 import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
+import com.victor_sml.playlistmaker.common.utils.UtilsUi.doOnApplyWindowInsets
+import com.victor_sml.playlistmaker.common.utils.UtilsUi.setImageFrom
 import com.victor_sml.playlistmaker.common.utils.debounce
-import com.victor_sml.playlistmaker.common.utils.recycler.adapters.UltimatePlaylistAdapter
-import com.victor_sml.playlistmaker.common.utils.recycler.adapters.UltimatePlaylistAdapter.PlaylistClickListener
 import com.victor_sml.playlistmaker.databinding.FragmentPlayerBinding
 import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState
@@ -39,31 +40,31 @@ import com.victor_sml.playlistmaker.player.ui.stateholders.TrackInsertionState.S
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-
-class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
-
-    private val sharedViewModel: SharedViewModel by activityViewModels()
-
-    private val viewModel by viewModel<PlayerViewModel> {
-        parametersOf(track)
-    }
-
-    private lateinit var recyclerAdapter: UltimatePlaylistAdapter
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
-    private lateinit var onPlaylistClickDebounce: (Playlist) -> Unit
-
+class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     private var track: Track? = null
 
-    private val playlistClickListener = object : PlaylistClickListener {
-        override fun onPlaylistClick(playlist: Playlist) {
-            onPlaylistClickDebounce(playlist)
+    private val viewModel by viewModel<PlayerViewModel> { parametersOf(track) }
+    private val sharedViewModel: SharedViewModel by activityViewModels()
+
+    private var windowInsetsController: WindowInsetsControllerCompat? = null
+
+    private lateinit var recyclerAdapter: RecyclerAdapter
+    private lateinit var bottomSheetController: PlayerBottomSheetController
+
+    private var layoutOnDrawListener = OnDrawListener {
+        with(bottomSheetController) {
+            setBottomSheetPeekHeight(binding.tvArtistName, GAP_ABOVE_BOTTOM_SHEET_DP)
+            setBottomSheetMaxHeight(binding.tbPlayer)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val inflater = TransitionInflater.from(requireContext())
-        enterTransition = inflater.inflateTransition(R.transition.fade)
+
+        windowInsetsController = WindowInsetsControllerCompat(
+            requireActivity().window,
+            requireActivity().window.decorView
+        )
     }
 
     override fun createBinding(
@@ -78,6 +79,24 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         track = sharedViewModel.getTrack(TRACK_FOR_PLAYER)
 
+        observeScreenContent()
+        initializeUi()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        removeListeners()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        if ((resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_NO)
+            windowInsetsController?.isAppearanceLightStatusBars = true
+    }
+
+    private fun observeScreenContent() {
         viewModel.getPlayerState().observe(viewLifecycleOwner) { playerState ->
             renderController(playerState)
         }
@@ -97,41 +116,23 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         viewModel.getTrackInsertionState().observe(viewLifecycleOwner) { state ->
             processTrackInsertionState(state)
         }
+    }
 
-        onPlaylistClickDebounce =
-            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { playlist ->
-                track?.let { track ->
-                    viewModel.onAddToPlaylistClick(playlist, track)
-                }
-            }
-
+    private fun initializeUi() {
         initViews()
         initBottomSheet()
         initRecycler()
+        applyWindowInsets()
         setListeners()
     }
 
-    override fun onPause() {
-        super.onPause()
-        if (viewModel.getPlayerState().value == PlayerState.STARTED) {
-            viewModel.onPlaybackControlClick()
-        }
-    }
-
     private fun initViews() {
-        val artworkCornerRadius = Utils.dpToPx(BIG_ARTWORK_RADIUS_DP, requireContext())
-
-        Glide.with(this).load(track?.getCoverArtwork())
-            .placeholder(R.drawable.default_artwork)
-            .centerCrop()
-            .transform(RoundedCorners(artworkCornerRadius))
-            .into(binding.ivArtwork)
-
         val setValue: (String?) -> String = {
             it ?: getString(R.string.not_applicable)
         }
 
-        binding.run {
+        with(binding) {
+            ivArtwork.setImageFrom(track?.getCoverArtwork(), DEFAULT_ARTWORK_DRAWABLE_ID)
             tvTrackName.text = setValue(track?.trackName)
             tvArtistName.text = setValue(track?.artistName)
             tvTrackTimeValue.text = setValue(track?.trackTimeMillis?.toTimeMMSS())
@@ -139,19 +140,50 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             tvReleaseYearValue.text = setValue(track?.releaseDate?.toDateYYYY())
             tvGenreValue.text = setValue(track?.primaryGenreName)
             tvCountryValue.text = setValue(track?.country)
+            binding.tvTitleTop.text = track?.trackName
         }
     }
 
     private fun initBottomSheet() {
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.bsAddingToPlaylist)
-        bottomSheetBehavior.state = STATE_HIDDEN
+        bottomSheetController = PlayerBottomSheetController(
+            binding.bsAddingToPlaylist,
+            binding.overlay,
+            binding.tbPlayer,
+            binding.tvTitleTop
+        )
+
+        binding
+            .tvTrackName
+            .viewTreeObserver
+            .addOnDrawListener(layoutOnDrawListener)
     }
 
     private fun initRecycler() {
-        val recycler = binding.rwPlaylists
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recyclerAdapter = UltimatePlaylistAdapter(playlistClickListener)
-        recycler.adapter = recyclerAdapter
+        val onPlaylistClickDebounce: (Playlist) -> Unit =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { playlist ->
+                track?.let { viewModel.onAddToPlaylistClick(playlist, it) }
+            }
+
+        val playlistClickListener = object : PlaylistClickListener {
+            override fun onPlaylistClick(playlist: Playlist) {
+                onPlaylistClickDebounce(playlist)
+            }
+        }
+
+        recyclerAdapter = RecyclerAdapter(arrayListOf(PlaylistDelegate(playlistClickListener)))
+
+        binding.rwPlaylists.layoutManager = LinearLayoutManager(requireContext())
+        binding.rwPlaylists.adapter = recyclerAdapter
+    }
+
+    private fun applyWindowInsets() {
+        binding.swRoot.doOnApplyWindowInsets(left = true, top = true, right = true, bottom = true)
+
+        binding.tbPlayer.doOnApplyWindowInsets(left = true, top = true, right = true)
+
+        binding.tvTitleTop.doOnApplyWindowInsets(left = true, top = true, right = true)
+
+        binding.bsAddingToPlaylist.doOnApplyWindowInsets(left = true, right = true)
     }
 
     private fun setListeners() {
@@ -164,12 +196,20 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         binding.fabAddToPlaylist.setOnClickListener {
-            bottomSheetBehavior.state = STATE_HALF_EXPANDED
+            bottomSheetController.bottomSheetBehavior.state = STATE_COLLAPSED
         }
 
         binding.btnNewPlaylist.setOnClickListener {
-            findNavController().navigate(R.id.action_global_new_playlist)
+            findNavController().navigate(R.id.action_global_playlist_editor)
         }
+
+        binding.tbPlayer.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun removeListeners() {
+        binding.tvTrackName.viewTreeObserver.removeOnDrawListener(layoutOnDrawListener)
     }
 
     private fun renderLikeButton(iconId: Int, colorId: Int) {
@@ -200,7 +240,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         showMessage(state.message)
         when (state) {
             is Success -> {
-                bottomSheetBehavior.state = STATE_HIDDEN
+                bottomSheetController.bottomSheetBehavior.state = STATE_HIDDEN
             }
 
             is Fail -> {
@@ -209,6 +249,10 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        Snackbar.make(binding.swRoot, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        const val GAP_ABOVE_BOTTOM_SHEET_DP = 8
     }
 }

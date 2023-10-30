@@ -25,38 +25,24 @@
         android:label="" />
 
     <fragment
-        android:id="@+id/destination_new_playlist"
-        android:name="com.victor_sml.playlistmaker.library.ui.view.NewPlaylistFragment"
+        android:id="@+id/destination_playlist_editor"
+        android:name="com.victor_sml.playlistmaker.library.playlistEditor.ui.view.PlaylistEditorFragment"
         android:label="@string/new_playlist" />
 
     <action
-        android:id="@+id/action_global_search"
-        app:destination="@id/destination_search"
-        app:enterAnim="@anim/slid_in_left"
-        app:popExitAnim="@anim/slid_out_left"
-        app:popUpTo="@id/destination_library" />
-
-    <action
-        android:id="@+id/action_global_library"
-        app:destination="@id/destination_library"
-        app:enterAnim="@anim/fade_in"
-        app:popUpTo="@id/destination_library"
-        app:popUpToInclusive="true" />
-
-    <action
-        android:id="@+id/action_global_settings"
-        app:destination="@id/destination_settings"
-        app:enterAnim="@anim/slid_in_right"
-        app:popExitAnim="@anim/slid_out_right"
-        app:popUpTo="@id/destination_library" />
-
-    <action
         android:id="@+id/action_global_player"
-        app:destination="@id/destination_player" />
+        app:destination="@id/destination_player"
+        app:enterAnim="@anim/fade_in"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/fade_out" />
 
     <action
-        android:id="@+id/action_global_new_playlist"
-        app:destination="@id/destination_new_playlist"
-        app:enterAnim="@anim/fade_in" />
+        android:id="@+id/action_global_playlist_editor"
+        app:destination="@id/destination_playlist_editor"
+        app:enterAnim="@anim/fade_in"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/fade_out" />
 
 </navigation>

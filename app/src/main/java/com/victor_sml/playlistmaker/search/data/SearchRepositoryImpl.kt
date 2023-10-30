@@ -1,7 +1,7 @@
 package com.victor_sml.playlistmaker.search.data
 
 import com.victor_sml.playlistmaker.common.data.db.AppDatabase
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository
 import com.victor_sml.playlistmaker.common.utils.Resource
 import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.CONNECTION_FAILURE
