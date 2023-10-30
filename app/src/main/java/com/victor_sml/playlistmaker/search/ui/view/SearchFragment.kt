@@ -2,8 +2,6 @@ package com.victor_sml.playlistmaker.search.ui.view
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,16 +10,21 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.Constants.CLICK_DEBOUNCE_DELAY
 import com.victor_sml.playlistmaker.common.Constants.TRACK_FOR_PLAYER
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import com.victor_sml.playlistmaker.common.ui.BindingFragment
+import com.victor_sml.playlistmaker.common.ui.recycler.adapters.RecyclerAdapter
 import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentSearchBinding
 import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
@@ -33,20 +36,17 @@ import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loa
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.NothingFound
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
-import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.ButtonDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.ButtonDelegate.ClickListener
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.HeaderDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.MessageDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.SpaceDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.TrackDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.TrackDelegate.TrackClickListener
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.ButtonDelegate.ClickListener
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.ButtonDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.HeaderDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.MessageDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.SpaceDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TrackDelegate.TrackClickListener
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TrackDelegate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel by viewModel<SearchViewModel>()
@@ -59,7 +59,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private lateinit var onTrackClickDebounce: (Track) -> Unit
     private lateinit var onRecyclerButtonClickDebounce: (() -> Unit) -> Unit
 
-    private lateinit var recyclerController: RecyclerController
+    private lateinit var recyclerAdapter: RecyclerAdapter
 
     private val trackClickListener = object : TrackClickListener {
         override fun onTrackClick(track: Track) {
@@ -87,7 +87,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         )
     }
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentSearchBinding {
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+    ): FragmentSearchBinding {
         return FragmentSearchBinding.inflate(inflater, container, false)
     }
 
@@ -96,38 +99,8 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
         thisRestored = viewModel.isFragmentDestroyed
 
-        recyclerController = get(null) {
-            parametersOf(
-                binding.rwTracks,
-                arrayListOf(
-                    TrackDelegate(trackClickListener),
-                    ButtonDelegate(recyclerButtonClickListener),
-                    MessageDelegate(),
-                    HeaderDelegate(),
-                    SpaceDelegate()
-                )
-            )
-        }
-
-        onTrackClickDebounce =
-            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
-                sharedViewModel.passTrack(TRACK_FOR_PLAYER, track)
-                viewModel.addToHistory(track)
-                findNavController().navigate(R.id.action_global_player)
-            }
-
-        onRecyclerButtonClickDebounce =
-            debounce(CLICK_DEBOUNCE_DELAY,
-                viewLifecycleOwner.lifecycleScope) { callback -> callback() }
-
-        viewModel.getScreenState().observe(viewLifecycleOwner) { screenState ->
-            this.screenState = screenState
-            renderViews(screenState)
-
-            backPressedCallback.isEnabled = screenState is SearchResult
-        }
-
-        setListeners()
+        observeScreenState()
+        initializeUI()
     }
 
     override fun onResume() {
@@ -145,22 +118,18 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         viewModel.isFragmentDestroyed = true
     }
 
+    private fun observeScreenState() {
+        viewModel.getScreenState().observe(viewLifecycleOwner) { screenState ->
+            this.screenState = screenState
+            renderViews(screenState)
+
+            backPressedCallback.isEnabled = screenState is SearchResult
+        }
+    }
+
     private fun renderViews(state: SearchScreenState) {
         updateRecycler(state)
         setViewVisibility(state)
-    }
-
-    private fun updateRecycler(state: SearchScreenState) {
-        with(recyclerController) {
-            when (state) {
-                is SearchResult,
-                is History,
-                is NothingFound,
-                is ConnectionFailure,
-                -> updateContent(state.items)
-                is Empty, Loading -> clearContent()
-            }
-        }
     }
 
     private fun setViewVisibility(state: SearchScreenState) {
@@ -171,11 +140,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         }
     }
 
-    private fun showRecycler() {
-        binding.progressBar.isVisible = false
-        binding.rwTracks.isVisible = true
-    }
-
     private fun showProgressBar() {
         binding.rwTracks.isVisible = false
         binding.progressBar.isVisible = true
@@ -184,6 +148,58 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private fun clearScreen() {
         binding.rwTracks.isVisible = false
         binding.progressBar.isVisible = false
+    }
+
+    private fun initializeUI() {
+        applyWindowInsets()
+        initRecycler()
+        setDebounces()
+        setListeners()
+    }
+
+    private fun applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.llRoot) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.top
+                leftMargin = insets.left
+                rightMargin = insets.right
+            }
+
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    private fun initRecycler() {
+        recyclerAdapter = RecyclerAdapter(
+            arrayListOf(
+                TrackDelegate(trackClickListener),
+                ButtonDelegate(recyclerButtonClickListener),
+                MessageDelegate(),
+                HeaderDelegate(),
+                SpaceDelegate()
+            )
+        )
+        binding.rwTracks.layoutManager = LinearLayoutManager(requireContext())
+        binding.rwTracks.adapter = recyclerAdapter
+    }
+
+    private fun updateRecycler(state: SearchScreenState) {
+        when (state) {
+            is SearchResult,
+            is History,
+            is NothingFound,
+            is ConnectionFailure,
+            -> recyclerAdapter.update(state.items)
+
+            is Empty, Loading -> recyclerAdapter.update()
+        }
+    }
+
+    private fun showRecycler() {
+        binding.progressBar.isVisible = false
+        binding.rwTracks.isVisible = true
     }
 
     private fun setListeners() {
@@ -220,12 +236,37 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         }
     }
 
+    private fun setDebounces() {
+        onTrackClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
+                sharedViewModel.passTrack(TRACK_FOR_PLAYER, track)
+                viewModel.addToHistory(track)
+                findNavController().navigate(R.id.action_global_player)
+            }
+
+        onRecyclerButtonClickDebounce =
+            debounce(
+                CLICK_DEBOUNCE_DELAY,
+                viewLifecycleOwner.lifecycleScope
+            ) { callback -> callback() }
+    }
+
     private fun processSearchRequestChange(searchRequest: CharSequence?) {
         if (searchRequest.isNullOrEmpty()) {
             searchDebounce(false)
             viewModel.getHistory()
         } else {
             searchDebounce()
+        }
+    }
+
+    private fun searchDebounce(isActive: Boolean = true) {
+        searchJob?.cancel()
+        searchJob = viewLifecycleOwner.lifecycleScope.launch {
+            if (isActive) {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                viewModel.searchTracks(binding.inputEditText.text.toString())
+            }
         }
     }
 
@@ -242,16 +283,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
         activity?.currentFocus?.clearFocus()
-    }
-
-    private fun searchDebounce(isActive: Boolean = true) {
-        searchJob?.cancel()
-        searchJob = viewLifecycleOwner.lifecycleScope.launch {
-            if (isActive) {
-                delay(SEARCH_DEBOUNCE_DELAY)
-                viewModel.searchTracks(binding.inputEditText.text.toString())
-            }
-        }
     }
 
     companion object {

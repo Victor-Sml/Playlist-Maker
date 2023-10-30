@@ -10,10 +10,12 @@
         <item name="colorOnSecondary">@color/yp_white</item>
         <item name="colorAccent">@color/yp_blue</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
-        <item name="colorSurface">@color/yp_light_gray</item>
+        <item name="colorSurface">@color/yp_light_grey</item>
         <item name="colorOnSurface">@color/yp_text_gray</item>
 
         <item name="android:textColorPrimary">@color/yp_black</item>
@@ -21,12 +23,15 @@
 
         <item name="colorControlNormal">@color/yp_black</item>
 
+        <item name="snackbarStyle">@style/Widget.PlaylistMaker.Snackbar</item>
+        <item name="snackbarTextViewStyle">@style/Widget.PlaylistMaker.SnackbarTextViewStyle</item>
+
         <item name="fabEnabledBackgroundTint">@color/yp_black</item>
         <item name="fabEnabledTint">@color/yp_white</item>
         <item name="fabDisabledBackgroundTint">@color/yp_black_25alpha</item>
         <item name="fabDisabledTint">@color/yp_white</item>
 
-        <item name="smallFabBackgroundTint">@color/yp_black_25alpha</item>
+        <item name="smallRoundButtonBackgroundTint">@color/yp_black_25alpha</item>
 
         <item name="emptyOutlinedInputColor">@color/empty_outlined_input_stroke_color</item>
 
@@ -34,9 +39,14 @@
         <item name="likeButtonDisabledBackgroundTint">@color/yp_white_25alpha</item>
         <item name="likeButtonEnabledTint">@color/yp_red</item>
 
+        <item name="textAppearanceTitle_Medium">@style/TextAppearance.YS_Bold24</item>
+
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
         <item name="textAppearanceSubtitle_Medium">@style/TextAppearance.YS_Medium19</item>
+        <item name="textAppearanceSubtitle_Small">@style/TextAppearance.YS_Medium16</item>
         <item name="textAppearanceSubtitle_ExtraSmall">@style/TextAppearance.YS_Medium14</item>
+
+        <item name="textAppearanceBody_2ExtraLarge">@style/TextAppearance.YS_Regular18</item>
         <item name="textAppearanceBody_ExtraLarge">@style/TextAppearance.YS_Regular16</item>
         <item name="textAppearanceBody_Large">@style/TextAppearance.YS_Regular14</item>
         <item name="textAppearanceBody_Medium">@style/TextAppearance.YS_Regular13</item>
@@ -56,6 +66,7 @@
         <item name="materialAlertDialogBodyTextStyle">@style/DialogBodyText</item>
         <item name="buttonBarPositiveButtonStyle">@style/DialogButton</item>
         <item name="buttonBarNeutralButtonStyle">@style/DialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButton</item>
     </style>
 
 </resources>

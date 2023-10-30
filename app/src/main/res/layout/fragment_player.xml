@@ -8,9 +8,11 @@
     android:orientation="vertical">
 
     <ScrollView
+        android:id="@+id/sw_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="56dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -21,7 +23,7 @@
                 android:layout_width="@dimen/player_artwork_dimensions"
                 android:layout_height="@dimen/player_artwork_dimensions"
                 android:layout_marginHorizontal="@dimen/player_artwork_marginHorizontal"
-                android:layout_marginTop="@dimen/player_artwork_margin_top"
+                android:layout_marginTop="26dp"
                 android:src="@drawable/default_artwork"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,11 +58,11 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="The Beatles " />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <ImageButton
                 android:id="@+id/fab_add_to_playlist"
-                style="@style/SmallFAB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/round_button"
                 app:layout_constraintBottom_toBottomOf="@+id/fab_playback_control"
                 app:layout_constraintStart_toStartOf="@+id/iv_artwork"
                 app:layout_constraintTop_toTopOf="@+id/fab_playback_control"
@@ -82,15 +84,15 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 app:srcCompat="@drawable/ic_play" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <ImageButton
                 android:id="@+id/fab_like"
-                style="@style/SmallFAB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/round_button"
+                android:src="@drawable/ic_heart"
                 app:layout_constraintBottom_toBottomOf="@+id/fab_playback_control"
                 app:layout_constraintEnd_toEndOf="@id/iv_artwork"
-                app:layout_constraintTop_toTopOf="@+id/fab_playback_control"
-                app:srcCompat="@drawable/ic_heart" />
+                app:layout_constraintTop_toTopOf="@+id/fab_playback_control" />
 
             <TextView
                 android:id="@+id/tv_playback_progress"
@@ -240,6 +242,33 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/steel_grey"
+        android:visibility="gone" />
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tb_player"
+        style="@style/Toolbar"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent"
+        app:icon="?attr/colorSecondary" />
+
+    <TextView
+        android:id="@+id/tv_title_top"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="center_horizontal"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingHorizontal="50dp"
+        android:textAppearance="?attr/textAppearanceSubtitle_Large"
+        android:textColor="@color/yp_white"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/bs_adding_to_playlist"
         android:layout_width="match_parent"
@@ -247,9 +276,8 @@
         android:background="@drawable/bottom_sheet_round_frame"
         android:backgroundTint="?attr/colorPrimary"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="240dp"
+        app:behavior_skipCollapsed="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
@@ -259,15 +287,15 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="12dp"
             android:background="@drawable/bottom_sheet_handler_shape"
-            android:backgroundTint="@color/yp_light_gray" />
+            android:backgroundTint="@color/yp_light_grey" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="52dp"
             android:layout_gravity="center"
-            android:textAppearance="?attr/textAppearanceSubtitle_Medium"
             android:gravity="center"
-            android:text="@string/add_to_playlist" />
+            android:text="@string/add_to_playlist"
+            android:textAppearance="?attr/textAppearanceSubtitle_Medium" />
 
         <Button
             android:id="@+id/btn_new_playlist"

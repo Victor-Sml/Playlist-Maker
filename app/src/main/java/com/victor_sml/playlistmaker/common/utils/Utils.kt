@@ -1,7 +1,8 @@
 package com.victor_sml.playlistmaker.common.utils
 
 import android.content.Context
-import android.util.TypedValue
+import android.content.res.Resources
+import com.victor_sml.playlistmaker.common.Constants.CASE_OF_TRACK_PLURALS_ID
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -11,14 +12,14 @@ object Utils {
 
     fun String.toDateYYYY(): String = this.take(4)
 
-    fun dpToPx(dp: Int, context: Context): Int {
-        val resources = context.resources
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp.toFloat(),
-            resources.displayMetrics
-        ).toInt()
-    }
+    fun Int.dpToPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    fun Int.toNumberOfTracksString(context: Context) =
+        context.resources.getQuantityString(
+            CASE_OF_TRACK_PLURALS_ID,
+            this,
+            this
+        )
 
     fun File.toUnique(): File {
         val fileRegex = Regex("(.*?)(\\.[^.]*)?")
@@ -38,20 +39,5 @@ object Utils {
             }
         }
         return file
-    }
-
-    fun caseOfTracks(number: Int): String {
-        var number = number
-
-        if (number in 11..20)  return "треков"
-
-        if (number > 9) number %= 10
-
-        return when (number % 10) {
-            1 -> "трек"
-            2, 3, 4 -> "трека"
-            0, 5, 6, 7, 8, 9 -> "треков"
-            else -> ""
-        }
     }
 }

@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="textAppearanceSubtitle_Large" format="reference"/>
-    <attr name="textAppearanceSubtitle_Medium" format="reference"/>
-    <attr name="textAppearanceSubtitle_ExtraSmall" format="reference"/>
+    <attr name="textAppearanceTitle_Medium" format="reference" />
 
-    <attr name="textAppearanceBody_ExtraLarge" format="reference"/>
-    <attr name="textAppearanceBody_Large" format="reference"/>
-    <attr name="textAppearanceBody_Medium" format="reference"/>
-    <attr name="textAppearanceBody_Small" format="reference"/>
-    <attr name="textAppearanceBody_ExtraSmall" format="reference"/>
+    <attr name="textAppearanceSubtitle_Large" format="reference" />
+    <attr name="textAppearanceSubtitle_Medium" format="reference" />
+    <attr name="textAppearanceSubtitle_Small" format="reference" />
+    <attr name="textAppearanceSubtitle_ExtraSmall" format="reference" />
 
-    <attr name="fabEnabledBackgroundTint" format="reference"/>
-    <attr name="fabDisabledBackgroundTint" format="reference"/>
-    <attr name="fabEnabledTint" format="reference"/>
-    <attr name="fabDisabledTint" format="reference"/>
+    <attr name="textAppearanceBody_2ExtraLarge" format="reference" />
+    <attr name="textAppearanceBody_ExtraLarge" format="reference" />
+    <attr name="textAppearanceBody_Large" format="reference" />
+    <attr name="textAppearanceBody_Medium" format="reference" />
+    <attr name="textAppearanceBody_Small" format="reference" />
+    <attr name="textAppearanceBody_ExtraSmall" format="reference" />
 
-    <attr name="smallFabBackgroundTint" format="reference"/>
+    <attr name="fabEnabledBackgroundTint" format="reference" />
+    <attr name="fabDisabledBackgroundTint" format="reference" />
+    <attr name="fabEnabledTint" format="reference" />
+    <attr name="fabDisabledTint" format="reference" />
 
-    <attr name="likeButtonEnabledBackgroundTint" format="reference"/>
-    <attr name="likeButtonDisabledBackgroundTint" format="reference"/>
-    <attr name="likeButtonEnabledTint" format="reference"/>
+    <attr name="smallRoundButtonBackgroundTint" format="reference" />
+
+    <attr name="likeButtonEnabledBackgroundTint" format="reference" />
+    <attr name="likeButtonDisabledBackgroundTint" format="reference" />
+    <attr name="likeButtonEnabledTint" format="reference" />
     <attr name="likeButtonDisabledTint" format="reference" />
 
     <attr name="emptyOutlinedInputColor" format="color" />

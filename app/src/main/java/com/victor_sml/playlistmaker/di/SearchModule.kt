@@ -8,10 +8,7 @@ import com.victor_sml.playlistmaker.search.domain.SearchInteractorImpl
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchRepository
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchViewModel
-import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerControllerIml
-import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
 import org.koin.androidx.viewmodel.dsl.viewModelOf
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -35,7 +32,4 @@ val searchModule = module {
             .build()
             .create(ItunesAPIService::class.java)
     }
-
-    factoryOf(::RecyclerControllerIml) bind RecyclerController::class
-
 }

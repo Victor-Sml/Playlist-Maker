@@ -8,7 +8,7 @@ import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
 import com.victor_sml.playlistmaker.search.domain.api.HistoryInteractor
 import com.victor_sml.playlistmaker.search.domain.api.SearchInteractor
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import com.victor_sml.playlistmaker.common.utils.Resource
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Loading
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.SearchResult
@@ -17,7 +17,7 @@ import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Not
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.ConnectionFailure
 import com.victor_sml.playlistmaker.search.ui.stateholders.SearchScreenState.Empty
 import com.victor_sml.playlistmaker.common.utils.Resource.ResponseState
-import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
+import com.victor_sml.playlistmaker.common.ui.recycler.RecyclerItemsBuilder
 import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.CONNECTION_FAILURE
 import com.victor_sml.playlistmaker.common.utils.Resource.ErrorState.NOTHING_FOUND
 import com.victor_sml.playlistmaker.common.utils.Resource.State.EMPTY
@@ -44,13 +44,14 @@ class SearchViewModel(
     fun searchTracks(searchRequest: String) {
         val (tracks, state) = cache.getResponse(searchRequest)
 
-        if (searchRequest == cache.getRequest() && state in setOf( CONNECTION_FAILURE, EMPTY)) {
+        if (searchRequest == cache.getRequest() && state in setOf(SUCCESS, NOTHING_FOUND, EMPTY)) {
             processSearchResponse(searchRequest, tracks, state)
-        } else {
-            viewRequireHistory = false
-            screenState.postValue(Loading)
-            requestSearchResult(searchRequest)
+            return
         }
+
+        viewRequireHistory = false
+        screenState.postValue(Loading)
+        requestSearchResult(searchRequest)
     }
 
     fun getHistory() {
@@ -92,10 +93,12 @@ class SearchViewModel(
                 postSuccessState(tracks)
                 cache.fillCache(searchRequest, Resource.Success(tracks))
             }
+
             NOTHING_FOUND -> {
                 postNothingFoundState()
                 cache.fillCache(searchRequest, Resource.Error(NOTHING_FOUND))
             }
+
             CONNECTION_FAILURE -> {
                 postConnectionFailureState { searchTracks(searchRequest) }
                 cache.fillCache(searchRequest, Resource.Error(CONNECTION_FAILURE))
@@ -157,8 +160,10 @@ class SearchViewModel(
     private fun postConnectionFailureState(callback: () -> Unit) {
         recyclerBuilder
             .addSpace(MESSAGE_MARGIN_TOP_DP)
-            .addMessage(CONNECTION_FAILURE_DRAWABLE_ID,
-                getStringUseCase.execute(CONNECTION_FAILURE_STR_ID))
+            .addMessage(
+                CONNECTION_FAILURE_DRAWABLE_ID,
+                getStringUseCase.execute(CONNECTION_FAILURE_STR_ID)
+            )
             .addButton(getStringUseCase.execute(REFRESH_STR_ID), callback)
             .getItems()
             .let { recyclerItems -> screenState.postValue(ConnectionFailure(recyclerItems)) }

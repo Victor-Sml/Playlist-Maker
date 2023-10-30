@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
-import com.victor_sml.playlistmaker.common.domain.api.TracksInteractor
-import com.victor_sml.playlistmaker.common.models.Playlist
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.api.tracks.TracksInteractor
+import com.victor_sml.playlistmaker.common.domain.models.Playlist
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import com.victor_sml.playlistmaker.common.utils.DBQueryState
 import com.victor_sml.playlistmaker.common.utils.SingleLiveEvent
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.DEFAULT
@@ -17,7 +17,10 @@ import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PAUSED
 import com.victor_sml.playlistmaker.player.ui.stateholders.PlayerState.PLAYBACK_COMPLETION
 import com.victor_sml.playlistmaker.player.domain.api.PlayerInteractor
 import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
-import com.victor_sml.playlistmaker.library.domain.api.PlaylistInteractor
+import com.victor_sml.playlistmaker.common.domain.api.playlists.PlaylistInteractor
+import com.victor_sml.playlistmaker.common.ui.recycler.api.RecyclerItem.PlaylistItem
+import com.victor_sml.playlistmaker.common.utils.DBQueryState.Added
+import com.victor_sml.playlistmaker.common.utils.DBQueryState.ErrorUnique
 import com.victor_sml.playlistmaker.player.ui.stateholders.FavoriteState.Dislike
 import com.victor_sml.playlistmaker.player.ui.stateholders.FavoriteState.Like
 import com.victor_sml.playlistmaker.player.ui.stateholders.TrackInsertionState.Fail
@@ -42,13 +45,13 @@ class PlayerViewModel(
     private var playerState = MutableLiveData(DEFAULT)
     private var playbackProgress = MutableLiveData<String>()
     private var favoriteState = MutableLiveData<FavoriteState>()
-    private var playlists = MutableLiveData<ArrayList<Playlist>>()
+    private var playlists = MutableLiveData<List<PlaylistItem>>()
     private var trackInsertionState = SingleLiveEvent<TrackInsertionState>()
 
     fun getPlayerState(): LiveData<PlayerState> = playerState
     fun getPlaybackProgress(): LiveData<String> = playbackProgress
     fun getFavoriteState(): LiveData<FavoriteState> = favoriteState
-    fun getPlaylists(): LiveData<ArrayList<Playlist>> = playlists
+    fun getPlaylists(): LiveData<List<PlaylistItem>> = playlists
     fun getTrackInsertionState(): LiveData<TrackInsertionState> = trackInsertionState
 
     init {
@@ -97,7 +100,9 @@ class PlayerViewModel(
 
     private fun observePlaylists() {
         viewModelScope.launch(Dispatchers.IO) {
-            playlistInteractor.loadPlaylist().collect { playlists.postValue(it as ArrayList) }
+            playlistInteractor.loadPlaylists().collect { playlist ->
+                playlists.postValue(playlist?.map { PlaylistItem(it) })
+            }
         }
     }
 
@@ -158,10 +163,10 @@ class PlayerViewModel(
 
     private fun processQueryResult(queryState: DBQueryState, playlistTitle: String) {
         when (queryState) {
-            is DBQueryState.Ok ->
+            is Added ->
                 trackInsertionState.postValue(Success(getSuccessMessage(playlistTitle)))
 
-            is DBQueryState.ErrorUnique ->
+            is ErrorUnique ->
                 trackInsertionState.postValue(Fail(getFailMessage(playlistTitle)))
 
             else -> {

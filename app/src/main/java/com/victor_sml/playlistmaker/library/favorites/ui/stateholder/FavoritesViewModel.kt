@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victor_sml.playlistmaker.common.Constants.NOTHING_FOUND_DRAWABLE_ID
 import com.victor_sml.playlistmaker.common.domain.GetStringUseCase
-import com.victor_sml.playlistmaker.common.domain.api.TracksInteractor
-import com.victor_sml.playlistmaker.common.models.Track
-import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
-import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerItem
+import com.victor_sml.playlistmaker.common.domain.api.tracks.TracksInteractor
+import com.victor_sml.playlistmaker.common.domain.models.Track
+import com.victor_sml.playlistmaker.common.ui.recycler.RecyclerItemsBuilder
+import com.victor_sml.playlistmaker.common.ui.recycler.api.RecyclerItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -36,20 +36,26 @@ class FavoritesViewModel(
     }
 
     private fun postFavorites(tracks: List<Track>) {
-        recyclerBuilder
-            .addTracks(tracks)
-            .getItems()
-            .let { favoriteTracks.postValue(it) }
+        synchronized(this) {
+            recyclerBuilder
+                .addTracks(tracks)
+                .getItems()
+                .let { favoriteTracks.postValue(it) }
+        }
     }
 
     private fun postEmptyMessage() {
-        recyclerBuilder
-            .addSpace(102)
-            .addMessage(NOTHING_FOUND_DRAWABLE_ID,
-                getStringUseCase.execute(EMPTY_LIBRARY_STR_ID))
-            .addSpace(BOTTOM_SPACE_DP)
-            .getItems()
-            .let { favoriteTracks.postValue(it) }
+        synchronized(this) {
+            recyclerBuilder
+                .addSpace(102)
+                .addMessage(
+                    NOTHING_FOUND_DRAWABLE_ID,
+                    getStringUseCase.execute(EMPTY_LIBRARY_STR_ID)
+                )
+                .addSpace(BOTTOM_SPACE_DP)
+                .getItems()
+                .let { favoriteTracks.postValue(it) }
+        }
     }
 
     companion object {

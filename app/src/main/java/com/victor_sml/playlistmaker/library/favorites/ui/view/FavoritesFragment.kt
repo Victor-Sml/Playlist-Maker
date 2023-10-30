@@ -8,28 +8,27 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.Constants.CLICK_DEBOUNCE_DELAY
 import com.victor_sml.playlistmaker.common.Constants.TRACK_FOR_PLAYER
-import com.victor_sml.playlistmaker.common.models.Track
+import com.victor_sml.playlistmaker.common.domain.models.Track
 import com.victor_sml.playlistmaker.common.ui.BindingFragment
+import com.victor_sml.playlistmaker.common.ui.recycler.adapters.RecyclerAdapter
 import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentFavoritesBinding
 import com.victor_sml.playlistmaker.library.favorites.ui.stateholder.FavoritesViewModel
 import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
-import com.victor_sml.playlistmaker.common.utils.recycler.api.RecyclerController
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.MessageDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.SpaceDelegate
-import com.victor_sml.playlistmaker.common.utils.recycler.delegates.TrackDelegate
-import org.koin.android.ext.android.get
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.MessageDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.SpaceDelegate
+import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TrackDelegate
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
     private val viewModel by viewModel<FavoritesViewModel>()
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
-    private lateinit var recyclerController: RecyclerController
+    private lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var onTrackClickDebounce: (Track) -> Unit
 
     private val trackClickListener = object : TrackDelegate.TrackClickListener {
@@ -38,7 +37,10 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
         }
     }
 
-    override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentFavoritesBinding {
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+    ): FragmentFavoritesBinding {
         return FragmentFavoritesBinding.inflate(inflater, container, false)
     }
 
@@ -51,23 +53,27 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
                 findNavController().navigate(R.id.action_global_player)
             }
 
-        recyclerController = get(null) {
-            parametersOf(
-                binding.rwFavoriteTracks,
+        viewModel.updateFavorites()
+
+        viewModel.getFavoriteTracks().observe(viewLifecycleOwner) { recyclerItems ->
+            binding.rwFavoriteTracks.isVisible = true
+            recyclerAdapter.update(recyclerItems)
+        }
+
+        initRecycler()
+    }
+
+    private fun initRecycler() {
+        recyclerAdapter =
+            RecyclerAdapter(
                 arrayListOf(
                     TrackDelegate(trackClickListener),
                     MessageDelegate(),
                     SpaceDelegate()
                 )
             )
-        }
-
-        viewModel.updateFavorites()
-
-        viewModel.getFavoriteTracks().observe(viewLifecycleOwner) { recyclerItems ->
-            binding.rwFavoriteTracks.isVisible = true
-            recyclerController.updateContent(recyclerItems)
-        }
+        binding.rwFavoriteTracks.layoutManager = LinearLayoutManager(requireContext())
+        binding.rwFavoriteTracks.adapter = recyclerAdapter
     }
 
     companion object {

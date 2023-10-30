@@ -1,6 +1,6 @@
 package com.victor_sml.playlistmaker.di.common
 
-import com.victor_sml.playlistmaker.common.utils.recycler.RecyclerItemsBuilder
+import com.victor_sml.playlistmaker.common.ui.recycler.RecyclerItemsBuilder
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
