@@ -272,7 +272,7 @@
     <LinearLayout
         android:id="@+id/bs_adding_to_playlist"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet_round_frame"
         android:backgroundTint="?attr/colorPrimary"
         android:orientation="vertical"

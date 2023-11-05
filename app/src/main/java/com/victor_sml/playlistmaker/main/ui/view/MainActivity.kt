@@ -28,10 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     private val fragmentAnimationListener = object : AnimationListener {
         override fun onAnimationStart(p0: Animation?) {
-            binding.bnvMain.isVisible = isCurrentDestinationWithBottomNav
         }
 
         override fun onAnimationEnd(p0: Animation?) {
+            binding.bnvMain.isVisible = isCurrentDestinationWithBottomNav
         }
 
         override fun onAnimationRepeat(p0: Animation?) {

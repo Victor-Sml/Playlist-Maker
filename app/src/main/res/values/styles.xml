@@ -194,6 +194,17 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="DialogText">
+        <item name="android:letterSpacing">0.0125</item>
+    </style>
+
+    <style name="DialogTextButton" parent="DialogText">
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle_Small</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+
     <style name="TextInputLayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:textColorHint">@color/yp_black</item>
         <item name="hintTextColor">@color/filled_in_outlined_input_stroke_color</item>
