@@ -117,6 +117,11 @@
         <item name="android:tint">?attr/colorSecondaryVariant</item>
     </style>
 
+    <style name="PlaylistDetailsText">
+        <item name="android:textColor">@color/yp_black</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody_2ExtraLarge</item>
+    </style>
+
     <style name="EllipsizedTextView">
         <item name="layout_constrainedWidth">true</item>
         <item name="android:ellipsize">end</item>

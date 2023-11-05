@@ -38,4 +38,9 @@
 
     <dimen name="progress_bar_dimensions">44dp</dimen>
 
+    <dimen name="playlist_menu_item_height">60dp</dimen>
+    <dimen name="playlist_menu_item_start_padding">16dp</dimen>
+    <dimen name="playlist_menu_icon_width">40dp</dimen>
+    <dimen name="playlist_menu_icon_height">40dp</dimen>
+
 </resources>

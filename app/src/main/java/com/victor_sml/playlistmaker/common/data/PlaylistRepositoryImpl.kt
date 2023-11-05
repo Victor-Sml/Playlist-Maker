@@ -9,9 +9,11 @@ import com.victor_sml.playlistmaker.common.domain.models.Playlist
 import com.victor_sml.playlistmaker.common.utils.DBQueryState
 import com.victor_sml.playlistmaker.common.utils.DBQueryState.Error
 import com.victor_sml.playlistmaker.common.domain.api.playlists.PlaylistRepository
+import com.victor_sml.playlistmaker.common.domain.models.PlaylistWithTracks
 import com.victor_sml.playlistmaker.common.utils.DBQueryState.Added
 import com.victor_sml.playlistmaker.common.utils.DBQueryState.ErrorUnique
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
@@ -22,6 +24,12 @@ class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
             return Added
         } catch (e: SQLiteException) {
             return processException(e)
+        }
+    }
+
+    override suspend fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracks> {
+        return db.loadPlaylist(playlistId).filterNotNull().map { playlistWithTracks ->
+            playlistWithTracks.toPlaylist()
         }
     }
 
