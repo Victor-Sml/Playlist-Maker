@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistInteractor {
     suspend fun addPlaylist(playlist: Playlist): DBQueryState
 
+    suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState
+
+    suspend fun deleteFromPlaylist(playlistId: Int, trackId: Int)
+
     suspend fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracks>
 
     suspend fun loadPlaylists(): Flow<List<Playlist>?>
-
-    suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState
 }

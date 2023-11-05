@@ -17,12 +17,15 @@ interface PlaylistDao {
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun insertPlaylist(playlist: PlaylistEntity)
 
-    @Transaction
-    @Query("SELECT * FROM playlists WHERE playlist_id = :playlistId")
-    fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracksDto>
+    @Query("DELETE FROM playlist_track WHERE playlist_id = :playlistId AND track_id = :trackId")
+    suspend fun deleteTrack(playlistId: Int, trackId: Int)
 
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun insertPlaylistTrackCrossRef(playlistTrackCrossRef: PlaylistTrackCrossRef) :Long
+
+    @Transaction
+    @Query("SELECT * FROM playlists WHERE playlist_id = :playlistId")
+    fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracksDto>
 
     @Query(
         "SELECT p.playlist_id, p.title, p.coverPath, p.description, COUNT(pt.playlist_id) AS numberOfTracks " +

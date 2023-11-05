@@ -27,6 +27,17 @@ class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
         }
     }
 
+    override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState {
+        try {
+            db.insertPlaylistTrackCrossRef(PlaylistTrackCrossRef(playlistId, trackId))
+            return Added
+        } catch (e: SQLiteException) { return processException(e) }
+    }
+
+    override suspend fun deleteFromPlaylist(playlistId: Int, trackId: Int) {
+        db.deleteTrack(playlistId, trackId)
+    }
+
     override suspend fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracks> {
         return db.loadPlaylist(playlistId).filterNotNull().map { playlistWithTracks ->
             playlistWithTracks.toPlaylist()
@@ -37,13 +48,6 @@ class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
         return db.loadPlaylists().map { playlistsDto ->
             playlistsDto.map { it.toPlaylist() }
         }
-    }
-
-    override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState {
-        try {
-            db.insertPlaylistTrackCrossRef(PlaylistTrackCrossRef(playlistId, trackId))
-            return Added
-        } catch (e: SQLiteException) { return processException(e) }
     }
 
     private fun processException(e: SQLiteException): DBQueryState {

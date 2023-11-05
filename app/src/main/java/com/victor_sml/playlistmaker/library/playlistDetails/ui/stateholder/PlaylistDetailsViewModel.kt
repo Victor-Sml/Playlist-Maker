@@ -28,6 +28,12 @@ class PlaylistDetailsViewModel(
         }
     }
 
+    fun deleteFromPlaylist(playlistId: Int, trackId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistInteractor.deleteFromPlaylist(playlistId, trackId)
+        }
+    }
+
     companion object {
         fun PlaylistWithTracks.toPlaylistUi() =
             PlaylistUi(

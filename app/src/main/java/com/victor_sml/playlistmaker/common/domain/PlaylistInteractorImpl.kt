@@ -13,12 +13,18 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
     override suspend fun addPlaylist(playlist: Playlist): DBQueryState =
         playlistRepository.addPlaylist(playlist)
 
+    override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState =
+        playlistRepository.insertToPlaylist(playlistId, trackId)
+
+    override suspend fun deleteFromPlaylist(playlistId: Int, trackId: Int) {
+        playlistRepository.deleteFromPlaylist(playlistId, trackId)
+    }
+
     override suspend fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracks> =
         playlistRepository.loadPlaylist(playlistId)
 
     override suspend fun loadPlaylists(): Flow<List<Playlist>?> =
         playlistRepository.loadPlaylists()
 
-    override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState =
-        playlistRepository.insertToPlaylist(playlistId, trackId)
+
 }

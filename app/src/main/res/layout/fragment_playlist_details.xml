@@ -176,7 +176,7 @@
             android:backgroundTint="@color/yp_light_grey" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rw_tracks"
+            android:id="@+id/rv_tracks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" />
