@@ -13,12 +13,12 @@ import com.victor_sml.playlistmaker.common.ui.BindingFragment
 import com.victor_sml.playlistmaker.common.ui.recycler.adapters.RecyclerAdapter
 import com.victor_sml.playlistmaker.common.ui.recycler.api.RecyclerItem
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.PlaylistDelegate
-import com.victor_sml.playlistmaker.common.ui.recycler.delegates.PlaylistDelegate.PlaylistClickListener
 import com.victor_sml.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsScreenState
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsScreenState.Content
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsScreenState.Empty
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsViewModel
+import com.victor_sml.playlistmaker.library.ui.view.LibraryFragmentDirections
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
@@ -26,8 +26,10 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     private lateinit var recyclerAdapter: RecyclerAdapter
 
-    private val playlistClickListener = object : PlaylistClickListener {
+    private val playlistClickListener = object : PlaylistDelegate.PlaylistClickListener {
         override fun onPlaylistClick(playlist: Playlist) {
+            val action = LibraryFragmentDirections.actionPlaylistDetails(playlist.id)
+            findNavController().navigate(action)
         }
     }
 

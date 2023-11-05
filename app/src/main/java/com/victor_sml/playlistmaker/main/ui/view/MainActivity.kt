@@ -15,51 +15,84 @@ import com.victor_sml.playlistmaker.common.utils.UtilsUi.doOnApplyWindowInsets
 import com.victor_sml.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
+
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
 
-    var isCurrentDestinationWithBottomNav = true
+    private var isCurrentDestinationWithBottomNav = true
+
+    private val onBackStackChangedListener = OnBackStackChangedListener {
+        setFragmentAnimationListener()
+    }
 
     private val fragmentAnimationListener = object : AnimationListener {
         override fun onAnimationStart(p0: Animation?) {
+            binding.bnvMain.isVisible = isCurrentDestinationWithBottomNav
         }
 
         override fun onAnimationEnd(p0: Animation?) {
-            binding.bnvMain.isVisible = isCurrentDestinationWithBottomNav
         }
 
         override fun onAnimationRepeat(p0: Animation?) {
         }
     }
 
-    private val onBackStackChangedListener = OnBackStackChangedListener {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        initializeUI()
+
+        savedInstanceState?.getBoolean(BOTTOM_NAVIGATION_VISIBILITY)?.let { isBottomNavigationVisible ->
+                restoreBottomNavigation(isBottomNavigationVisible)
+            }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(BOTTOM_NAVIGATION_VISIBILITY, binding.bnvMain.isVisible)
+    }
+
+    private fun initializeUI() {
+        window.setDecorFitsSystemWindows(false)
+
+        initLayout()
+        applyWindowInsets()
+        initNavigation()
+        setListener()
+    }
+
+    private fun initLayout() {
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+
+    private fun applyWindowInsets() {
+        binding.bnvMain.doOnApplyWindowInsets(left = true, right = true, bottom = true)
+    }
+
+    private fun initNavigation() {
+        navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fc_main) as NavHostFragment
+
+        navController = navHostFragment.navController
+
+        binding.bnvMain.setupWithNavController(navController)
+    }
+
+    private fun restoreBottomNavigation(isBottomNavigationVisible: Boolean) {
+        binding.bnvMain.isVisible = isBottomNavigationVisible
+        setFragmentAnimationListener()
+    }
+
+    private fun setFragmentAnimationListener() {
         val currentFragment = navHostFragment.childFragmentManager.primaryNavigationFragment
 
         if (currentFragment is NonBottomNavFragment) {
             binding.bnvMain.isVisible = false
             currentFragment.setAnimationListener(fragmentAnimationListener)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        initializeUI()
-    }
-
-    private fun initializeUI() {
-        window.setDecorFitsSystemWindows(false)
-
-        applyWindowInsets()
-        initNavigation()
-        setListener()
-    }
-
-    private fun applyWindowInsets() {
-        binding.bnvMain.doOnApplyWindowInsets(left = true, right = true, bottom = true)
     }
 
     private fun setListener() {
@@ -71,22 +104,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
+            isCurrentDestinationWithBottomNav = when (destination.id) {
                 R.id.destination_library,
                 R.id.destination_search,
-                R.id.destination_settings -> isCurrentDestinationWithBottomNav = true
+                R.id.destination_settings -> true
 
-                else -> isCurrentDestinationWithBottomNav = false
+                else -> false
             }
         }
     }
 
-    private fun initNavigation() {
-        navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fc_main) as NavHostFragment
-
-        navController = navHostFragment.navController
-
-        binding.bnvMain.setupWithNavController(navController)
+    companion object {
+        const val BOTTOM_NAVIGATION_VISIBILITY = "bottom_navigation_visibility"
     }
 }

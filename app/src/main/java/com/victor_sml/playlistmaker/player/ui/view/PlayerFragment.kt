@@ -7,7 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnDrawListener
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -46,7 +49,11 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     private val viewModel by viewModel<PlayerViewModel> { parametersOf(track) }
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
-    private var windowInsetsController: WindowInsetsControllerCompat? = null
+    private val windowInsetsController
+        get() = WindowInsetsControllerCompat(
+            requireActivity().window,
+            requireActivity().window.decorView
+        )
 
     private lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var bottomSheetController: PlayerBottomSheetController
@@ -56,15 +63,6 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
             setBottomSheetPeekHeight(binding.tvArtistName, GAP_ABOVE_BOTTOM_SHEET_DP)
             setBottomSheetMaxHeight(binding.tbPlayer)
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        windowInsetsController = WindowInsetsControllerCompat(
-            requireActivity().window,
-            requireActivity().window.decorView
-        )
     }
 
     override fun createBinding(
@@ -92,8 +90,13 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        if ((resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_NO)
-            windowInsetsController?.isAppearanceLightStatusBars = true
+        setStatusBarAppearanceLight(
+            ((resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_NO)
+        )
+    }
+
+    private fun setStatusBarAppearanceLight(isStatusBarLight: Boolean) {
+        windowInsetsController.isAppearanceLightStatusBars = isStatusBarLight
     }
 
     private fun observeScreenContent() {
@@ -147,8 +150,8 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     private fun initBottomSheet() {
         bottomSheetController = PlayerBottomSheetController(
             binding.bsAddingToPlaylist,
-            binding.overlay,
             binding.tbPlayer,
+            binding.overlay,
             binding.tvTitleTop
         )
 
@@ -172,18 +175,29 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
 
         recyclerAdapter = RecyclerAdapter(arrayListOf(PlaylistDelegate(playlistClickListener)))
 
-        binding.rwPlaylists.layoutManager = LinearLayoutManager(requireContext())
-        binding.rwPlaylists.adapter = recyclerAdapter
+        binding.rvPlaylists.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvPlaylists.adapter = recyclerAdapter
     }
 
     private fun applyWindowInsets() {
-        binding.swRoot.doOnApplyWindowInsets(left = true, top = true, right = true, bottom = true)
+        binding.svRoot.doOnApplyWindowInsets(left = true, top = true, right = true, bottom = true)
 
         binding.tbPlayer.doOnApplyWindowInsets(left = true, top = true, right = true)
 
         binding.tvTitleTop.doOnApplyWindowInsets(left = true, top = true, right = true)
 
-        binding.bsAddingToPlaylist.doOnApplyWindowInsets(left = true, right = true)
+        binding.rvPlaylists.doOnApplyWindowInsets(bottom = true)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bsAddingToPlaylist) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                rightMargin = insets.right
+            }
+
+            windowInsets
+        }
     }
 
     private fun setListeners() {
@@ -249,7 +263,7 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     }
 
     private fun showMessage(message: String) {
-        Snackbar.make(binding.swRoot, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.svRoot, message, Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

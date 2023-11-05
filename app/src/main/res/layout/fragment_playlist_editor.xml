@@ -4,14 +4,14 @@
     android:id="@+id/ll_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/tb_playlist_editor"
         style="@style/Toolbar"
         android:background="?attr/colorPrimary"
-        android:backgroundTint="?attr/colorPrimary" />
+        android:backgroundTint="?attr/colorPrimary"
+        app:title="@string/new_playlist" />
 
     <ScrollView
         android:id="@+id/sv_edit_area"
