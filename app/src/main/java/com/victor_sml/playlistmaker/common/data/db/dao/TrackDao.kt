@@ -21,4 +21,9 @@ interface TrackDao {
     @Query("SELECT * FROM tracks WHERE is_favorite = 1 ORDER BY timestamp DESC")
     suspend fun getFavoriteTracks(): List<TrackEntity>
 
+    @Query("UPDATE tracks SET is_favorite = :isFavorite WHERE track_id = :trackId")
+    suspend fun updateFavoriteState(trackId: Int, isFavorite: Boolean)
+
+    @Query("SELECT EXISTS(SELECT * FROM playlist_track WHERE track_id = :trackId)")
+    suspend fun isTrackInPlaylist(trackId: Int): Boolean
 }

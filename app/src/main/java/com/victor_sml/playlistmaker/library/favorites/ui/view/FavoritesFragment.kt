@@ -56,8 +56,8 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
         viewModel.updateFavorites()
 
         viewModel.getFavoriteTracks().observe(viewLifecycleOwner) { recyclerItems ->
-            binding.rwFavoriteTracks.isVisible = true
             recyclerAdapter.update(recyclerItems)
+            binding.rwFavoriteTracks.isVisible = true
         }
 
         initRecycler()

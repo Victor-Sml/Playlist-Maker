@@ -36,7 +36,7 @@ class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val trackInteractor: TracksInteractor,
     private val playlistInteractor: PlaylistInteractor,
-    private val getStringUseCase: GetStringUseCase,
+    private val getStringUseCase: GetStringUseCase
 ) :
     ViewModel(), PlayerInteractor.StateObserver {
 
