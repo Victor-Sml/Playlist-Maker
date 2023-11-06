@@ -8,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnDrawListener
+import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.FileProvider
+import androidx.core.graphics.Insets
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,7 +25,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.Constants
 import com.victor_sml.playlistmaker.common.domain.models.Track
@@ -33,11 +38,15 @@ import com.victor_sml.playlistmaker.common.ui.recycler.api.RecyclerItem.TrackIte
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.PlaylistDelegate
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TextLineDelegate
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TrackDelegate
+import com.victor_sml.playlistmaker.common.utils.Utils.toNumberOfTracksString
+import com.victor_sml.playlistmaker.common.utils.Utils.toTimeMMSS
 import com.victor_sml.playlistmaker.common.utils.UtilsUi.doOnApplyWindowInsets
 import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentPlaylistDetailsBinding
 import com.victor_sml.playlistmaker.library.playlistDetails.ui.model.PlaylistUi
 import com.victor_sml.playlistmaker.library.playlistDetails.ui.stateholder.PlaylistDetailsViewModel
+import com.victor_sml.playlistmaker.library.playlistDetails.ui.view.bottomSheetControllers.BottomSheetControllerMenu
+import com.victor_sml.playlistmaker.library.playlistDetails.ui.view.bottomSheetControllers.BottomSheetControllerTracks
 import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
 import java.io.File
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -47,10 +56,12 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private var playlistId: Int? = null
+    private var playlistUi: PlaylistUi? = null
 
     private lateinit var recyclerAdapter: RecyclerAdapter
 
     private lateinit var bottomSheetControllerTrack: BottomSheetController
+    private lateinit var bottomSheetControllerMenu: BottomSheetController
 
     private val windowInsetsController
         get() = WindowInsetsControllerCompat(
@@ -62,6 +73,11 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
         with(bottomSheetControllerTrack) {
             setBottomSheetMaxHeight(binding.tbPlaylist)
             setBottomSheetPeekHeight(binding.ivSharePlaylist)
+        }
+
+        with(bottomSheetControllerMenu) {
+            setBottomSheetMaxHeight(binding.tvPlaylistTitle, GAP_ABOVE_BOTTOM_SHEET_DP)
+            setBottomSheetPeekHeight(binding.tvPlaylistTitle, GAP_ABOVE_BOTTOM_SHEET_DP)
         }
     }
 
@@ -111,7 +127,9 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
 
     private fun observeScreenContent() {
         viewModel.getState().observe(viewLifecycleOwner) { playlist ->
+            playlistUi = playlist
             renderViews(playlist)
+            setMenuListeners(playlist)
         }
     }
 
@@ -124,9 +142,13 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
 
     private fun applyWindowInsets() {
         with(binding) {
-            clRoot.doOnApplyWindowInsets(left = true, top = true, right = true, bottom = true)
+            clRoot.doOnApplyWindowInsets(left = true, right = true, bottom = true) { view, insets ->
+                view.setMarginTop(insets)
+            }
 
-            flToolbarContainer.doOnApplyWindowInsets(left = true, top = true, right = true)
+            flToolbarContainer.doOnApplyWindowInsets(left = true, right = true) { view, insets ->
+                view.setMarginTop(insets)
+            }
 
             rvTracks.doOnApplyWindowInsets(bottom = true)
 
@@ -178,10 +200,11 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
 
     private fun initBottomSheets() {
         initBottomSheetTrack()
+        initBottomSheetMenu()
     }
 
     private fun initBottomSheetTrack() {
-        bottomSheetControllerTrack = TracksBottomSheetController(
+        bottomSheetControllerTrack = BottomSheetControllerTracks(
             binding.llTracks,
             binding.overlay,
             binding.tbPlaylist,
@@ -189,13 +212,52 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
         )
     }
 
+    private fun initBottomSheetMenu() {
+        bottomSheetControllerMenu = BottomSheetControllerMenu(
+            binding.clMenu,
+            binding.overlay,
+            binding.tbPlaylist,
+            bottomSheetControllerTrack
+        )
+    }
+
     private fun setListeners() {
         binding.tbPlaylist.setNavigationOnClickListener { findNavController().popBackStack() }
+
+        binding.ivSharePlaylist.setOnClickListener {
+            playlistUi?.let { onSharePlaylistClicked(it) }
+        }
+
+        binding.ivMenu.setOnClickListener {
+            bottomSheetControllerMenu.bottomSheetBehavior.state =
+                BottomSheetBehavior.STATE_COLLAPSED
+
+            binding.overlay.setOnClickListener {
+                bottomSheetControllerMenu.bottomSheetBehavior.state =
+                    BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
 
         binding
             .ivSharePlaylist
             .viewTreeObserver
             .addOnDrawListener(layoutOnDrawListener)
+    }
+
+    private fun setMenuListeners(playlist: PlaylistUi) {
+        binding.tvMenuSharePlaylist.setOnClickListener {
+            onSharePlaylistClicked(playlist)
+        }
+
+        binding.tvMenuEditPlaylist.setOnClickListener {
+        }
+
+        binding.tvMenuDeletePlaylist.setOnClickListener {
+            showDeletionDialog(String.format(getString(PLAYLIST_DIALOG_TITLE), playlist.title)) {
+                viewModel.deletePlaylist(playlist.id)
+                findNavController().popBackStack()
+            }
+        }
     }
 
     private fun removeListeners() {
@@ -205,6 +267,7 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
     private fun renderViews(playlist: PlaylistUi) {
         renderDetailArea(playlist)
         renderTracksArea(playlist)
+        renderMenuArea(playlist)
     }
 
     private fun renderDetailArea(playlist: PlaylistUi) {
@@ -235,6 +298,20 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
         }
 
         showTracks(playlist.tracks)
+    }
+
+    private fun renderMenuArea(playlist: PlaylistUi) {
+        with(binding) {
+            tvMenuPlaylistTitle.text = playlist.title
+
+            tvMenuNumberOfTracks.text = resources.getQuantityString(
+                CASE_OF_TRACK_PLURALS_ID,
+                playlist.numberOfTracks,
+                playlist.numberOfTracks
+            )
+
+            ivMenuPlaylistCover.setCoverImage(playlist.coverPath)
+        }
     }
 
     private fun ImageView.setCoverImage(coverPath: String?) {
@@ -270,6 +347,69 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
         binding.tvWithoutTracksPlaylist.isVisible = true
     }
 
+    private fun onSharePlaylistClicked(playlist: PlaylistUi) {
+        if (playlist.tracks.isNullOrEmpty()) {
+            showMessage(getString(SHARE_MESSAGE_STR_ID))
+            return
+        }
+
+        val contentUri = playlist.coverPath?.getContentUri()
+
+        viewModel.onSharePlaylistClicked(playlist.toStringMassage(), playlist, contentUri)
+    }
+
+    private fun String.getContentUri(): Uri {
+        val path = File(this)
+        val file = File(path.parent, path.name)
+
+        return FileProvider.getUriForFile(
+            requireContext(),
+            FILE_PROVIDER_AUTHORITY,
+            file
+        )
+    }
+
+    private fun PlaylistUi.toStringMassage(): String {
+        return buildString {
+            append(title)
+            append(NEW_LINE_STRING)
+            if (!description.isNullOrEmpty()) append(description + NEW_LINE_STRING)
+            append(numberOfTracks.toNumberOfTracksString(requireContext()))
+            append(DOUBLE_NEW_LINE_STRING)
+            append(tracks?.toStringMessage())
+        }
+    }
+
+    private fun List<TrackItem>.toStringMessage(): String {
+        val preparedTracks =
+            this.mapIndexed { index, recyclerTrack ->
+                with(recyclerTrack) {
+                    String.format(
+                        getString(TRACK_STRING_TEMPLATE_ID),
+                        (index + 1).toString(),
+                        track.artistName,
+                        track.trackName,
+                        track.trackTimeMillis?.toTimeMMSS()
+                    )
+                }
+            }
+
+        return preparedTracks.joinToString(separator = NEW_LINE_STRING)
+    }
+
+    // Устанавливает верхний отступ View, чтобы при появлении Sharesheet разметка
+    // не уезжала за статусбаром.
+    private fun View.setMarginTop(insets: Insets) {
+        this.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            if (insets.top != 0) topMargin =
+                requireActivity().window.decorView.rootWindowInsets.getInsets(WindowInsets.Type.systemBars()).top
+        }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.clRoot, message, Snackbar.LENGTH_SHORT).show()
+    }
+
     private fun showDeletionDialog(message: String, action: () -> Unit) {
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(R.layout.dialog_deletion)
@@ -295,5 +435,17 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
         const val CASE_OF_MINUTE_PLURALS_ID = R.plurals.case_of_minute
 
         const val TRACK_DIALOG_TITLE = R.string.deletion_of_a_track_dialog_title
+        const val PLAYLIST_DIALOG_TITLE = R.string.deletion_of_a_playlist_dialog_title
+
+        const val SHARE_MESSAGE_STR_ID = R.string.tracks_is_not_available_to_share
+
+        const val TRACK_STRING_TEMPLATE_ID = R.string.track_item_template
+
+        const val NEW_LINE_STRING = "\n"
+        const val DOUBLE_NEW_LINE_STRING = "\n\n"
+
+        const val GAP_ABOVE_BOTTOM_SHEET_DP = 8
+
+        const val FILE_PROVIDER_AUTHORITY = "com.victor_sml.playlistmaker.fileprovider"
     }
 }

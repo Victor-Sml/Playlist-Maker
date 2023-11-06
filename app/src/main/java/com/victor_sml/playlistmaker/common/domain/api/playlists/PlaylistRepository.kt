@@ -15,4 +15,6 @@ interface PlaylistRepository {
     suspend fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracks>
 
     suspend fun loadPlaylists(): Flow<List<Playlist>>
+
+    suspend fun deletePlaylist(playlistId: Int)
 }

@@ -33,4 +33,7 @@ interface PlaylistDao {
                 "ON pt.playlist_id = p.playlist_id GROUP BY p.playlist_id"
     )
     fun loadPlaylists(): Flow<List<PlaylistDto>>
+
+    @Query("DELETE FROM playlists WHERE playlist_id = :playlistId")
+    suspend fun deletePlaylist(playlistId: Int)
 }

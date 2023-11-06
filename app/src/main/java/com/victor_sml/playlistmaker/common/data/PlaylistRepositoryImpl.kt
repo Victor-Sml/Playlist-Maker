@@ -50,6 +50,10 @@ class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
         }
     }
 
+    override suspend fun deletePlaylist(playlistId: Int) {
+        db.deletePlaylist(playlistId)
+    }
+
     private fun processException(e: SQLiteException): DBQueryState {
         e.message?.let { message ->
             if (message.startsWith(SQLITE_CONSTRAINT_UNIQUE)) return ErrorUnique

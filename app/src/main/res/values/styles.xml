@@ -122,6 +122,12 @@
         <item name="android:textAppearance">?attr/textAppearanceBody_2ExtraLarge</item>
     </style>
 
+    <style name="PlaylistDetailsTextMenu">
+        <item name="android:textAppearance">?attr/textAppearanceBody_ExtraLarge</item>
+        <item name="android:background">@drawable/clickable_item_background</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
     <style name="EllipsizedTextView">
         <item name="layout_constrainedWidth">true</item>
         <item name="android:ellipsize">end</item>

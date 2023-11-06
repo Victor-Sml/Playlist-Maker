@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.library.playlistDetails.ui.view
+package com.victor_sml.playlistmaker.library.playlistDetails.ui.view.bottomSheetControllers
 
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPS
 import com.victor_sml.playlistmaker.R.color.steel_grey
 import com.victor_sml.playlistmaker.common.ui.BottomSheetController
 
-class TracksBottomSheetController(
+class BottomSheetControllerTracks(
     bottomSheet: ViewGroup,
     private val overlay: View,
     toolbar: MaterialToolbar,

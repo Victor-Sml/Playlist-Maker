@@ -10,6 +10,7 @@ import com.victor_sml.playlistmaker.library.favorites.ui.stateholder.FavoritesVi
 import com.victor_sml.playlistmaker.library.playlistEditor.ui.stateholders.PlaylistEditorViewModel
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsViewModel
 import com.victor_sml.playlistmaker.library.playlistDetails.ui.stateholder.PlaylistDetailsViewModel
+import com.victor_sml.playlistmaker.library.playlistDetails.domain.SharePlaylistUseCase
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -29,4 +30,6 @@ val libraryModule = module {
     singleOf(::PlaylistInteractorImpl) bind PlaylistInteractor::class
 
     singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
+
+    singleOf(::SharePlaylistUseCase)
 }

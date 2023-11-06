@@ -48,6 +48,9 @@
     <string name="edit_information">Редактировать информацию</string>
     <string name="delete_playlist">Удалить плейлист</string>
     <string name="deletion_of_a_track_dialog_title">Хотите удалить трек?</string>
+    <string name="deletion_of_a_playlist_dialog_title">Хотите удалить плейлист %1$s?</string>
     <string name="accept">Да</string>
     <string name="decline">Нет</string>
+    <string name="tracks_is_not_available_to_share">В этом плейлисте нет списа треков,\n которыми можно поделиться.</string>
+    <string name="track_item_template">%1$s. %2$s - %3$s (%4$s)</string>
 </resources>
