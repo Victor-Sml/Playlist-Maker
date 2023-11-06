@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.core.content.FileProvider
 import androidx.core.graphics.Insets
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -47,6 +48,7 @@ import com.victor_sml.playlistmaker.library.playlistDetails.ui.model.PlaylistUi
 import com.victor_sml.playlistmaker.library.playlistDetails.ui.stateholder.PlaylistDetailsViewModel
 import com.victor_sml.playlistmaker.library.playlistDetails.ui.view.bottomSheetControllers.BottomSheetControllerMenu
 import com.victor_sml.playlistmaker.library.playlistDetails.ui.view.bottomSheetControllers.BottomSheetControllerTracks
+import com.victor_sml.playlistmaker.library.playlistEditor.ui.view.PlaylistEditorFragment.Companion.PLAYLIST_FOR_EDITING
 import com.victor_sml.playlistmaker.main.ui.stateholder.SharedViewModel
 import java.io.File
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -245,11 +247,17 @@ class PlaylistDetailsFragment : NonBottomNavFragmentImpl<FragmentPlaylistDetails
     }
 
     private fun setMenuListeners(playlist: PlaylistUi) {
-        binding.tvMenuSharePlaylist.setOnClickListener {
-            onSharePlaylistClicked(playlist)
-        }
+        val onEditPlaylistClickDebounce: (Bundle) -> Unit =
+            debounce(Constants.CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { playlist ->
+                findNavController().navigate(R.id.action_global_playlist_editor, playlist)
+            }
 
         binding.tvMenuEditPlaylist.setOnClickListener {
+            onEditPlaylistClickDebounce(bundleOf(PLAYLIST_FOR_EDITING to playlist.toPlaylist()))
+        }
+
+        binding.tvMenuSharePlaylist.setOnClickListener {
+            onSharePlaylistClicked(playlist)
         }
 
         binding.tvMenuDeletePlaylist.setOnClickListener {

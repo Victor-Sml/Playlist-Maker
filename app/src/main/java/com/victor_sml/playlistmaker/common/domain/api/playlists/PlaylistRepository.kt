@@ -6,7 +6,7 @@ import com.victor_sml.playlistmaker.common.utils.DBQueryState
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistRepository {
-    suspend fun addPlaylist(playlist: Playlist): DBQueryState
+    suspend fun savePlaylist(playlist: Playlist): DBQueryState
 
     suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState
 

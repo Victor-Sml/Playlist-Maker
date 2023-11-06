@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository) :
     PlaylistInteractor {
 
-    override suspend fun addPlaylist(playlist: Playlist): DBQueryState =
-        playlistRepository.addPlaylist(playlist)
+    override suspend fun savePlaylist(playlist: Playlist): DBQueryState =
+        playlistRepository.savePlaylist(playlist)
 
     override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState =
         playlistRepository.insertToPlaylist(playlistId, trackId)

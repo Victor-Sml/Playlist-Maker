@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.victor_sml.playlistmaker.common.data.db.dto.PlaylistDto
 import com.victor_sml.playlistmaker.common.data.db.dto.PlaylistWithTracksDto
 import com.victor_sml.playlistmaker.common.data.db.entity.PlaylistEntity
@@ -16,6 +17,9 @@ interface PlaylistDao {
 
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun insertPlaylist(playlist: PlaylistEntity)
+
+    @Update
+    suspend fun updatePlaylist(playlist: PlaylistEntity)
 
     @Query("DELETE FROM playlist_track WHERE playlist_id = :playlistId AND track_id = :trackId")
     suspend fun deleteTrack(playlistId: Int, trackId: Int)
