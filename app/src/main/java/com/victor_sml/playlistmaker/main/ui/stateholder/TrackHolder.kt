@@ -1,4 +1,4 @@
-package com.victor_sml.playlistmaker.common.utils
+package com.victor_sml.playlistmaker.main.ui.stateholder
 
 import android.os.Bundle
 import com.victor_sml.playlistmaker.common.domain.models.Track
