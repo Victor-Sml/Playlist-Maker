@@ -187,8 +187,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="24dp"
-            android:drawableTop="@drawable/ic_nothing_found"
-            android:drawablePadding="16dp"
             android:text="@string/without_tracks_playlist"
             android:textAppearance="?attr/textAppearanceBody_2ExtraLarge"
             android:visibility="gone" />

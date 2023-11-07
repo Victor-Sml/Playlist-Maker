@@ -16,4 +16,8 @@ class TracksInteractorImpl(private val trackRepository: TrackRepository) : Track
 
     override suspend fun getFavoriteTracks(): Flow<List<Track>> =
         trackRepository.getFavoriteTracks()
+
+    override suspend fun verifyTrackFavorites(trackId: Int): Boolean {
+        return trackRepository.verifyTrackFavorites(trackId)
+    }
 }

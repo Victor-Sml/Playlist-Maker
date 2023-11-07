@@ -2,6 +2,8 @@ package com.victor_sml.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import com.victor_sml.playlistmaker.di.common.commonModule
 import com.victor_sml.playlistmaker.di.common.dataModule
 import com.victor_sml.playlistmaker.di.common.domainModule
@@ -45,12 +47,10 @@ class App : Application() {
 
     fun switchTheme(darkThemeEnabled: Boolean) {
         isDarkTheme = darkThemeEnabled
+
         AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
+            if (darkThemeEnabled) MODE_NIGHT_YES
+            else MODE_NIGHT_NO
         )
     }
 }

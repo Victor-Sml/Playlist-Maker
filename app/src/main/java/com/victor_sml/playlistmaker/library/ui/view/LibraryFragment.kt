@@ -4,21 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import com.google.android.material.tabs.TabLayoutMediator
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.ui.BindingFragment
+import com.victor_sml.playlistmaker.common.utils.UtilsUi.doOnApplyWindowInsets
 import com.victor_sml.playlistmaker.databinding.FragmentLibraryBinding
-import com.victor_sml.playlistmaker.library.favorites.ui.stateholder.FavoritesViewModel
-import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : BindingFragment<FragmentLibraryBinding>() {
     private var tabLayoutMediator: TabLayoutMediator? = null
-    private val favoritesViewModel by viewModel<FavoritesViewModel>()
-    private val playlistViewModel by viewModel<PlaylistsViewModel>()
 
     override fun createBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentLibraryBinding {
         return FragmentLibraryBinding.inflate(inflater, container, false)
@@ -47,20 +40,6 @@ class LibraryFragment : BindingFragment<FragmentLibraryBinding>() {
     }
 
     private fun setLayoutParams() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.llRoot) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.top
-                leftMargin = insets.left
-                rightMargin = insets.right
-            }
-
-            WindowInsetsCompat.CONSUMED
-        }
-    }
-
-    companion object {
-        fun newInstance(): LibraryFragment = LibraryFragment()
+        binding.llRoot.doOnApplyWindowInsets(left = true, top = true, right = true)
     }
 }

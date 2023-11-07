@@ -31,12 +31,6 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
     private lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var onTrackClickDebounce: (Track) -> Unit
 
-    private val trackClickListener = object : TrackDelegate.TrackClickListener {
-        override fun onTrackClick(track: Track) {
-            onTrackClickDebounce(track)
-        }
-    }
-
     override fun createBinding(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,23 +41,37 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        onTrackClickDebounce =
-            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
-                sharedViewModel.passTrack(TRACK_FOR_PLAYER, track)
-                findNavController().navigate(R.id.action_global_player)
-            }
+        observeFavoriteTracks()
+        initializeUI()
+    }
 
+    private fun observeFavoriteTracks() {
         viewModel.updateFavorites()
 
         viewModel.getFavoriteTracks().observe(viewLifecycleOwner) { recyclerItems ->
             recyclerAdapter.update(recyclerItems)
             binding.rwFavoriteTracks.isVisible = true
         }
+    }
 
+    private fun initializeUI() {
+        setDebounce()
         initRecycler()
     }
 
+    private fun setDebounce() {
+        onTrackClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
+                sharedViewModel.passTrack(TRACK_FOR_PLAYER, track)
+                findNavController().navigate(R.id.action_global_player)
+            }
+    }
+
     private fun initRecycler() {
+        val trackClickListener = object : TrackDelegate.TrackClickListener {
+            override fun onTrackClick(track: Track) { onTrackClickDebounce(track) }
+        }
+
         recyclerAdapter =
             RecyclerAdapter(
                 arrayListOf(

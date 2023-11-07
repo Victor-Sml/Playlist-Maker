@@ -62,6 +62,12 @@ class SearchViewModel(
         requestHistory()
     }
 
+    fun onTrackClicked(track: Track) {
+        if (screenState.value is History) return
+
+        addToHistory(track)
+    }
+
     fun addToHistory(track: Track) {
         viewModelScope.launch { historyInteractor.addTrack(track) }
     }

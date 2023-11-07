@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnDrawListener
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import com.victor_sml.playlistmaker.R
 import com.victor_sml.playlistmaker.common.Constants.CLICK_DEBOUNCE_DELAY
 import com.victor_sml.playlistmaker.common.Constants.DEFAULT_ARTWORK_DRAWABLE_ID
@@ -75,8 +77,7 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        track = sharedViewModel.getTrack(TRACK_FOR_PLAYER)
-
+        loadTrack()
         observeScreenContent()
         initializeUi()
     }
@@ -97,6 +98,10 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
 
     private fun setStatusBarAppearanceLight(isStatusBarLight: Boolean) {
         windowInsetsController.isAppearanceLightStatusBars = isStatusBarLight
+    }
+
+    private fun loadTrack() {
+        track = sharedViewModel.getTrack(TRACK_FOR_PLAYER)
     }
 
     private fun observeScreenContent() {
@@ -228,7 +233,7 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
 
     private fun renderLikeButton(iconId: Int, colorId: Int) {
         binding.fabLike.apply {
-            setImageDrawable(requireContext().getDrawable(iconId))
+            setImageDrawable(AppCompatResources.getDrawable(requireContext(), iconId))
             setColorFilter(requireContext().getColor(colorId))
         }
     }
@@ -243,7 +248,9 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     }
 
     private fun updateControllerImage(drawableId: Int) {
-        binding.fabPlaybackControl.setImageDrawable(requireContext().getDrawable(drawableId))
+        binding.fabPlaybackControl.setImageDrawable(
+            AppCompatResources.getDrawable(requireContext(), drawableId)
+        )
     }
 
     private fun updatePlaybackProgress(progress: String) {
@@ -263,7 +270,7 @@ class PlayerFragment : NonBottomNavFragmentImpl<FragmentPlayerBinding>() {
     }
 
     private fun showMessage(message: String) {
-        Snackbar.make(binding.svRoot, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.svRoot, message, LENGTH_SHORT).show()
     }
 
     companion object {

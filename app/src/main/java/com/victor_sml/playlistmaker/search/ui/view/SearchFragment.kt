@@ -1,19 +1,16 @@
 package com.victor_sml.playlistmaker.search.ui.view
 
-import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -43,6 +40,7 @@ import com.victor_sml.playlistmaker.common.ui.recycler.delegates.MessageDelegate
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.SpaceDelegate
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TrackDelegate.TrackClickListener
 import com.victor_sml.playlistmaker.common.ui.recycler.delegates.TrackDelegate
+import com.victor_sml.playlistmaker.common.utils.UtilsUi.doOnApplyWindowInsets
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -158,17 +156,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     }
 
     private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.llRoot) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = insets.top
-                leftMargin = insets.left
-                rightMargin = insets.right
-            }
-
-            WindowInsetsCompat.CONSUMED
-        }
+        binding.llRoot.doOnApplyWindowInsets(left = true, top = true, right = true)
     }
 
     private fun initRecycler() {
@@ -240,7 +228,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         onTrackClickDebounce =
             debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope) { track ->
                 sharedViewModel.passTrack(TRACK_FOR_PLAYER, track)
-                viewModel.addToHistory(track)
+                viewModel.onTrackClicked(track)
                 findNavController().navigate(R.id.action_global_player)
             }
 
@@ -274,13 +262,15 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun showSoftInput() {
         binding.inputEditText.requestFocus()
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        activity?.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
     }
 
     private fun hideSoftInput() {
         val view = activity?.currentFocus
+
         val inputMethodManager =
-            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            activity?.getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+
         inputMethodManager?.hideSoftInputFromWindow(view?.windowToken, 0)
         activity?.currentFocus?.clearFocus()
     }

@@ -23,4 +23,8 @@ class TrackRepositoryImpl(private val db: TrackDao) : TrackRepository {
     override suspend fun getFavoriteTracks(): Flow<List<Track>> = flow {
         emit(db.getFavoriteTracks().map { it.toTrack() })
     }
+
+    override suspend fun verifyTrackFavorites(trackId: Int): Boolean {
+        return db.getFavoriteTrackIds().contains(trackId)
+    }
 }

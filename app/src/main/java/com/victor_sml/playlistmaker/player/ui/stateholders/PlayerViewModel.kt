@@ -32,7 +32,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val track: Track,
+    private var track: Track,
     private val playerInteractor: PlayerInteractor,
     private val trackInteractor: TracksInteractor,
     private val playlistInteractor: PlaylistInteractor,
@@ -56,7 +56,7 @@ class PlayerViewModel(
 
     init {
         preparePlayer()
-        postFavoriteState()
+        verifyTrackFavorites(track.trackId)
         observePlaylists()
     }
 
@@ -70,7 +70,7 @@ class PlayerViewModel(
 
     fun onLikeClick() {
         viewModelScope.launch {
-            track.isFavorite = !track.isFavorite
+            track = track.copy(isFavorite = !track.isFavorite)
             postFavoriteState()
             changeFavoriteState()
         }
@@ -90,6 +90,19 @@ class PlayerViewModel(
         try {
             track.previewUrl?.let { playerInteractor.preparePlayer(it, this) }
         } catch (_: IOException) {
+        }
+    }
+
+    private fun verifyTrackFavorites(trackId: Int) {
+        viewModelScope.launch {
+            if (trackInteractor.verifyTrackFavorites(trackId)) {
+                track = track.copy(isFavorite = true)
+                favoriteState.postValue(Like)
+            }
+            else {
+                track = track.copy(isFavorite = false)
+                favoriteState.postValue(Dislike)
+            }
         }
     }
 
