@@ -35,6 +35,7 @@ import com.victor_sml.playlistmaker.common.ui.nonBottomNavFragment.NonBottomNavF
 import com.victor_sml.playlistmaker.common.utils.Transliterator.toLatin
 import com.victor_sml.playlistmaker.common.utils.Utils.dpToPx
 import com.victor_sml.playlistmaker.common.utils.Utils.toUnique
+import com.victor_sml.playlistmaker.common.utils.UtilsUi.setImageFrom
 import com.victor_sml.playlistmaker.common.utils.debounce
 import com.victor_sml.playlistmaker.databinding.FragmentPlaylistEditorBinding
 import com.victor_sml.playlistmaker.library.playlistEditor.ui.stateholders.PlaylistCreationState
@@ -49,6 +50,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBinding>() {
     private val viewModel by viewModel<PlaylistEditorViewModel>()
 
+    private var currentPlaylist: Playlist? = null
+
     private var title: String = ""
     private var description: String = ""
     private var imageFileUri: Uri? = null
@@ -59,6 +62,7 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        getCurrentPlaylist()
         setOnBackPressedCallback()
         initPickMedia()
     }
@@ -76,6 +80,13 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
         initializeUI()
     }
 
+    private fun getCurrentPlaylist() {
+        try {
+            currentPlaylist = requireArguments().getParcelable(PLAYLIST_FOR_EDITING)
+        } catch (_: IllegalStateException) {
+        }
+    }
+
     private fun observeCreationState() {
         viewModel.getCreationState().observe(viewLifecycleOwner) { state ->
             processCreationState(state)
@@ -84,9 +95,11 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
 
     private fun initializeUI() {
         applyWindowInsets()
+        renderViews()
         setDebounce()
         setListeners()
     }
+
     private fun applyWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.llRoot) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -115,15 +128,33 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
         }
     }
 
+    private fun renderViews() {
+        with(binding) {
+            tiPlaylistTitle.setText(currentPlaylist?.title)
+            tiPlaylistDescription.setText(currentPlaylist?.description)
+            btnSavePlaylist.isEnabled = !tiPlaylistTitle.text.isNullOrEmpty()
+            ivPlaylistCover.setImageFrom(
+                currentPlaylist?.coverPath,
+                ADD_PLAYLIST_POSTER_DRAWABLE_ID
+            )
+        }
+
+        if (currentPlaylist == null)
+            renderServiceViews(R.string.new_playlist, R.string.create)
+        else
+            renderServiceViews(R.string.edit, R.string.save)
+    }
+
+    private fun renderServiceViews(titleId: Int, buttonTextId: Int) {
+        binding.tbPlaylistEditor.title = getString(titleId)
+        binding.btnSavePlaylist.text = getString(buttonTextId)
+    }
+
     private fun setDebounce() {
         onSaveClickDebounce =
             debounce(DEBOUNCE_DELAY_MILLIS, viewLifecycleOwner.lifecycleScope) {
-                val fileSizeMB = imageFileUri?.getFileSizeMB() ?: 0f
-
-                if (fileSizeMB > LOAD_INDICATION_FILE_SIZE_MB)
-                    binding.progressIndicator.isVisible = true
-
-                thread { savePlaylist(createPlaylist()) }
+                indicateSaving()
+                thread { savePlaylist(editPlaylist(currentPlaylist)) }
             }
     }
 
@@ -187,7 +218,7 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
     }
 
     private fun processBackPress() {
-        if (title.isNotEmpty() || description.isNotEmpty() || imageFileUri != null) {
+        if ((currentPlaylist == null) && (title.isNotEmpty() || description.isNotEmpty() || imageFileUri != null)) {
             showDialog()
         } else findNavController().popBackStack()
     }
@@ -206,16 +237,22 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
         )
     }
 
-    private fun createPlaylist(): Playlist {
+    private fun editPlaylist(currentPlaylist: Playlist? = null): Playlist {
         val imagePath = imageFileUri?.let { imageFileUri ->
             saveImageToPrivateStorage(imageFileUri, getImageFile(title))
-        }
+        } ?: currentPlaylist?.coverPath
 
-        return Playlist(0, title, imagePath, description, DEFAULT_NUMBER_OF_TRACKS)
+        return currentPlaylist?.copy(
+            title = binding.tiPlaylistTitle.text.toString().trim(),
+            coverPath = imagePath,
+            description = binding.tiPlaylistDescription.text.toString().trim()
+        ) ?: return Playlist(
+            DEFAULT_PLAYLIST_ID, title, imagePath, description, DEFAULT_NUMBER_OF_TRACKS
+        )
     }
 
     private fun savePlaylist(playlist: Playlist) {
-        viewModel.addPlaylist(playlist)
+        viewModel.savePlaylist(playlist)
     }
 
     private fun saveImageToPrivateStorage(uri: Uri, file: File): String? {
@@ -287,6 +324,13 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
         Snackbar.make(binding.llRoot, message, Snackbar.LENGTH_SHORT).show()
     }
 
+    private fun indicateSaving() {
+        val fileSizeMB = imageFileUri?.getFileSizeMB() ?: DEFAULT_FILE_SIZE_MB
+
+        if (fileSizeMB > LOAD_INDICATION_FILE_SIZE_MB)
+            binding.progressIndicator.isVisible = true
+    }
+
     private fun Uri.getFileSizeMB(): Float {
         requireContext().contentResolver.query(this, null, null, null, null)?.use { cursor ->
             val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
@@ -294,10 +338,12 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
 
             return cursor.getLong(sizeIndex) / (1024f * 1024f)
         }
-        return 0f
+        return DEFAULT_FILE_SIZE_MB
     }
 
     companion object {
+        const val PLAYLIST_FOR_EDITING = "playlist for editing"
+
         const val IMAGE_DIRECTORY = "playlist_covers"
         const val IMAGE_FILE_PREFIX = "playlist_cover_"
         const val IMAGE_FILE_EXTENSION = ".jpg"
@@ -305,10 +351,14 @@ class PlaylistEditorFragment : NonBottomNavFragmentImpl<FragmentPlaylistEditorBi
         const val FILLED_IN_INPUT_STROKE_COLOR_ID = R.color.filled_in_outlined_input_stroke_color
         const val EMPTY_INPUT_STROKE_COLOR_ID = R.color.empty_outlined_input_stroke_color
 
+        const val ADD_PLAYLIST_POSTER_DRAWABLE_ID = R.drawable.add_playlist_poster
+
+        const val DEFAULT_PLAYLIST_ID = 0
         const val DEFAULT_NUMBER_OF_TRACKS = 0
 
-        const val DEBOUNCE_DELAY_MILLIS = 2000L
-
+        const val DEFAULT_FILE_SIZE_MB = 0f
         const val LOAD_INDICATION_FILE_SIZE_MB = 2
+
+        const val DEBOUNCE_DELAY_MILLIS = 2000L
     }
 }

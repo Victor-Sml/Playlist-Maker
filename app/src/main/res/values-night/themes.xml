@@ -19,11 +19,18 @@
         <item name="android:textColorPrimary">@color/yp_white</item>
         <item name="android:textColorSecondary">@color/yp_white</item>
 
+        <item name="emptyOutlinedInputColor">@color/night_empty_outlined_input_stroke_color</item>
+
         <item name="colorControlNormal">@color/yp_white</item>
 
+        <!-- Snackbar -->
         <item name="snackbarStyle">@style/Widget.PlaylistMaker.Snackbar</item>
         <item name="snackbarTextViewStyle">@style/Widget.PlaylistMaker.SnackbarTextViewStyle</item>
 
+        <!-- Dialogs -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+
+        <!-- Buttons -->
         <item name="fabEnabledBackgroundTint">@color/yp_white</item>
         <item name="fabEnabledTint">@color/yp_black</item>
         <item name="fabDisabledBackgroundTint">@color/yp_white_25alpha</item>
@@ -31,8 +38,7 @@
 
         <item name="smallRoundButtonBackgroundTint">@color/yp_white_25alpha</item>
 
-        <item name="emptyOutlinedInputColor">@color/night_empty_outlined_input_stroke_color</item>
-
+        <!-- Typography -->
         <item name="textAppearanceTitle_Medium">@style/TextAppearance.YS_Bold24</item>
 
         <item name="textAppearanceSubtitle_Large">@style/TextAppearance.YS_Medium22</item>
@@ -46,8 +52,6 @@
         <item name="textAppearanceBody_Medium">@style/TextAppearance.YS_Regular13</item>
         <item name="textAppearanceBody_Small">@style/TextAppearance.YS_Regular12</item>
         <item name="textAppearanceBody_ExtraSmall">@style/TextAppearance.YS_Regular11</item>
-
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">

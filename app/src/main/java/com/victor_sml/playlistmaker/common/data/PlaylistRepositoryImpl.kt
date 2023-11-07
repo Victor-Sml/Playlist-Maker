@@ -1,6 +1,7 @@
 package com.victor_sml.playlistmaker.common.data
 
 import android.database.sqlite.SQLiteException
+import android.util.Log
 import com.victor_sml.playlistmaker.common.data.db.convertors.PlaylistConvertor.toPlaylist
 import com.victor_sml.playlistmaker.common.data.db.convertors.PlaylistConvertor.toPlaylistEntity
 import com.victor_sml.playlistmaker.common.data.db.dao.PlaylistDao
@@ -9,19 +10,54 @@ import com.victor_sml.playlistmaker.common.domain.models.Playlist
 import com.victor_sml.playlistmaker.common.utils.DBQueryState
 import com.victor_sml.playlistmaker.common.utils.DBQueryState.Error
 import com.victor_sml.playlistmaker.common.domain.api.playlists.PlaylistRepository
+import com.victor_sml.playlistmaker.common.domain.models.PlaylistWithTracks
 import com.victor_sml.playlistmaker.common.utils.DBQueryState.Added
 import com.victor_sml.playlistmaker.common.utils.DBQueryState.ErrorUnique
+import com.victor_sml.playlistmaker.common.utils.DBQueryState.Updated
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
 
-    override suspend fun addPlaylist(playlist: Playlist): DBQueryState {
+    override suspend fun savePlaylist(playlist: Playlist): DBQueryState {
+        if (playlist.id == 0) return addPlaylist(playlist)
+        return updatePlaylist(playlist)
+    }
+
+    private suspend fun addPlaylist(playlist: Playlist): DBQueryState {
         try {
+            Log.d("MyLogs", playlist.id.toString() + " playlist id")
             db.insertPlaylist(playlist.toPlaylistEntity())
             return Added
         } catch (e: SQLiteException) {
             return processException(e)
+        }
+    }
+
+    private suspend fun updatePlaylist(playlist: Playlist): DBQueryState {
+        try {
+            db.updatePlaylist(playlist.toPlaylistEntity())
+            return Updated
+        } catch (e: SQLiteException) {
+            return processException(e)
+        }
+    }
+
+    override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState {
+        try {
+            db.insertPlaylistTrackCrossRef(PlaylistTrackCrossRef(playlistId, trackId))
+            return Added
+        } catch (e: SQLiteException) { return processException(e) }
+    }
+
+    override suspend fun deleteFromPlaylist(playlistId: Int, trackId: Int) {
+        db.deleteTrack(playlistId, trackId)
+    }
+
+    override suspend fun loadPlaylist(playlistId: Int): Flow<PlaylistWithTracks> {
+        return db.loadPlaylist(playlistId).filterNotNull().map { playlistWithTracks ->
+            playlistWithTracks.toPlaylist()
         }
     }
 
@@ -31,11 +67,8 @@ class PlaylistRepositoryImpl(private val db: PlaylistDao) : PlaylistRepository {
         }
     }
 
-    override suspend fun insertToPlaylist(playlistId: Int, trackId: Int): DBQueryState {
-        try {
-            db.insertPlaylistTrackCrossRef(PlaylistTrackCrossRef(playlistId, trackId))
-            return Added
-        } catch (e: SQLiteException) { return processException(e) }
+    override suspend fun deletePlaylist(playlistId: Int) {
+        db.deletePlaylist(playlistId)
     }
 
     private fun processException(e: SQLiteException): DBQueryState {

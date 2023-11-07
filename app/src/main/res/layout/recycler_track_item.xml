@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/recycler_linear_item_height"
+    android:background="@drawable/clickable_item_background"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingHorizontal="12dp">

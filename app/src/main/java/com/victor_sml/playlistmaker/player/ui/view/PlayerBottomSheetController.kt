@@ -13,9 +13,9 @@ import com.victor_sml.playlistmaker.common.ui.BottomSheetController
 
 class PlayerBottomSheetController(
     bottomSheet: ViewGroup,
-    overlay: View,
     toolbar: MaterialToolbar,
-    titleTop: TextView,
+    private val overlay: View,
+    private val titleTop: TextView,
 ) : BottomSheetController(bottomSheet, overlay, toolbar) {
     private val resources = bottomSheet.context.resources
 
@@ -26,22 +26,30 @@ class PlayerBottomSheetController(
             BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    STATE_HIDDEN -> overlay.isVisible = false
-                    else -> overlay.isVisible = true
-                }
+                changeOverlayVisibility(newState)
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                renderOverlay(slideOffset, OVERLAY_ALPHA_STEP)
-
-                setRebelViewsColor(slideOffset) {
-                    ((resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_NO)
-                }
-
-                titleTop.isVisible = slideOffset > DARK_EDGE_SLIDE_OFFSET
+                renderViews(slideOffset)
             }
         })
+    }
+
+    private fun changeOverlayVisibility(bottomSheetState: Int) {
+        when (bottomSheetState) {
+            STATE_HIDDEN -> overlay.isVisible = false
+            else -> overlay.isVisible = true
+        }
+    }
+
+    private fun renderViews(slideOffset: Float) {
+        renderOverlay(slideOffset, OVERLAY_ALPHA_STEP)
+
+        setRebelViewsColor(slideOffset) {
+            ((resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_NO)
+        }
+
+        titleTop.isVisible = slideOffset > DARK_EDGE_SLIDE_OFFSET
     }
 
     companion object {

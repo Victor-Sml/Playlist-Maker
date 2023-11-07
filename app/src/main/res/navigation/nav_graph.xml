@@ -12,7 +12,15 @@
     <fragment
         android:id="@+id/destination_library"
         android:name="com.victor_sml.playlistmaker.library.ui.view.LibraryFragment"
-        android:label="@string/library" />
+        android:label="@string/library">
+        <action
+            android:id="@+id/action_playlist_details"
+            app:destination="@id/destination_playlist_details"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
+    </fragment>
 
     <fragment
         android:id="@+id/destination_settings"
@@ -28,6 +36,15 @@
         android:id="@+id/destination_playlist_editor"
         android:name="com.victor_sml.playlistmaker.library.playlistEditor.ui.view.PlaylistEditorFragment"
         android:label="@string/new_playlist" />
+
+    <fragment
+        android:id="@+id/destination_playlist_details"
+        android:name="com.victor_sml.playlistmaker.library.playlistDetails.ui.view.PlaylistDetailsFragment"
+        android:label="">
+        <argument
+            android:name="playlistId"
+            app:argType="integer" />
+    </fragment>
 
     <action
         android:id="@+id/action_global_player"

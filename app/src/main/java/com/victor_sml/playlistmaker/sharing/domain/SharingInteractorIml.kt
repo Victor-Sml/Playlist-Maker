@@ -10,7 +10,7 @@ class SharingInteractorImpl(
     private val sharingRepository: SharingRepository
 ) : SharingInteractor {
     override fun shareApp() {
-        externalNavigator.shareLink(getShareAppLink())
+        externalNavigator.shareText(getShareAppLink())
     }
 
     override fun openTerms() {

@@ -25,10 +25,10 @@ class HistoryInteractorImpl(
     }
 
     private suspend fun verifyTrackFavorites(tracks: List<Track>): List<Track> {
-        val tracks = tracks
         val favoriteIds = historyRepository.getFavoriteIds()
-        tracks.forEach { it.isFavorite = favoriteIds.contains(it.trackId) }
-        return tracks
+
+        return tracks.map { track ->
+            track.copy(isFavorite = favoriteIds.contains(track.trackId)) }
     }
 
     override suspend fun clearHistory() {
@@ -54,12 +54,16 @@ class HistoryInteractorImpl(
         return result
     }
 
-    private fun updateHistory(track: Track) {
+    private fun updateHistory(currentTrack: Track) {
         if (lookedTracks.isNotEmpty()) {
-            if (track != lookedTracks[0]) lookedTracks.remove(track) else return
+            if (currentTrack.trackId != lookedTracks[0].trackId) {
+                lookedTracks.removeIf { lookedTrackId ->
+                    currentTrack.trackId == lookedTrackId.trackId
+                }
+            } else return
         }
         if (lookedTracks.size == HISTORY_SIZE) lookedTracks.removeLast()
-        lookedTracks.add(0, track)
+        lookedTracks.add(0, currentTrack)
     }
 
     private fun getLookedTracksIds(): IntArray =

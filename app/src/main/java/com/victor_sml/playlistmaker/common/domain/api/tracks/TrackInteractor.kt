@@ -5,6 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface TracksInteractor {
     suspend fun addTrack(track: Track)
+
     suspend fun deleteTrackFromFavorites(trackId: Int)
+
     suspend fun getFavoriteTracks(): Flow<List<Track>>
+
+    suspend fun verifyTrackFavorites(trackId: Int): Boolean
 }

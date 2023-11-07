@@ -19,6 +19,7 @@ import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsSc
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsScreenState.Content
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsScreenState.Empty
 import com.victor_sml.playlistmaker.library.playlists.ui.stateholder.PlaylistsViewModel
+import com.victor_sml.playlistmaker.library.ui.view.LibraryFragmentDirections
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
@@ -28,6 +29,8 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     private val playlistClickListener = object : PlaylistClickListener {
         override fun onPlaylistClick(playlist: Playlist) {
+            val action = LibraryFragmentDirections.actionPlaylistDetails(playlist.id)
+            findNavController().navigate(action)
         }
     }
 

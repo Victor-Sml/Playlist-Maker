@@ -4,7 +4,7 @@ import android.app.Application
 import com.google.gson.Gson
 import com.victor_sml.playlistmaker.App
 import com.victor_sml.playlistmaker.PM_PREFERENCES
-import com.victor_sml.playlistmaker.common.utils.TrackHolder
+import com.victor_sml.playlistmaker.main.ui.stateholder.TrackHolder
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
